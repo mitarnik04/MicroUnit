@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../test-failed-exception.php';
+require_once __DIR__ . '/../core/test-failed-exception.php';
 
 class Assert
 {

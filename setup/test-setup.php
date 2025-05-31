@@ -1,6 +1,6 @@
 <?php
 const CORE_DIR = __DIR__ . '/../core';
-const ASSERT_DIR = CORE_DIR . '/assert';
+const ASSERT_DIR = __DIR__ . '/../assertion';
 
 require_once CORE_DIR . '/testWriter/string-test-writer.php';
 require_once CORE_DIR . '/tester-hub.php';
