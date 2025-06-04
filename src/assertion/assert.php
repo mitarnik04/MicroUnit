@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../core/test-failed-exception.php';
+require_once __DIR__ . '/../helpers/formatter.php';
 
 class Assert
 {
@@ -9,8 +10,37 @@ class Assert
         if ($expected != $actual) {
             throw new TestFailedException(
                 'The provided two values are not equal' . PHP_EOL
-                    . self::formatLabelledValue('Expected', $expected) . PHP_EOL
-                    . self::formatLabelledValue('Actual', $actual)
+                    . Formatter::formatDiff($expected, $actual)
+            );
+        }
+    }
+
+    public static function notEquals(mixed $expected, $actual)
+    {
+        if ($expected == $actual) {
+            throw new TestFailedException(
+                'Expected two values to be not equal. But actually they are' . PHP_EOL
+                    . Formatter::formatLabelledValue("Value", $expected)
+            );
+        }
+    }
+
+    public static function exact(mixed $expected, mixed $actual)
+    {
+        if ($expected !== $actual) {
+            throw new TestFailedException(
+                'The provided two values are not exactly equal (type, value)' . PHP_EOL
+                    . Formatter::formatDiff($expected, $actual)
+            );
+        }
+    }
+
+    public static function notExact(mixed $expected, $actual)
+    {
+        if ($expected === $actual) {
+            throw new TestFailedException(
+                'Expected two values to not be exactly equal (type, value). But actually they are' . PHP_EOL
+                    . Formatter::formatLabelledValue("Value", $expected)
             );
         }
     }
@@ -20,7 +50,7 @@ class Assert
         if (!empty($array)) {
             throw new TestFailedException(
                 'Expected array to be EMPTY.' . PHP_EOL .
-                    self::formatLabelledValue('Actual', $array)
+                    Formatter::formatLabelledValue('Actual', $array)
             );
         }
     }
@@ -30,7 +60,7 @@ class Assert
         if (empty($array)) {
             throw new TestFailedException(
                 'Expected array to be NOT EMPTY.' . PHP_EOL .
-                    self::formatLabelledValue('Actual', '[]')
+                    Formatter::formatLabelledValue('Actual', '[]')
             );
         }
     }
@@ -39,21 +69,21 @@ class Assert
     {
         if (!in_array($element, $source, $shouldUseStrict)) {
             throw new TestFailedException(
-                'Expected array to CONTAIN this element: ' . self::formatValue($element) . PHP_EOL .
-                    self::formatLabelledValue('Array contents', $source)
+                'Expected array to CONTAIN this element: ' . Formatter::formatValue($element) . PHP_EOL .
+                    Formatter::formatLabelledValue('Array contents', $source)
             );
         }
     }
 
 
-    public static function countEquals(int $expected, array $source): void
+    public static function countEquals(int $expected, array | Countable $source): void
     {
         $arrayCount = count($source);
         if ($expected !== $arrayCount) {
             throw new TestFailedException(
                 'Array length mismatch:' . PHP_EOL .
-                    self::formatLabelledValue('Expected', $expected) . PHP_EOL .
-                    self::formatLabelledValue('Actual', $arrayCount)
+                    Formatter::formatLabelledValue('Expected', $expected) . PHP_EOL .
+                    Formatter::formatLabelledValue('Actual', $arrayCount)
             );
         }
     }
@@ -63,7 +93,7 @@ class Assert
         if (!($object instanceof $expectedInstance)) {
             throw new TestFailedException(
                 "The object is not an instance of $expectedInstance." . PHP_EOL .
-                    self::formatLabelledValue('Actual object type', $object::class)
+                    Formatter::formatLabelledValue('Actual object type', $object::class)
             );
         }
     }
@@ -75,7 +105,7 @@ class Assert
             $method();
             throw new TestFailedException(
                 "Expected Method to throw exception of type: $exceptionType." . PHP_EOL .
-                    self::formatLabelledValue('Actually threw', 'No Excpetion')
+                    Formatter::formatLabelledValue('Actually threw', 'No Excpetion')
             );
         } catch (\Throwable $e) {
             if ($e instanceof TestFailedException) {
@@ -84,49 +114,9 @@ class Assert
             if (isset($exceptionType) && !($e instanceof $exceptionType)) {
                 throw new TestFailedException(
                     "Expected Method to throw exception of type: $exceptionType." . PHP_EOL .
-                        self::formatLabelledValue('Actually threw', $e::class)
+                        Formatter::formatLabelledValue('Actually threw', $e::class)
                 );
             }
         }
-    }
-
-    private static function formatValue(mixed $value, int $indentLevel = 1): string
-    {
-        $indent = str_repeat("    ", $indentLevel);
-        $subIndent = $indent . "    ";
-
-        $exported = self::exportValue($value);
-        if (str_contains($exported, "\n")) {
-            // Multiline: indent each line manually with foreach for better performance !
-            $lines = explode("\n", trim($exported));
-            foreach ($lines as &$line) {
-                $line = $subIndent . $line;
-            }
-
-            return implode("\n", $lines);
-        }
-
-        return $exported;
-    }
-
-    private static function formatLabelledValue(string $label, mixed $value, int $indentLevel = 1): string
-    {
-        $indent = str_repeat("    ", $indentLevel);
-        $exported = self::formatValue($value, $indentLevel);
-        $seperator = ': ';
-        if (str_contains($exported, "\n")) {
-            $seperator = ":\n";
-        }
-
-        return $indent . $label . $seperator . $exported;
-    }
-
-    private static function exportValue(mixed $value): string
-    {
-        if (is_array($value) || is_object($value)) {
-            return print_r($value, true);
-        }
-
-        return var_export($value, true);
     }
 }

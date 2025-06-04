@@ -7,10 +7,35 @@ class AssertArray
         public readonly array $source
     ) {}
 
-    public static function begin(array $source)
+    public static function begin(array $source): AssertArray
     {
         return new AssertArray($source);
     }
+
+    public function equals(array $expected): AssertArray
+    {
+        Assert::equals($expected, $this->source);
+        return $this;
+    }
+
+    public function notEquals(array $expected): AssertArray
+    {
+        Assert::notEquals($expected, $this->source);
+        return $this;
+    }
+
+    public function exact(array $expected): AssertArray
+    {
+        Assert::exact($expected, $this->source);
+        return $this;
+    }
+
+    public function notExact(array $expected): AssertArray
+    {
+        Assert::notExact($expected, $this->source);
+        return $this;
+    }
+
 
     public function empty(): AssertArray
     {
