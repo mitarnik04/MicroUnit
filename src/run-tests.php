@@ -28,6 +28,7 @@ function getTestFiles(string $dir): array
     return $files;
 }
 
-foreach (getTestFiles(__DIR__) as $testFile) {
+//TODO: Be able to pass a custom directory to this !!
+foreach (getTestFiles(__DIR__ . '/../') as $testFile) {
     require_once $testFile;
 }
