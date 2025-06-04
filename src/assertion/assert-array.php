@@ -61,4 +61,28 @@ class AssertArray
         Assert::countEquals($expected, $this->source);
         return $this;
     }
+
+    public function hasKey(mixed $key): AssertArray
+    {
+        Assert::hasKey($key, $this->source);
+        return $this;
+    }
+
+    public function notHasKey(mixed $key): AssertArray
+    {
+        Assert::notHasKey($key, $this->source);
+        return $this;
+    }
+
+    public function keysEqual(array $expectedKeys): AssertArray
+    {
+        Assert::keysEqual($expectedKeys, $this->source);
+        return $this;
+    }
+
+    public function containsOnly(array $allowedValues): AssertArray
+    {
+        Assert::containsOnly($allowedValues, $this->source);
+        return $this;
+    }
 }

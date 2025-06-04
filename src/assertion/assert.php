@@ -4,7 +4,6 @@ require_once __DIR__ . '/../helpers/formatter.php';
 
 class Assert
 {
-
     public static function equals(mixed $expected, mixed $actual)
     {
         if ($expected != $actual) {
@@ -45,6 +44,78 @@ class Assert
         }
     }
 
+    public static function isTrue(mixed $value): void
+    {
+        if ($value !== true) {
+            throw new TestFailedException(
+                'Expected TRUE' . PHP_EOL .
+                    Formatter::formatLabelledValue('Got', $value)
+            );
+        }
+    }
+
+    public static function isFalse(mixed $value): void
+    {
+        if ($value !== false) {
+            throw new TestFailedException(
+                'Expected FALSE:' . PHP_EOL .
+                    Formatter::formatLabelledValue('Got', $value)
+            );
+        }
+    }
+
+    public static function isNull(mixed $value): void
+    {
+        if ($value !== null) {
+            throw new TestFailedException(
+                'Expected NULL:' . PHP_EOL .
+                    Formatter::formatLabelledValue('Got', $value)
+            );
+        }
+    }
+
+    public static function notNull(mixed $value): void
+    {
+        if ($value === null) {
+            throw new TestFailedException('Expected NOT NULL but got NULL.');
+        }
+    }
+
+    public static function isGreaterThan(int | float $expected, int | float $actual): void
+    {
+        if (!($actual > $expected)) {
+            throw new TestFailedException(
+                'Expected value to be greater than ' . Formatter::formatValue($expected) . PHP_EOL .
+                    Formatter::formatLabelledValue('Actual', $actual)
+            );
+        }
+    }
+
+    public static function isLessThan(int | float  $expected, int | float  $actual): void
+    {
+        if (!($actual < $expected)) {
+            throw new TestFailedException(
+                'Expected value to be less than ' . Formatter::formatValue($expected) . PHP_EOL .
+                    Formatter::formatLabelledValue('Actual', $actual)
+            );
+        }
+    }
+
+    public static function isBetween(int | float  $min, int | float  $max, int | float  $actual, bool $inclusive = true): void
+    {
+        $ok = $inclusive
+            ? ($actual >= $min && $actual <= $max)
+            : ($actual > $min && $actual < $max);
+
+        if (!$ok) {
+            $inclusivity = $inclusive ? 'inclusive' : 'exclusive';
+            throw new TestFailedException(
+                "Expected value to be between {$min} and {$max} ({$inclusivity})" . PHP_EOL .
+                    Formatter::formatLabelledValue('Actual', $actual)
+            );
+        }
+    }
+
     public static function empty(array $array): void
     {
         if (!empty($array)) {
@@ -75,7 +146,6 @@ class Assert
         }
     }
 
-
     public static function countEquals(int $expected, array | Countable $source): void
     {
         $arrayCount = count($source);
@@ -85,6 +155,53 @@ class Assert
                     Formatter::formatLabelledValue('Expected', $expected) . PHP_EOL .
                     Formatter::formatLabelledValue('Actual', $arrayCount)
             );
+        }
+    }
+
+    public static function hasKey(mixed $key, array $array): void
+    {
+        if (!array_key_exists($key, $array)) {
+            throw new TestFailedException(
+                'Expected array to have key: ' . Formatter::formatValue($key) . PHP_EOL .
+                    Formatter::formatLabelledValue('Array keys', array_keys($array))
+            );
+        }
+    }
+
+    public static function notHasKey(mixed $key, array $array): void
+    {
+        if (array_key_exists($key, $array)) {
+            throw new TestFailedException(
+                'Expected array NOT to have key: ' . Formatter::formatValue($key) . PHP_EOL .
+                    Formatter::formatLabelledValue('Array keys', array_keys($array))
+            );
+        }
+    }
+
+    public static function keysEqual(array $expectedKeys, array $array): void
+    {
+        $actualKeys = array_keys($array);
+        sort($expectedKeys);
+        sort($actualKeys);
+        if ($expectedKeys !== $actualKeys) {
+            throw new TestFailedException(
+                'Expected array keys to be exactly:' . PHP_EOL .
+                    Formatter::formatLabelledValue('Expected keys', $expectedKeys) . PHP_EOL .
+                    Formatter::formatLabelledValue('Actual keys', $actualKeys)
+            );
+        }
+    }
+
+    public static function containsOnly(array $allowedValues, array $array): void
+    {
+        foreach ($array as $item) {
+            if (!in_array($item, $allowedValues, true)) {
+                throw new TestFailedException(
+                    'Array contains value not in allowed list: ' . Formatter::formatValue($item) . PHP_EOL .
+                        Formatter::formatLabelledValue('Allowed values', $allowedValues) . PHP_EOL .
+                        Formatter::formatLabelledValue('Array', $array)
+                );
+            }
         }
     }
 
@@ -98,7 +215,7 @@ class Assert
         }
     }
 
-    /** @param callable() $method*/
+    /** @param callable() $method */
     public static function throws(callable $method, ?string $exceptionType = null)
     {
         try {

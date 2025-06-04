@@ -41,4 +41,28 @@ class AssertSingle
         Assert::instanceOf($expectedInstance, $this->source);
         return $this;
     }
+
+    public function isTrue(): AssertSingle
+    {
+        Assert::isTrue($this->source);
+        return $this;
+    }
+
+    public function isFalse(): AssertSingle
+    {
+        Assert::isFalse($this->source);
+        return $this;
+    }
+
+    public function isNull(): AssertSingle
+    {
+        Assert::isNull($this->source);
+        return $this;
+    }
+
+    public function notNull(): AssertSingle
+    {
+        Assert::notNull($this->source);
+        return $this;
+    }
 }

@@ -7,6 +7,7 @@ require_once CORE_DIR . '/tester-hub.php';
 require_once ASSERT_DIR . '/assert.php';
 require_once ASSERT_DIR . '/assert-single.php';
 require_once ASSERT_DIR . '/assert-array.php';
+require_once ASSERT_DIR . '/assert-numeric.php';
 
 function getTester(string $suite): Tester
 {
