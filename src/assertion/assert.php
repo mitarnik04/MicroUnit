@@ -58,7 +58,7 @@ class Assert
     {
         if ($value !== false) {
             throw new TestFailedException(
-                'Expected FALSE:' . PHP_EOL .
+                'Expected FALSE' . PHP_EOL .
                     Formatter::formatLabelledValue('Got', $value)
             );
         }
@@ -131,7 +131,7 @@ class Assert
         if (empty($array)) {
             throw new TestFailedException(
                 'Expected array to be NOT EMPTY.' . PHP_EOL .
-                    Formatter::formatLabelledValue('Actual', 'EMPTY')
+                    Formatter::formatLabelledValue('Actual', '[]', asLiteral: true)
             );
         }
     }
@@ -186,7 +186,7 @@ class Assert
         sort($actualKeys);
         if ($expectedKeys !== $actualKeys) {
             throw new TestFailedException(
-                'Expected array keys to be exactly:' . PHP_EOL .
+                'Expected array keys to be exactly equal' . PHP_EOL .
                     Formatter::formatLabelledValue('Expected keys', $expectedKeys) . PHP_EOL .
                     Formatter::formatLabelledValue('Actual keys', $actualKeys)
             );
@@ -198,9 +198,9 @@ class Assert
         foreach ($array as $item) {
             if (!in_array($item, $allowedValues, true)) {
                 throw new TestFailedException(
-                    'Array contains value not in allowed list: ' . Formatter::formatValue($item) . PHP_EOL .
-                        Formatter::formatLabelledValue('Allowed values', $allowedValues) . PHP_EOL .
-                        Formatter::formatLabelledValue('Array', $array)
+                    'Array contains value(s) not specified as allowed' . PHP_EOL .
+                        Formatter::formatLabelledValue('Allowed', $allowedValues) . PHP_EOL .
+                        Formatter::formatLabelledValue('Actual', $array)
                 );
             }
         }
@@ -211,7 +211,7 @@ class Assert
         if (!($object instanceof $expectedInstance)) {
             throw new TestFailedException(
                 "The object is not an instance of $expectedInstance." . PHP_EOL .
-                    Formatter::formatLabelledValue('Actual object type', $object::class)
+                    Formatter::formatLabelledValue('Actual object type', $object::class, asLiteral: true)
             );
         }
     }
