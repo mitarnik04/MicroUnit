@@ -17,7 +17,7 @@ class Formatter
             $label,
             Diff::generate(ValueExporter::export($expected), ValueExporter::export($actual)),
             $indentLevel
-        );;
+        );
     }
 
     public static function formatValue(mixed $value, int $indentLevel = 1, bool $asLiteral = false): string
