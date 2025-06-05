@@ -39,7 +39,7 @@ class Assert
         if ($expected === $actual) {
             throw new TestFailedException(
                 'Expected two values to not be exactly equal (type, value). But actually they are' . PHP_EOL
-                    . Formatter::formatLabelledValue("Value", $expected)
+                    . Formatter::formatLabelledValue('Value', $expected)
             );
         }
     }
@@ -140,7 +140,7 @@ class Assert
     {
         if (!in_array($element, $source, $shouldUseStrict)) {
             throw new TestFailedException(
-                'Array does not contain the given element. ' . PHP_EOL
+                'Array does not contain the given element.' . PHP_EOL
                     . Formatter::formatLabelledValue('Expected to contain', $element) . PHP_EOL
                     . Formatter::formatLabelledValue('Actual', $source)
             );
