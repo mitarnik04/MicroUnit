@@ -4,8 +4,8 @@ require_once __DIR__ . '/value-exporter.php';
 
 class Formatter
 {
-    private const SPACES_FIRST_INDENT_LEVEL = 9;
-    private const SPACES_SUBSEQUENT_INDENT_LEVELS = 4;
+    private const BASE_INDENT = 9;
+    private const INDENT_PER_LEVEL = 4;
 
     public static function formatDiff(mixed $expected, mixed $actual, int $indentLevel = 1, string $label = 'Diff'): string
     {
@@ -24,8 +24,8 @@ class Formatter
     {
         $exported = $asLiteral ? $value : ValueExporter::export($value);
 
-        if (str_contains($exported, "\n")) {
-            return self::formatLines(explode("\n", trim($exported)), $indentLevel + 1);
+        if (str_contains($exported, PHP_EOL)) {
+            return self::formatLines(explode(PHP_EOL, trim($exported)), $indentLevel + 1);
         }
 
         return $exported;
@@ -35,37 +35,34 @@ class Formatter
     {
         $indent = self::getIndent($indentLevel);
         $formatted = self::formatValue($value, $indentLevel, $asLiteral);
-        $separator = str_contains($formatted, "\n") ? ":\n" : ": ";
+        $separator = str_contains($formatted, PHP_EOL) ? ':' . PHP_EOL : ': ';
 
         return $indent . $label . $separator . $formatted;
     }
 
     public static function formatBlock(string $label, string $content, int $indentLevel = 1): string
     {
-        $block = self::formatLines(explode("\n", trim($content)), $indentLevel + 1);
+        $block = self::formatLines(explode(PHP_EOL, trim($content)), $indentLevel + 1);
 
         $indent = self::getIndent($indentLevel);
-        return $indent . $label . ":\n" . $block;
+        return $indent . $label . ':' . PHP_EOL . $block;
     }
 
     private static function getIndent(int $indentLevel)
     {
-        if ($indentLevel <= 0) {
-            return '';
-        }
-        $firstIndent = str_repeat(' ', self::SPACES_FIRST_INDENT_LEVEL);
-        if ($indentLevel === 1) {
-            return $firstIndent;
-        }
-
-        return $firstIndent . str_repeat(' ', self::SPACES_SUBSEQUENT_INDENT_LEVELS * ($indentLevel - 1));
+        $firstIndent = str_repeat(' ', self::BASE_INDENT);
+        return match (true) {
+            $indentLevel <= 0 => '',
+            $indentLevel === 1 => $firstIndent,
+            default => $firstIndent . str_repeat(' ', self::INDENT_PER_LEVEL * ($indentLevel - 1))
+        };
     }
 
     private static function formatLines(array $lines, int $indentLevel = 1): string
     {
         $indent = self::getIndent($indentLevel);
         return implode(
-            "\n",
+            PHP_EOL,
             array_map(
                 fn($line) => $indent . $line,
                 $lines

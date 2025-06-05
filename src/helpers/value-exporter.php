@@ -4,7 +4,7 @@ class ValueExporter
 {
     private const SPACING_UNIT = '   ';
 
-    public static function export($var, int $indent = 0)
+    public static function export($var, int $indent = 0): string
     {
         return match (true) {
             is_array($var) => self::exportArray($var, $indent),
@@ -21,7 +21,7 @@ class ValueExporter
         return "$exported ($type)";
     }
 
-    private static function exportArray(array $vals, int $indent = 0)
+    private static function exportArray(array $vals, int $indent = 0): string
     {
         $spacing = self::getSpacing($indent);
         $innerSpacing = self::getSpacing($indent + 1);
@@ -32,11 +32,12 @@ class ValueExporter
             $output .= self::export($value, $indent + 1);
             $output .= PHP_EOL;
         }
+        $output .= ')';
 
-        return $output . $spacing . ")";
+        return $output;
     }
 
-    private static function exportObject(object $obj, int $indent = 0)
+    private static function exportObject(object $obj, int $indent = 0): string
     {
         $spacing = self::getSpacing($indent);
         $innerSpacing = self::getSpacing($indent + 1);
@@ -48,11 +49,12 @@ class ValueExporter
             $output .= self::export($value, $indent + 1);
             $output .= PHP_EOL;
         }
+        $output .= ')';
 
-        return $output . $spacing . ")";
+        return $output;
     }
 
-    private static function getSpacing(int $indent)
+    private static function getSpacing(int $indent): string
     {
         return str_repeat(self::SPACING_UNIT, $indent);
     }
