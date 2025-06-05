@@ -8,7 +8,7 @@ class MicroUnitConfig
      * @param array<string> $testFilePatterns
      */
     public function __construct(
-        public readonly string $testDirectory = __DIR__ . '/../../',
+        public readonly ?string $testDirectory = null,
         public readonly array $testWriters = [new StringTestWriter()],
         public readonly array $testFilePatterns = ['*-tests.php'],
         public readonly bool $stopOnFailure = false,

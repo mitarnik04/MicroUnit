@@ -23,7 +23,7 @@ class MicroUnitConfigBuilder
 
     private function __construct() {}
 
-    public static function begin(): MicroUnitConfigBuilder
+    public static function create(): MicroUnitConfigBuilder
     {
         return new MicroUnitConfigBuilder();
     }
@@ -34,13 +34,13 @@ class MicroUnitConfigBuilder
         return $this;
     }
 
-    public function withTestWriters(ITestWriter ...$writers)
+    public function withTestWriters(ITestWriter ...$writers): MicroUnitConfigBuilder
     {
         $this->testWriters = $writers;
         return $this;
     }
 
-    public function addTestWriter(ITestWriter $writer)
+    public function addTestWriter(ITestWriter $writer): MicroUnitConfigBuilder
     {
         if (!isset($this->testWriters)) {
             $this->testWriters = [];
@@ -49,13 +49,13 @@ class MicroUnitConfigBuilder
         return $this;
     }
 
-    public function withTestFilePatterns(string ...$testFilePatterns)
+    public function withTestFilePatterns(string ...$testFilePatterns): MicroUnitConfigBuilder
     {
         $this->testFilePatterns = $testFilePatterns;
         return $this;
     }
 
-    public function addTestFilePattern(string $pattern)
+    public function addTestFilePattern(string $pattern): MicroUnitConfigBuilder
     {
         if (!isset($this->testFilePatterns)) {
             $this->testFilePatterns = [];
@@ -64,15 +64,16 @@ class MicroUnitConfigBuilder
         return $this;
     }
 
-    public function stopOnFailure()
+    public function stopOnFailure(): MicroUnitConfigBuilder
     {
         $this->stopOnFailure = true;
         return $this;
     }
 
-    public function withBootstrapFile(string $bootstrapFile)
+    public function withBootstrapFile(string $bootstrapFile): MicroUnitConfigBuilder
     {
         $this->bootstrapFile = $bootstrapFile;
+        return $this;
     }
 
     public function build()

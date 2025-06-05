@@ -3,99 +3,31 @@
 /**
  * Entry point to load and run all tests.
  * Use in CLI or build pipelines to execute the full test suite.
- * 
  */
-
 
 require_once __DIR__ . '/config/config-provider.php';
 require_once __DIR__ . '/setup/test-setup.php';
+require_once __DIR__ . '/helpers/utils.php';
+require_once __DIR__ . '/config/config-builder.php';
 
+$configFile = findFileInDirectoryOrAbove('microunit.config.php');
 
-/** 
- * Recursive function to find all test files in tests and subdirectories
- * @param string $dir The root directory where to _start looking_
- * @param array<string> $patterns all the valid naming patterns for test files
- */
-function getTestFiles(string $dir, array $patterns): array
-{
-    $files = [];
-    $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir));
-
-    foreach ($iterator as $file) {
-        if (!$file->isFile()) {
-            continue;
-        }
-
-        $filename = $file->getFilename();
-
-        foreach ($patterns as $pattern) {
-            if (preg_match($pattern, $filename)) {
-                $files[] = $file->getPathname();
-                break; // Stop checking once one pattern matches
-            }
-        }
-    }
-
-    return $files;
-}
-
-function FindFileInDirectoryOrAbove(string $fileName, ?string $startDir = null): ?string
-{
-    $dir = $startDir ?? getcwd();
-    $previousDir = null;
-
-    // Loop until root directory is reached
-    while ($dir !== $previousDir) {
-        $possibleConfig = $dir . DIRECTORY_SEPARATOR . $fileName;
-
-        if (file_exists($possibleConfig)) {
-            return $possibleConfig;
-        }
-
-        $previousDir = $dir;
-        $dir = dirname($dir);  // Go one level up
-    }
-
-    return null; // Not found
-}
-
-function globToRegex(string $glob): string
-{
-    $regex = preg_quote($glob, '/');
-    $regex = str_replace('\*', '.*', $regex);
-    $regex = str_replace('\?', '.', $regex);
-    return '/^' . $regex . '$/i';
-}
-
-$configFile = FindFileInDirectoryOrAbove('microunit-config.php');
 /** @var MicroUnitConfig $config */
-$config;
-if ($configFile !== null) {
-    $config = require_once $configFile;
-} else {
-    $config = new MicroUnitConfig();
-}
+$config = $configFile ? require_once $configFile : new MicroUnitConfig();
 ConfigProvider::set($config);
 
-$testDir = $config->testDirectory;
-$boootstrap = $config->bootstrapFile;
-if (isset($configFile)) {
-    $configDir = dirname($configFile);
-    /** @var string */
-    $testDir = $configDir . (str_starts_with($testDir, '/') ? $testDir : '/' . $testDir);
+$baseDir = $configFile ? dirname($configFile) : getcwd();
+$testDir = $baseDir . DIRECTORY_SEPARATOR . ltrim($config->testDirectory ?? '', '\/');
 
-    if (isset($config->bootstrapFile)) {
-        /** @var string */
-        $boootstrap = $configDir . str_starts_with($boootstrap, '/') ? $boootstrap : '/' . $boootstrap;
-        include_once $boootstrap;
-    }
-}
+$bootstrap = isset($config->bootstrapFile)
+    ? $baseDir . DIRECTORY_SEPARATOR . ltrim($config->bootstrapFile, '\/')
+    : null;
 
-if (isset($config->bootstrapFile)) {
-    include_once $boootstrap;
+if ($bootstrap && file_exists($bootstrap)) {
+    include_once $bootstrap;
 }
 
 $testFileRegexes = array_map(fn($glob) => globToRegex($glob), $config->testFilePatterns);
-foreach (getTestFiles($testDir, $testFileRegexes) as $testFile) {
+foreach (getFilesRecursive($testDir, $testFileRegexes) as $testFile) {
     require_once $testFile;
 }
