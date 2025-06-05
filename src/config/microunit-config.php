@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../core/testWriter/string-test-writer.php';
+require_once __DIR__ . '/../core/output/string-test-writer.php';
 
 class MicroUnitConfig
 {

@@ -48,7 +48,7 @@ class Formatter
         return $indent . $label . ':' . PHP_EOL . $block;
     }
 
-    private static function getIndent(int $indentLevel)
+    private static function getIndent(int $indentLevel): string
     {
         $firstIndent = str_repeat(' ', self::BASE_INDENT);
         return match (true) {
