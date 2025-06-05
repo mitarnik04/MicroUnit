@@ -3,7 +3,7 @@ require_once __DIR__ . '/diff.php';
 
 class Formatter
 {
-    private const SPACES_PER_INDENT_LEVEL = 4;
+    private const SPACES_PER_INDENT_LEVEL = 7;
 
     public static function formatDiff(mixed $expected, mixed $actual, int $indentLevel = 1, string $label = 'Diff'): string
     {
@@ -20,14 +20,13 @@ class Formatter
 
     public static function formatValue(mixed $value, int $indentLevel = 1): string
     {
-        $indent = self::getIndent($indentLevel);
         $exported = self::exportValue($value);
 
         if (str_contains($exported, "\n")) {
             return self::formatLines(explode("\n", trim($exported)), $indentLevel + 1);
         }
 
-        return $indent . "$exported " . '(' . gettype($exported) . ')';
+        return "$exported ";
     }
 
     public static function formatLabelledValue(string $label, mixed $value, int $indentLevel = 1): string
@@ -50,8 +49,8 @@ class Formatter
     public static function exportValue(mixed $value): string
     {
         return is_array($value) || is_object($value)
-            ? print_r($value, true)
-            : var_export($value, true);
+            ? print_r_with_types($value)
+            : var_export($value, true) . ' ' . '(' . gettype($value) . ')';
     }
 
     private static function getIndent(int $indentLevel)
@@ -65,9 +64,50 @@ class Formatter
         return implode(
             "\n",
             array_map(
-                fn($line) => $indent . "$line " . '(' . gettype($line) . ')',
+                fn($line) => $indent . "$line ",
                 $lines
             )
         );
     }
+}
+
+function print_r_with_types($var, $indent = 0)
+{
+    $spacing = str_repeat('    ', $indent);
+    $output = '';
+
+    if (is_array($var)) {
+        $output .= "Array (\n";
+        foreach ($var as $key => $value) {
+            $output .= $spacing . "    [$key] => ";
+            if (is_array($value) || is_object($value)) {
+                $output .= print_r_with_types($value, $indent + 1);
+            } else {
+                $val = var_export($value, true);
+                $type = gettype($value);
+                $output .= "$val ($type)\n";
+            }
+        }
+        $output .= $spacing . ")\n";
+    } elseif (is_object($var)) {
+        $class = get_class($var);
+        $output .= "Object of class $class (\n";
+        foreach (get_object_vars($var) as $prop => $value) {
+            $output .= $spacing . "    [$prop] => ";
+            if (is_array($value) || is_object($value)) {
+                $output .= print_r_with_types($value, $indent + 1);
+            } else {
+                $val = var_export($value, true);
+                $type = gettype($value);
+                $output .= "$val ($type)\n";
+            }
+        }
+        $output .= $spacing . ")\n";
+    } else {
+        $val = var_export($var, true);
+        $type = gettype($var);
+        $output .= "$val ($type)\n";
+    }
+
+    return $output;
 }

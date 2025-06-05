@@ -19,7 +19,7 @@ class StringTestWriter implements ITestWriter
             echo 'Stack trace: N/A' . PHP_EOL;
         }
 
-        echo str_repeat('-', 40) . PHP_EOL;
+        echo str_repeat('-', 80) . PHP_EOL;
     }
 
     public function writeResults(array $results): void
@@ -31,18 +31,18 @@ class StringTestWriter implements ITestWriter
 
     public function writeSummary(int $totalTests, int $successes, int $failures): void
     {
-        echo PHP_EOL . str_repeat('=', 13) . " Test Summary " . str_repeat('=', 13) . PHP_EOL;
+        echo PHP_EOL . str_repeat('=', 33) . " Test Summary " . str_repeat('=', 34) . PHP_EOL;
         echo "Total: {$totalTests}" . PHP_EOL;
         echo "Succeeded: {$successes}" . PHP_EOL;
         echo "Failed: {$failures}" . PHP_EOL;
-        echo str_repeat('=', 40) . PHP_EOL;
+        echo str_repeat('=', 80) . PHP_EOL;
     }
 
     public function writeSuite(string $suite): void
     {
-        echo str_repeat('=', 40) . PHP_EOL;
-        echo str_repeat(' ', 9) . "Test Suite: $suite " . PHP_EOL;
-        echo str_repeat('=', 40) . PHP_EOL;
+        echo str_repeat('=', 80) . PHP_EOL;
+        echo str_repeat(' ', 18) . "Test Suite: $suite " . PHP_EOL;
+        echo str_repeat('=', 80) . PHP_EOL;
     }
 
     private function writeHeader(TestResult $testResult): void

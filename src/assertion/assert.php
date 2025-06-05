@@ -68,7 +68,7 @@ class Assert
     {
         if ($value !== null) {
             throw new TestFailedException(
-                'Expected NULL:' . PHP_EOL .
+                'Expected value to be NULL.' . PHP_EOL .
                     Formatter::formatLabelledValue('Got', $value)
             );
         }
@@ -131,7 +131,7 @@ class Assert
         if (empty($array)) {
             throw new TestFailedException(
                 'Expected array to be NOT EMPTY.' . PHP_EOL .
-                    Formatter::formatLabelledValue('Actual', '[]')
+                    Formatter::formatLabelledValue('Actual', 'EMPTY')
             );
         }
     }
@@ -140,8 +140,9 @@ class Assert
     {
         if (!in_array($element, $source, $shouldUseStrict)) {
             throw new TestFailedException(
-                'Expected array to CONTAIN this element: ' . Formatter::formatValue($element) . PHP_EOL .
-                    Formatter::formatLabelledValue('Array contents', $source)
+                'Expected array to CONTAIN a specific element. ' . PHP_EOL
+                    . Formatter::formatLabelledValue('Expected to contain', $element) . PHP_EOL
+                    . Formatter::formatLabelledValue('Actual', $source)
             );
         }
     }
