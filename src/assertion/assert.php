@@ -140,7 +140,7 @@ class Assert
     {
         if (!in_array($element, $source, $shouldUseStrict)) {
             throw new TestFailedException(
-                'Expected array to CONTAIN a specific element. ' . PHP_EOL
+                'Array does not contain the given element. ' . PHP_EOL
                     . Formatter::formatLabelledValue('Expected to contain', $element) . PHP_EOL
                     . Formatter::formatLabelledValue('Actual', $source)
             );

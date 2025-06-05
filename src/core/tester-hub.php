@@ -11,7 +11,8 @@ require_once __DIR__ . '/test-result.php';
 class TesterHub
 {
     public function __construct(
-        public ITestWriter $writer
+        public WriteHelper $writer,
+        private bool $stopOnFailure,
     ) {}
 
     /** @var array<Tester> */
@@ -27,7 +28,7 @@ class TesterHub
         if (isset($tester)) {
             return $tester;
         }
-        $tester = new Tester($suite);
+        $tester = new Tester($this->stopOnFailure);
         $this->testers[$suite] = $tester;
         return $tester;
     }
@@ -35,12 +36,17 @@ class TesterHub
     public function runAll()
     {
         foreach ($this->testers as $suite => $tester) {
+            if ($this->stopOnFailure && $this->failed > 0) {
+                break;
+            }
+
             $this->writer->writeSuite($suite);
 
             $results = $tester->run();
             $this->writer->writeResults($results);
 
             $counts = $this->getCounts($results);
+
             $this->updateMetrics($counts);
         }
 

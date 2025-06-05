@@ -3,7 +3,8 @@ require_once __DIR__ . '/diff.php';
 
 class Formatter
 {
-    private const SPACES_PER_INDENT_LEVEL = 7;
+    private const SPACES_FIRST_INDENT_LEVEL = 9;
+    private const SPACES_SUBSEQUENT_INDENT_LEVELS = 4;
 
     public static function formatDiff(mixed $expected, mixed $actual, int $indentLevel = 1, string $label = 'Diff'): string
     {
@@ -55,7 +56,15 @@ class Formatter
 
     private static function getIndent(int $indentLevel)
     {
-        return str_repeat(str_repeat(' ', self::SPACES_PER_INDENT_LEVEL), $indentLevel);
+        if ($indentLevel <= 0) {
+            return '';
+        }
+        $firstIndent = str_repeat(' ', self::SPACES_FIRST_INDENT_LEVEL);
+        if ($indentLevel === 1) {
+            return $firstIndent;
+        }
+
+        return $firstIndent . str_repeat(' ', self::SPACES_SUBSEQUENT_INDENT_LEVELS);
     }
 
     private static function formatLines(array $lines, int $indentLevel = 1): string

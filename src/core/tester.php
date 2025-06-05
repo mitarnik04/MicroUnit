@@ -5,6 +5,10 @@ require_once __DIR__ . '/test-case.php';
 
 class Tester
 {
+    public function __construct(
+        private bool $stopOnFailure
+    ) {}
+
     /** @var array<Test> */
     private array $tests = [];
 
@@ -56,7 +60,16 @@ class Tester
     /** @return array<TestResult> */
     public function run(): array
     {
-        return array_map(fn($test) => $this->runSingleTest($test), $this->tests);
+        $results = [];
+        foreach ($this->tests as $test) {
+            $result = $this->runSingleTest($test);
+            $results[] = $result;
+            if ($this->stopOnFailure && $result->isError) {
+                return $results;
+            }
+        }
+
+        return $results;
     }
 
     private function runSingleTest(Test $test): TestResult
