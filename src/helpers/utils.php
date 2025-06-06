@@ -56,3 +56,15 @@ function globToRegex(string $glob): string
     $regex = str_replace('\?', '.', $regex);
     return '/^' . $regex . '$/i';
 }
+
+function tryGetJsonContent(string $path, ?array &$jsonContentResult, bool $errorLogIfFileNotFound = true): bool
+{
+    if (file_exists($path)) {
+        $jsonContentResult = json_decode(file_get_contents($path), true);
+        return true;
+    }
+    if ($errorLogIfFileNotFound) {
+        error_log("JSON-file not found. PATH: $path");
+    }
+    return false;
+}

@@ -18,7 +18,8 @@ class MicroUnitConfigBuilder
     public array $testWriters;
     public array $testFilePatterns;
     public ?bool $stopOnFailure;
-    public ?bool $bootstrapFile;
+    public ?string $bootstrapFile;
+    public ?bool $cacheConfigPath;
 
 
     private function __construct() {}
@@ -76,6 +77,12 @@ class MicroUnitConfigBuilder
         return $this;
     }
 
+    public function cacheConfigPath(): MicroUnitConfigBuilder
+    {
+        $this->cacheConfigPath = true;
+        return $this;
+    }
+
     public function build()
     {
         $defaultConfig = new MicroUnitConfig();
@@ -85,6 +92,7 @@ class MicroUnitConfigBuilder
             $this->testFilePatterns ?? $defaultConfig->testFilePatterns,
             $this->stopOnFailure ?? $defaultConfig->stopOnFailure,
             $this->bootstrapFile ?? $defaultConfig->bootstrapFile,
+            $this->cacheConfigPath ?? $defaultConfig->cacheConfigPath,
         );
     }
 }
