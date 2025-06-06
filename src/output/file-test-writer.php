@@ -1,5 +1,4 @@
 <?php
-require_once __DIR__ . '/../test-result.php';
 require_once __DIR__ . '/test-writer.php';
 
 class FileTestWriter implements ITestWriter

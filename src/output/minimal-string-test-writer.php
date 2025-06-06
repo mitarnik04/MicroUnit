@@ -1,6 +1,7 @@
 <?php
-require_once __DIR__ . '/../test-result.php';
 require_once __DIR__ . '/test-writer.php';
+require_once __DIR__ . '/../helpers/string-formatter.php';
+
 
 class MinimalStringTestWriter implements ITestWriter
 {
@@ -10,13 +11,13 @@ class MinimalStringTestWriter implements ITestWriter
         $name = $testResult->testName;
         $time = isset($testResult->time) ? number_format($testResult->time * 1000, 2) . 'ms' : 'N/A';
 
-        echo "[{$status}] {$name} ({$time})" . PHP_EOL;
+        echo "[{$status}] {$name} ({$time})", PHP_EOL;
 
         if (!$testResult->isSuccess) {
-            echo "  Error: " . ($testResult->errorMsg ?? 'Unknown error') . PHP_EOL;
+            echo StringFormatter::formatLabelledBlock('Error: ' . $testResult->errorMsg ?? 'Unknown Error');
         }
 
-        echo PHP_EOL;
+        echo str_repeat(PHP_EOL, 2);
     }
 
     public function writeResults(array $results): void
@@ -28,11 +29,11 @@ class MinimalStringTestWriter implements ITestWriter
 
     public function writeSummary(int $totalTests, int $successes, int $failures): void
     {
-        echo PHP_EOL . "Summary: {$successes}/{$totalTests} passed, {$failures} failed" . PHP_EOL;
+        echo PHP_EOL, "Summary: {$successes}/{$totalTests} passed, {$failures} failed", PHP_EOL;
     }
 
     public function writeSuite(string $suite): void
     {
-        echo PHP_EOL . "-- {$suite} --" . PHP_EOL;
+        echo PHP_EOL, "-- {$suite} --", PHP_EOL;
     }
 }

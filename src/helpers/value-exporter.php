@@ -1,5 +1,6 @@
 <?php
 
+/** Exports a value of any kind into a human readable format */
 class ValueExporter
 {
     private const SPACING_UNIT = '   ';
@@ -8,6 +9,7 @@ class ValueExporter
     {
         return match (true) {
             is_array($var) => self::exportArray($var, $indent),
+            $var instanceof Diff => self::exportDiff($var, $indent),
             is_object($var) => self::exportObject($var, $indent),
             default => self::exportScalar($var),
         };
@@ -23,7 +25,6 @@ class ValueExporter
 
     private static function exportArray(array $vals, int $indent = 0): string
     {
-        $spacing = self::getSpacing($indent);
         $innerSpacing = self::getSpacing($indent + 1);
 
         $output = "Array (" . PHP_EOL;
@@ -39,11 +40,11 @@ class ValueExporter
 
     private static function exportObject(object $obj, int $indent = 0): string
     {
-        $spacing = self::getSpacing($indent);
         $innerSpacing = self::getSpacing($indent + 1);
-
         $class = get_class($obj);
+
         $output = "Object of class $class (" . PHP_EOL;
+
         foreach (get_object_vars($obj) as $prop => $value) {
             $output .= $innerSpacing . "[$prop] => ";
             $output .= self::export($value, $indent + 1);
@@ -52,6 +53,28 @@ class ValueExporter
         $output .= ')';
 
         return $output;
+    }
+
+    private static function exportDiff(Diff $diff, int $indent = 0)
+    {
+        $innerSpacing = self::getSpacing($indent + 1);
+
+        $output = '--- Expected' . PHP_EOL;
+        $output .= '+++ Actual' . PHP_EOL;
+        $output .= 'Diff: ' . PHP_EOL;
+
+        foreach ($diff->diffLines as $diffLine) {
+            $prefix = match ($diffLine->type) {
+                DiffLineType::Same => '',
+                DiffLineType::ExpectedDifferent => '-',
+                DiffLineType::AcutalDifferent => '+'
+            };
+            $line = $diffLine->line;
+            $output .= $innerSpacing . "$prefix $line";
+            $output .= PHP_EOL;
+        }
+
+        return trim($output);
     }
 
     private static function getSpacing(int $indent): string

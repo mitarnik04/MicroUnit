@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/tester.php';
-require_once __DIR__ . '/output/test-writer.php';
+require_once __DIR__ . '/../output/test-writer.php';
 require_once __DIR__ . '/test-result.php';
 
 

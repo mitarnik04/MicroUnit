@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../test-result.php';
+require_once __DIR__ . '/../core/test-result.php';
 
 interface ITestWriter
 {
