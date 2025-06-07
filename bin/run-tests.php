@@ -5,15 +5,15 @@
  * Use in CLI or build pipelines to execute the full test suite.
  */
 
-const SRC_DIR = __DIR__ . '/../src';
-const RUN_LOG_FOLDER = __DIR__ . '/run_logs';
-
 require_once SRC_DIR . '/setup/test-setup.php';
 require_once SRC_DIR . '/helpers/utils.php';
 require_once SRC_DIR . '/helpers/guid-generator.php';
 require_once SRC_DIR . '/config/config-builder.php';
 require_once SRC_DIR . '/bootstrap/config-initializer.php';
 require_once SRC_DIR . '/bootstrap/logging-initializer.php';
+
+const SRC_DIR = __DIR__ . '/../src';
+const RUN_LOG_FOLDER = __DIR__ . '/run_logs';
 
 $configInitResult = initConfiguration();
 $config = $configInitResult->config;
