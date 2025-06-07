@@ -1,10 +1,4 @@
 <?php
-const CORE_DIR = __DIR__ . '/../core';
-const ASSERT_DIR = __DIR__ . '/../assertion';
-const CONFIG_DIR = __DIR__ . '/../config';
-const OUTPUT_DIR = __DIR__ . '/../output';
-
-
 require_once CORE_DIR . '/tester-hub.php';
 require_once CONFIG_DIR . '/config-provider.php';
 require_once CONFIG_DIR . '/microunit-config.php';
@@ -17,6 +11,10 @@ require_once ASSERT_DIR . '/assert-single.php';
 require_once ASSERT_DIR . '/assert-array.php';
 require_once ASSERT_DIR . '/assert-numeric.php';
 
+const CORE_DIR = __DIR__ . '/../core';
+const ASSERT_DIR = __DIR__ . '/../assertion';
+const CONFIG_DIR = __DIR__ . '/../config';
+const OUTPUT_DIR = __DIR__ . '/../output';
 
 function getTester(string $suite): Tester
 {
