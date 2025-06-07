@@ -68,3 +68,14 @@ function tryGetJsonContent(string $path, ?array &$jsonContentResult, bool $error
     }
     return false;
 }
+
+function deleteMatchingFiles(string $pattern)
+{
+    $files = glob($pattern);
+
+    foreach ($files as $file) {
+        if (is_file($file)) {
+            unlink($file);
+        }
+    }
+}

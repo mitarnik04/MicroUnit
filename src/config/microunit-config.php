@@ -13,6 +13,6 @@ class MicroUnitConfig
         public readonly array $testFilePatterns = ['*-tests.php'],
         public readonly bool $stopOnFailure = false,
         public readonly ?string $bootstrapFile = null,
-        public readonly ?bool $cacheConfigPath = false
+        public readonly bool $persistRunLogs = false,
     ) {}
 }

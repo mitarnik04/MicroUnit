@@ -2,24 +2,19 @@
 
 class MicroUnitConfigBuilder
 {
-    //     /** 
-    //  * @param array<ITestWriter> $testWriters 
-    //  * @param array<string> $testFilePatterns
-    //  */
-    // public function __construct(
-    //     public readonly string $testDirectory = __DIR__ . '/../../';
-    //     public readonly array $testWriters = [new StringTestWriter()],
-    //     public readonly array $testFilePatterns = ['*-tests.php'],
-    //     public readonly bool $stopOnFailure = false,
-    //     public readonly ?bool $bootstrapFile = null
-    // ) {}
-
     public ?string $testDirectory;
+
+    /** @var array<ITestWriter> */
     public array $testWriters;
+
+    /** @var array<string> */
     public array $testFilePatterns;
+
     public ?bool $stopOnFailure;
+
     public ?string $bootstrapFile;
-    public ?bool $cacheConfigPath;
+
+    public ?bool $persistRunLogs;
 
 
     private function __construct() {}
@@ -77,9 +72,9 @@ class MicroUnitConfigBuilder
         return $this;
     }
 
-    public function cacheConfigPath(): MicroUnitConfigBuilder
+    public function persistRunLogs(): MicroUnitConfigBuilder
     {
-        $this->cacheConfigPath = true;
+        $this->persistRunLogs = true;
         return $this;
     }
 
@@ -92,7 +87,7 @@ class MicroUnitConfigBuilder
             $this->testFilePatterns ?? $defaultConfig->testFilePatterns,
             $this->stopOnFailure ?? $defaultConfig->stopOnFailure,
             $this->bootstrapFile ?? $defaultConfig->bootstrapFile,
-            $this->cacheConfigPath ?? $defaultConfig->cacheConfigPath,
+            $this->persistRunLogs ?? $defaultConfig->persistRunLogs,
         );
     }
 }
