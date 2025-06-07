@@ -21,6 +21,9 @@ $configFile = $configInitResult->configFullPath;
 
 $runId = GuidGenerator::generateV4();
 
+if (!is_dir(RUN_LOG_FOLDER)) {
+    mkdir(RUN_LOG_FOLDER);
+}
 setFileOnlyLogging(E_ALL, RUN_LOG_FOLDER . "/run-$runId.log");
 
 echo $config->persistRunLogs;
