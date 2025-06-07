@@ -34,6 +34,6 @@ class MinimalStringTestWriter implements ITestWriter
 
     public function writeSuite(string $suite): void
     {
-        echo PHP_EOL, "-- {$suite} --", PHP_EOL;
+        echo "-- {$suite} --", PHP_EOL;
     }
 }

@@ -12,7 +12,7 @@ class MicroUnitConfig
         public readonly array $testWriters = [new MinimalStringTestWriter()],
         public readonly array $testFilePatterns = ['*-tests.php'],
         public readonly bool $stopOnFailure = false,
-        public readonly ?bool $bootstrapFile = null,
+        public readonly ?string $bootstrapFile = null,
         public readonly ?bool $cacheConfigPath = false
     ) {}
 }
