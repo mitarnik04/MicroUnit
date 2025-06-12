@@ -15,16 +15,16 @@ require_once SRC_DIR . '/config/config-builder.php';
 require_once SRC_DIR . '/bootstrap/config-initializer.php';
 require_once SRC_DIR . '/bootstrap/logging-initializer.php';
 
+if (!is_dir(RUN_LOG_FOLDER)) {
+    mkdir(RUN_LOG_FOLDER);
+}
+setFileOnlyLogging(E_ALL, RUN_LOG_FOLDER . "/run-$runId.log");
+
 $configInitResult = initConfiguration();
 $config = $configInitResult->config;
 $configFile = $configInitResult->configFullPath;
 
 $runId = GuidGenerator::generateV4();
-
-if (!is_dir(RUN_LOG_FOLDER)) {
-    mkdir(RUN_LOG_FOLDER);
-}
-setFileOnlyLogging(E_ALL, RUN_LOG_FOLDER . "/run-$runId.log");
 
 echo $config->persistRunLogs;
 if (!$config->persistRunLogs) {
