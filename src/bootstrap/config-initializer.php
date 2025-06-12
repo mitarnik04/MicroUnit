@@ -27,19 +27,21 @@ function initConfiguration(): ConfigInitializationResult
         ? $cachedConfigFile
         : findFileInDirectoryOrAbove('microunit.config.php');
 
-    /** @var MicroUnitConfig $config */
     $config = null;
+    $usingDefaultConfig = false;
     if ($configFile) {
-        trigger_error("Using configFile $configFile", E_NOTICE);
+        trigger_error("Using configFile $configFile", E_USER_NOTICE);
+        /** @var MicroUnitConfig $config */
         $config = require_once $configFile;
     } else {
-        trigger_error('No config file found. Using default config', E_NOTICE);
+        trigger_error('No config file found. Using default config', E_USER_NOTICE);
         $config = new MicroUnitConfig();
+        $usingDefaultConfig = true;
     }
     ConfigProvider::set($config);
 
-    if (!$isCachedFileValid) {
-        trigger_error("Caching the config file path $configFile since it was either added or moved to a new location.", E_NOTICE);
+    if (!$usingDefaultConfig && !$isCachedFileValid) {
+        trigger_error("Caching the config file path $configFile since it was either added or moved to a new location.", E_USER_NOTICE);
         $cache->set(CONFIG_FILE_CACHE_KEY, $configFile);
     }
 

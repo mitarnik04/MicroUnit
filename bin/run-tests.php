@@ -10,7 +10,6 @@ const RUN_LOG_FOLDER = __DIR__ . '/run_logs';
 
 require_once SRC_DIR . '/setup/test-setup.php';
 require_once SRC_DIR . '/helpers/utils.php';
-require_once SRC_DIR . '/helpers/guid-generator.php';
 require_once SRC_DIR . '/config/config-builder.php';
 require_once SRC_DIR . '/bootstrap/config-initializer.php';
 require_once SRC_DIR . '/bootstrap/logging-initializer.php';
@@ -18,17 +17,15 @@ require_once SRC_DIR . '/bootstrap/logging-initializer.php';
 if (!is_dir(RUN_LOG_FOLDER)) {
     mkdir(RUN_LOG_FOLDER);
 }
-setFileOnlyLogging(E_ALL, RUN_LOG_FOLDER . "/run-$runId.log");
+$currentUtcDateTime = gmdate('Y-m-d\TH-i-s\Z');
+setFileOnlyLogging(E_ALL, RUN_LOG_FOLDER . "/$currentUtcDateTime.log");
 
 $configInitResult = initConfiguration();
 $config = $configInitResult->config;
 $configFile = $configInitResult->configFullPath;
 
-$runId = GuidGenerator::generateV4();
-
-echo $config->persistRunLogs;
 if (!$config->persistRunLogs) {
-    deleteMatchingFiles(RUN_LOG_FOLDER . '/run-*.log');
+    deleteMatchingFiles(RUN_LOG_FOLDER . '/*.log', [RUN_LOG_FOLDER . "/$currentUtcDateTime.log"]);
 }
 
 $baseDir = $configFile ? dirname($configFile) : getcwd();
@@ -38,7 +35,7 @@ $bootstrap = isset($config->bootstrapFile)
     ? $baseDir . DIRECTORY_SEPARATOR . ltrim($config->bootstrapFile, '\/')
     : null;
 
-$doesBootstrapFileExist = file_exists($bootstrap);
+$doesBootstrapFileExist = isset($bootstrap) && file_exists($bootstrap);
 if (!$doesBootstrapFileExist && $bootstrap) {
     trigger_error("The bootstrap file specified in $configFile does not exist.", E_USER_WARNING);
 }
@@ -48,6 +45,12 @@ if ($bootstrap && file_exists($bootstrap)) {
 }
 
 $testFileRegexes = array_map(fn($glob) => globToRegex($glob), $config->testFilePatterns);
-foreach (getFilesRecursive($testDir, $testFileRegexes) as $testFile) {
+$testFiles = getFilesRecursive($testDir, $testFileRegexes);
+foreach ($testFiles as $testFile) {
     require_once $testFile;
+}
+
+echo count($testFiles);
+if (count($testFiles) === 0) {
+    trigger_error('No test files were found', E_USER_NOTICE);
 }

@@ -69,9 +69,9 @@ function tryGetJsonContent(string $path, ?array &$jsonContentResult, bool $error
     return false;
 }
 
-function deleteMatchingFiles(string $pattern)
+function deleteMatchingFiles(string $pattern, array $filePathWhitelist = [])
 {
-    $files = glob($pattern);
+    $files = array_diff(glob($pattern), $filePathWhitelist);
 
     foreach ($files as $file) {
         if (is_file($file)) {
