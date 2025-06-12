@@ -4,7 +4,6 @@ require_once __DIR__ . '/../vendor/autoload.php';
 use MicroUnit\Helpers\Utils;
 use MicroUnit\Bootstrap\ConfigInitializer;
 use MicroUnit\Bootstrap\LoggingInitializer;
-use MicroUnit\Config\ConfigProvider;
 
 /**
  * Entry point to load and run all tests.
