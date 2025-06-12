@@ -4,7 +4,7 @@ namespace MicroUnit\Assertion;
 
 use MicroUnit\Helpers\Diff;
 use MicroUnit\Helpers\ValueExporter;
-use MicroUnit\core\TestFailedException;
+use MicroUnit\Exceptions\TestFailedException;
 
 class Assert
 {

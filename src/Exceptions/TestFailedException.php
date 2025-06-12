@@ -1,6 +1,6 @@
 <?php
 
-namespace MicroUnit\Core;
+namespace MicroUnit\Exceptions;
 
 /**
  * Extend this class with custom behaviour if needed. 
