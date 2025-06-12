@@ -1,4 +1,7 @@
 <?php
+
+namespace MicroUnit\Assertion;
+
 class AssertNumeric
 {
     private function __construct(

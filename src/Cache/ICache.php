@@ -1,5 +1,7 @@
 <?php
 
+namespace MicroUnit\Cache;
+
 interface ICache
 {
     function get(string $key, bool $throwOnNotFound = false): mixed;

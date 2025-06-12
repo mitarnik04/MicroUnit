@@ -1,6 +1,6 @@
 <?php
-require_once __DIR__ . '/diff.php';
-require_once __DIR__ . '/value-exporter.php';
+
+namespace MicroUnit\Helpers;
 
 class StringFormatter
 {

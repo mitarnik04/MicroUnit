@@ -1,6 +1,8 @@
 <?php
-require_once __DIR__ . '/cache.php';
-require_once __DIR__ . '/../helpers/utils.php';
+
+namespace MicroUnit\Cache;
+
+use MicroUnit\Helpers\Utils;
 
 class JsonCache implements ICache
 {
@@ -12,7 +14,7 @@ class JsonCache implements ICache
         //TODO: Check that it's really a valid file name ! 
         $this->cacheFullPath = __DIR__ . "/$cacheFileName.json";
 
-        if (!tryGetJsonContent($this->cacheFullPath, $this->cache, false)) {
+        if (!Utils::tryGetJsonContent($this->cacheFullPath, $this->cache, false)) {
             $this->cache = [];
         };
     }
@@ -24,7 +26,7 @@ class JsonCache implements ICache
         }
 
         if ($throwOnNotFound) {
-            throw new RuntimeException("Cache does not contain key '$key'");
+            throw new \RuntimeException("Cache does not contain key '$key'");
         }
 
         return null;
@@ -36,7 +38,7 @@ class JsonCache implements ICache
             $this->cache[$key] = json_encode($value);
         }
         if ($throwOnKeyExists) {
-            throw new RuntimeException("The key '$key' is already present in the cache");
+            throw new \RuntimeException("The key '$key' is already present in the cache");
         }
 
         file_put_contents($this->cacheFullPath, json_encode($this->cache, JSON_PRETTY_PRINT));

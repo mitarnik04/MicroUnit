@@ -1,4 +1,10 @@
 <?php
+require_once __DIR__ . '/../vendor/autoload.php';
+
+use MicroUnit\Helpers\Utils;
+use MicroUnit\Bootstrap\ConfigInitializer;
+use MicroUnit\Bootstrap\LoggingInitializer;
+use MicroUnit\Config\ConfigProvider;
 
 /**
  * Entry point to load and run all tests.
@@ -8,24 +14,20 @@
 const SRC_DIR = __DIR__ . '/../src';
 const RUN_LOG_FOLDER = __DIR__ . '/run_logs';
 
-require_once SRC_DIR . '/setup/test-setup.php';
-require_once SRC_DIR . '/helpers/utils.php';
-require_once SRC_DIR . '/config/config-builder.php';
-require_once SRC_DIR . '/bootstrap/config-initializer.php';
-require_once SRC_DIR . '/bootstrap/logging-initializer.php';
+
 
 if (!is_dir(RUN_LOG_FOLDER)) {
     mkdir(RUN_LOG_FOLDER);
 }
 $currentUtcDateTime = gmdate('Y-m-d\TH-i-s\Z');
-setFileOnlyLogging(E_ALL, RUN_LOG_FOLDER . "/$currentUtcDateTime.log");
+LoggingInitializer::setFileOnlyLogging(E_ALL, RUN_LOG_FOLDER . "/$currentUtcDateTime.log");
 
-$configInitResult = initConfiguration();
+$configInitResult = ConfigInitializer::initConfiguration();
 $config = $configInitResult->config;
 $configFile = $configInitResult->configFullPath;
 
 if (!$config->persistRunLogs) {
-    deleteMatchingFiles(RUN_LOG_FOLDER . '/*.log', [RUN_LOG_FOLDER . "/$currentUtcDateTime.log"]);
+    Utils::deleteMatchingFiles(RUN_LOG_FOLDER . '/*.log', [RUN_LOG_FOLDER . "/$currentUtcDateTime.log"]);
 }
 
 $baseDir = $configFile ? dirname($configFile) : getcwd();
@@ -44,8 +46,8 @@ if ($bootstrap && file_exists($bootstrap)) {
     include_once $bootstrap;
 }
 
-$testFileRegexes = array_map(fn($glob) => globToRegex($glob), $config->testFilePatterns);
-$testFiles = getFilesRecursive($testDir, $testFileRegexes);
+$testFileRegexes = array_map(fn($glob) => Utils::globToRegex($glob), $config->testFilePatterns);
+$testFiles = Utils::getFilesRecursive($testDir, $testFileRegexes);
 foreach ($testFiles as $testFile) {
     require_once $testFile;
 }

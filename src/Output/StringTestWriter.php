@@ -1,7 +1,10 @@
 <?php
-require_once __DIR__ . '/test-writer.php';
-require_once __DIR__ . '/../helpers/string-formatter.php';
-require_once __DIR__ . '/../helpers/value-exporter.php';
+
+namespace MicroUnit\Output;
+
+use MicroUnit\Core\TestResult;
+use MicroUnit\Helpers\StringFormatter;
+use MicroUnit\Helpers\ValueExporter;
 
 class StringTestWriter implements ITestWriter
 {
@@ -51,7 +54,7 @@ class StringTestWriter implements ITestWriter
         echo StringFormatter::formatLabelledBlock('Error: ' . ($testResult->errorMsg ?? 'None')), PHP_EOL;
     }
 
-    private function writeStacktrace(?Throwable $exception): void
+    private function writeStacktrace(?\Throwable $exception): void
     {
         if ($exception) {
             echo 'Stack trace: ', $exception::class, PHP_EOL, $exception->getTraceAsString(), PHP_EOL;

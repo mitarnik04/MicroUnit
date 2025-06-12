@@ -1,7 +1,6 @@
 <?php
-require_once __DIR__ . '/test.php';
-require_once __DIR__ . '/test-result.php';
-require_once __DIR__ . '/test-case.php';
+
+namespace MicroUnit\Core;
 
 class Tester
 {
@@ -93,7 +92,7 @@ class Tester
                 ($this->teardown)($result, $setUpResult);
             }
             return TestResult::success($test->name, $result, $endTime - $startTime);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $endTime = microtime(true);
             return TestResult::failiureFromException($test->name, $e, $endTime - $startTime);
         }

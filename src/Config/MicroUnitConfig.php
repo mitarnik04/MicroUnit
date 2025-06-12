@@ -1,5 +1,9 @@
 <?php
-require_once __DIR__ . '/../output/minimal-string-test-writer.php';
+
+namespace MicroUnit\Config;
+
+use MicroUnit\Output\MinimalStringTestWriter;
+
 
 class MicroUnitConfig
 {

@@ -1,5 +1,8 @@
 <?php
-require_once __DIR__ . '/test-writer.php';
+
+namespace MicroUnit\Output;
+
+use MicroUnit\Core\TestResult;
 
 class FileTestWriter implements ITestWriter
 {
@@ -66,7 +69,7 @@ class FileTestWriter implements ITestWriter
         );
     }
 
-    private function getStacktrace(?Throwable $exception): string
+    private function getStacktrace(?\Throwable $exception): string
     {
         if ($exception) {
             return 'Stack trace: ' . $exception::class . "\n" . $exception->getTraceAsString() . "\n";

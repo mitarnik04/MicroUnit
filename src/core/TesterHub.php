@@ -1,8 +1,8 @@
 <?php
-require_once __DIR__ . '/tester.php';
-require_once __DIR__ . '/../output/test-writer.php';
-require_once __DIR__ . '/test-result.php';
 
+namespace MicroUnit\Core;
+
+use MicroUnit\Output\WriteHelper;
 
 /** 
  * Use this hub to get a tester instance for a specific suite

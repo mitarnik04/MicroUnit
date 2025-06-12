@@ -1,5 +1,6 @@
 <?php
-require_once __DIR__ . '/assert.php';
+
+namespace MicroUnit\Assertion;
 
 class AssertArray
 {

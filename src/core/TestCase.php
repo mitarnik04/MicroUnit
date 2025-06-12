@@ -1,5 +1,7 @@
 <?php
 
+namespace MicroUnit\Core;
+
 class TestCase
 {
     public function __construct(

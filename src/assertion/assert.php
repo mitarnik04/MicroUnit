@@ -1,7 +1,10 @@
 <?php
-require_once __DIR__ . '/../core/test-failed-exception.php';
-require_once __DIR__ . '/../helpers/diff.php';
-require_once __DIR__ . '/../helpers/value-exporter.php';
+
+namespace MicroUnit\Assertion;
+
+use MicroUnit\Helpers\Diff;
+use MicroUnit\Helpers\ValueExporter;
+use MicroUnit\core\TestFailedException;
 
 class Assert
 {

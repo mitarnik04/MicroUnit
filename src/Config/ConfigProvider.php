@@ -1,6 +1,6 @@
 <?php
-require_once __DIR__ . '/microunit-config.php';
 
+namespace MicroUnit\Config;
 
 class ConfigProvider
 {

@@ -1,5 +1,7 @@
 <?php
 
+namespace MicroUnit\Helpers;
+
 /** Exports a value of any kind into a human readable format */
 class ValueExporter
 {

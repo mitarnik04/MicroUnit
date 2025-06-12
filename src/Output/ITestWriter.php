@@ -1,5 +1,8 @@
 <?php
-require_once __DIR__ . '/../core/test-result.php';
+
+namespace MicroUnit\Output;
+
+use MicroUnit\Core\TestResult;
 
 interface ITestWriter
 {

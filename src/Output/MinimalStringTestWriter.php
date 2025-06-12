@@ -1,7 +1,9 @@
 <?php
-require_once __DIR__ . '/test-writer.php';
-require_once __DIR__ . '/../helpers/string-formatter.php';
 
+namespace MicroUnit\Output;
+
+use MicroUnit\Helpers\StringFormatter;
+use MicroUnit\Core\TestResult;
 
 class MinimalStringTestWriter implements ITestWriter
 {

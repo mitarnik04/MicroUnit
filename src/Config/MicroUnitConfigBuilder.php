@@ -1,5 +1,9 @@
 <?php
 
+namespace MicroUnit\Config;
+
+use MicroUnit\Output\ITestWriter;
+
 class MicroUnitConfigBuilder
 {
     public ?string $testDirectory;

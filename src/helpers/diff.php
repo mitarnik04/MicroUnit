@@ -1,18 +1,6 @@
 <?php
-enum DiffLineType
-{
-    case Same;
-    case ExpectedDifferent;
-    case AcutalDifferent;
-}
 
-class DiffLine
-{
-    public function __construct(
-        public readonly DiffLineType $type,
-        public readonly string $line
-    ) {}
-}
+namespace MicroUnit\Helpers;
 
 class Diff
 {

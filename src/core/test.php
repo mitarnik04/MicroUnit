@@ -1,5 +1,7 @@
 <?php
 
+namespace MicroUnit\Core;
+
 class Test
 {
     /** @param callable(...$args): mixed $testCallable */

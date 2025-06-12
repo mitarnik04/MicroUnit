@@ -1,6 +1,8 @@
 <?php
-require_once __DIR__ . '/test-writer.php';
 
+namespace MicroUnit\Output;
+
+use MicroUnit\Core\TestResult;
 
 class WriteHelper
 {
