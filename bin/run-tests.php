@@ -51,7 +51,6 @@ foreach ($testFiles as $testFile) {
     require_once $testFile;
 }
 
-echo count($testFiles);
 if (count($testFiles) === 0) {
     trigger_error('No test files were found', E_USER_NOTICE);
 }
