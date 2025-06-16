@@ -11,7 +11,7 @@ class MockBuilder
         $this->engine = new MicroMock($targetType);
     }
 
-    public static function createMock(string $class): self
+    public static function create(string $class): self
     {
         return new self($class, 'concrete');
     }
@@ -52,8 +52,8 @@ class MockBuilder
         return $this;
     }
 
-    public function build(): object
+    public function build(): MicroMock
     {
-        return $this->engine->generateMock();
+        return $this->engine;
     }
 }

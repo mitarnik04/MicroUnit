@@ -2,12 +2,20 @@
 
 namespace MicroUnit\Mock;
 
+use MicroUnit\Helpers\ArrayUtils;
+
 class MicroMock
 {
     private string $targetType;
     private array $returnPlans = [];
-    private array $callLog = [];
+    private CallLog $callLog;
     private array $expectations = [];
+
+    public function __construct(string $targetType)
+    {
+        $this->targetType = $targetType;
+        $this->callLog = new CallLog();
+    }
 
     public function setReturnPlan(string $method, ReturnPlanType $returnType, mixed $return): void
     {
@@ -19,14 +27,9 @@ class MicroMock
         $this->expectations[$method][$kind->value] = $value;
     }
 
-    public function __construct(string $targetType)
-    {
-        $this->targetType = $targetType;
-    }
-
     public function handleCall(string $method, array $args): mixed
     {
-        $this->callLog[] = ['method' => $method, 'args' => $args];
+        $this->callLog->addCall($method, $args);
 
         if (isset($this->returnPlans[$method])) {
             return $this->returnPlans[$method]->execute($args);
@@ -38,17 +41,18 @@ class MicroMock
     public function verify(): void
     {
         foreach ($this->expectations as $method => $exp) {
-            $calls = array_filter($this->callLog, fn($c) => $c['method'] === $method);
-
-            if (isset($exp['times']) && count($calls) !== $exp['times']) {
-                throw new \Exception("Expected {$method} to be called {$exp['times']} times, called " . count($calls));
+            $callCount = $this->callLog->getCallCount($method);
+            if (isset($exp[ExpectationKind::TIMES->value]) && $callCount !== $exp[ExpectationKind::TIMES->value]) {
+                throw new \Exception("Expected {$method} to be called {$exp[ExpectationKind::TIMES->value]} times, called " . $callCount);
             }
 
-            if (isset($exp['args'])) {
-                foreach ($exp['args'] as $expectedArgs) {
+            $allCallArgs = $this->callLog->getAllCallArgs($method);
+
+            if (isset($exp[ExpectationKind::ARGS->value])) {
+                foreach ($exp[ExpectationKind::ARGS->value] as $expectedArgs) {
                     $matched = false;
-                    foreach ($calls as $call) {
-                        if ($call['args'] === $expectedArgs) {
+                    foreach ($allCallArgs as $callArgs) {
+                        if ($callArgs === $expectedArgs) {
                             $matched = true;
                             break;
                         }
@@ -61,29 +65,7 @@ class MicroMock
         }
     }
 
-    private function stringifyType(\ReflectionType $type): string
-    {
-        if ($type instanceof \ReflectionNamedType) {
-            $name = $type->getName();
-            $prefix = $type->allowsNull() && $name !== 'mixed' ? '?' : '';
-            if (!$type->isBuiltin()) {
-                $name = '\\' . ltrim($name, '\\');
-            }
-            return $prefix . $name;
-        }
-
-        if ($type instanceof \ReflectionUnionType) {
-            return implode('|', array_map([$this, 'stringifyType'], $type->getTypes()));
-        }
-
-        if ($type instanceof \ReflectionIntersectionType) {
-            return implode('&', array_map([$this, 'stringifyType'], $type->getTypes()));
-        }
-
-        return '';
-    }
-
-    public function generateMock(): object
+    public function newInstance(): object
     {
         $target = $this->targetType;
         $ref = new \ReflectionClass($target);
@@ -165,5 +147,27 @@ class MicroMock
 
         $fqcn = "MicroUnit\\Mock\\{$className}";
         return new $fqcn($engine);
+    }
+
+    private function stringifyType(\ReflectionType $type): string
+    {
+        if ($type instanceof \ReflectionNamedType) {
+            $name = $type->getName();
+            $prefix = $type->allowsNull() && $name !== 'mixed' ? '?' : '';
+            if (!$type->isBuiltin()) {
+                $name = '\\' . ltrim($name, '\\');
+            }
+            return $prefix . $name;
+        }
+
+        if ($type instanceof \ReflectionUnionType) {
+            return implode('|', array_map([$this, 'stringifyType'], $type->getTypes()));
+        }
+
+        if ($type instanceof \ReflectionIntersectionType) {
+            return implode('&', array_map([$this, 'stringifyType'], $type->getTypes()));
+        }
+
+        return '';
     }
 }
