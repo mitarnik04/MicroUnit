@@ -24,6 +24,8 @@ class ClassRepresentation extends Representation
             $result .= "implements $implemented ";
         }
         $result .= '{';
+        $result .= PHP_EOL;
+        $result .= 'use MicroUnit\Mock\Representation\MethodCallTracer;';
         $membersAsString = array_map(fn($member) => $member->asString(), $this->classMembers);
         $result .= implode("\n", $membersAsString);
         $result .= PHP_EOL;

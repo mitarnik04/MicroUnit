@@ -21,13 +21,16 @@ class MethodRepresentation extends ClassMemberRepresentation
         foreach ($this->methodParams as $param) {
             $result .= "{$param->asString()},";
         }
-
         $result = rtrim($result, ',');
         $result .= ')';
+
         if (isset($this->methodReturnType)) {
             $result .= ": {$this->asFormattedType($this->methodReturnType,$this->typeCombination)}";
         }
-        $result .= "{ return {$this->return}; }";
+        $result .= "{
+         \$this->traceCall(__FUNCTION__, func_get_args()); 
+         return {$this->return}; 
+         }";
         return $result;
     }
 }
