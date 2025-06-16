@@ -4,30 +4,56 @@ namespace MicroUnit\Mock;
 
 class MockBuilder
 {
-    private string $type;
-    private array $stubs = [];
+    private MicroMock $engine;
 
-    public static function for(string $type): self
+    private function __construct(string $targetType)
     {
-        return new self($type);
+        $this->engine = new MicroMock($targetType);
     }
 
-    private function __construct(string $type)
+    public static function createMock(string $class): self
     {
-        if (!interface_exists($type) && !class_exists($type)) {
-            throw new \InvalidArgumentException("Type $type does not exist.");
-        }
-        $this->type = $type;
+        return new self($class, 'concrete');
     }
 
-    public function stub(string $method, mixed $returnValue): self
+    public function returns(string $method, mixed $value): self
     {
-        $this->stubs[$method] = $returnValue;
+        $this->engine->setReturnPlan($method, ReturnPlanType::FIXED, $value);
         return $this;
     }
 
-    public function build(): Mock
+    public function returnsSequence(string $method, mixed ...$values): self
     {
-        return MockFactory::create($this->type, $this->stubs);
+        $this->engine->setReturnPlan($method, ReturnPlanType::FIXED, $values);
+        return $this;
+    }
+
+    public function returnsCallback(string $method, callable $callback): self
+    {
+        $this->engine->setReturnPlan($method, ReturnPlanType::CALLBACK, $callback);
+        return $this;
+    }
+
+    public function throws(string $method, \Throwable $e): self
+    {
+        $this->engine->setReturnPlan($method, ReturnPlanType::CALLBACK, $e);
+        return $this;
+    }
+
+    public function shouldBeCalledTimes(string $method, int $times): self
+    {
+        $this->engine->setExpectation($method, ExpectationKind::TIMES, $times);
+        return $this;
+    }
+
+    public function shouldBeCalledWith(string $method, array $args): self
+    {
+        $this->engine->setExpectation($method, ExpectationKind::ARGS, $args);
+        return $this;
+    }
+
+    public function build(): object
+    {
+        return $this->engine->generateMock();
     }
 }
