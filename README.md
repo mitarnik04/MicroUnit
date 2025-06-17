@@ -8,9 +8,13 @@ _The next-generation PHP unit testing framework for developers who want speed, c
 [![License Apache2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![PHP Version](https://img.shields.io/badge/php-8.0%2B-blue.svg)](https://www.php.net/)
 [![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)](#)
+[![Beta](https://img.shields.io/badge/status-beta-yellow.svg)](#)
 [![buymeacoffee](https://img.shields.io/badge/donate-buy_me_a_coffee-ffdd00?style=flat&logo=buy-me-a-coffee&logoColor=black)](https://coff.ee/mitarnikolic)
 
 ---
+
+> ⚠️ **MicroUnit is currently in public beta!**  
+> Features may change and bugs may exist. Feedback is welcome as we prepare for the first stable release.
 
 ## What is MicroUnit?
 
