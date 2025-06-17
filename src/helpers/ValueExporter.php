@@ -27,6 +27,7 @@ class ValueExporter
 
     private static function exportArray(array $vals, int $indent = 0): string
     {
+        $spacing = self::getSpacing($indent);
         $innerSpacing = self::getSpacing($indent + 1);
 
         $output = "Array (" . PHP_EOL;
@@ -35,13 +36,14 @@ class ValueExporter
             $output .= self::export($value, $indent + 1);
             $output .= PHP_EOL;
         }
-        $output .= ')';
+        $output .= $spacing . ')';
 
         return $output;
     }
 
     private static function exportObject(object $obj, int $indent = 0): string
     {
+        $spacing = self::getSpacing($indent);
         $innerSpacing = self::getSpacing($indent + 1);
         $class = get_class($obj);
 
@@ -52,7 +54,7 @@ class ValueExporter
             $output .= self::export($value, $indent + 1);
             $output .= PHP_EOL;
         }
-        $output .= ')';
+        $output .= $spacing . ')';
 
         return $output;
     }

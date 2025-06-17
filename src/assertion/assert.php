@@ -8,6 +8,7 @@ use MicroUnit\Exceptions\TestFailedException;
 
 class Assert
 {
+    //Single-Value
     public static function equals(mixed $expected, mixed $actual)
     {
         if ($expected != $actual) {
@@ -87,6 +88,7 @@ class Assert
         }
     }
 
+    //Numeric 
     public static function isGreaterThan(int | float $expected, int | float $actual): void
     {
         if (!($actual > $expected)) {
@@ -122,6 +124,7 @@ class Assert
         }
     }
 
+    //Array
     public static function empty(array $array): void
     {
         if (!empty($array)) {
@@ -153,7 +156,7 @@ class Assert
         }
     }
 
-    public static function countEquals(int $expected, array | Countable $source): void
+    public static function countEquals(int $expected, array | \Countable $source): void
     {
         $arrayCount = count($source);
         if ($expected !== $arrayCount) {

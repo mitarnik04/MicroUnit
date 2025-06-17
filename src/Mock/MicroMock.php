@@ -2,14 +2,11 @@
 
 namespace MicroUnit\Mock;
 
-use MicroUnit\Helpers\ArrayUtils;
-
 class MicroMock
 {
     private string $targetType;
     private array $returnPlans = [];
     private CallLog $callLog;
-    private array $expectations = [];
 
     public function __construct(string $targetType)
     {
@@ -22,9 +19,9 @@ class MicroMock
         $this->returnPlans[$method] = new ReturnPlan($returnType, $return);
     }
 
-    public function setExpectation(string $method, ExpectationKind $kind, mixed $value): void
+    public function getCallLog(): CallLog
     {
-        $this->expectations[$method][$kind->value] = $value;
+        return $this->callLog;
     }
 
     public function handleCall(string $method, array $args): mixed
@@ -36,33 +33,6 @@ class MicroMock
         }
 
         return null;
-    }
-
-    public function verify(): void
-    {
-        foreach ($this->expectations as $method => $exp) {
-            $callCount = $this->callLog->getCallCount($method);
-            if (isset($exp[ExpectationKind::TIMES->value]) && $callCount !== $exp[ExpectationKind::TIMES->value]) {
-                throw new \Exception("Expected {$method} to be called {$exp[ExpectationKind::TIMES->value]} times, called " . $callCount);
-            }
-
-            $allCallArgs = $this->callLog->getAllCallArgs($method);
-
-            if (isset($exp[ExpectationKind::ARGS->value])) {
-                foreach ($exp[ExpectationKind::ARGS->value] as $expectedArgs) {
-                    $matched = false;
-                    foreach ($allCallArgs as $callArgs) {
-                        if ($callArgs === $expectedArgs) {
-                            $matched = true;
-                            break;
-                        }
-                    }
-                    if (!$matched) {
-                        throw new \Exception("Expected {$method} to be called with " . json_encode($expectedArgs));
-                    }
-                }
-            }
-        }
     }
 
     public function newInstance(): object

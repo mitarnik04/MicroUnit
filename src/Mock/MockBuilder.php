@@ -40,18 +40,6 @@ class MockBuilder
         return $this;
     }
 
-    public function shouldBeCalledTimes(string $method, int $times): self
-    {
-        $this->engine->setExpectation($method, ExpectationKind::TIMES, $times);
-        return $this;
-    }
-
-    public function shouldBeCalledWith(string $method, array $args): self
-    {
-        $this->engine->setExpectation($method, ExpectationKind::ARGS, $args);
-        return $this;
-    }
-
     public function build(): MicroMock
     {
         return $this->engine;
