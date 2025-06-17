@@ -136,7 +136,7 @@ use MicroUnit\Output\MinimalStringTestWriter;
 
 return MicroUnitConfigBuilder::create()
     ->withTestDir('./tests')
-    ->withTestFilePatterns('*Test.php') // If not configured '*-tests.php' will be used
+    ->addTestFilePattern('*Test.php') // If not configured '*-tests.php' will be used
     ->addTestWriter(new MinimalStringTestWriter()) //If not configured MinimalStringTestWriter will be used
     ->build();
 ```
