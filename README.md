@@ -51,7 +51,7 @@ By sponsoring MicroUnit, you're investing in the future of PHP development: fast
 ❤️ Be part of a growing movement to modernize PHP for the next generation
 
 Ready to lead the charge?  
-I am currently working on publishing my github sponsors page. Since that page is currently not live, in the meantime you can use below link if you wish to sponsor the project. **Any donation is very much appreciated**.  
+I am currently working on publishing my github sponsors page. Since that page is not live yet, you can use the link below if you wish to sponsor the project. **Any donation is very much appreciated and will be listed in this readme**.  
 [![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-orange?style=for-the-badge&logo=buy-me-a-coffee&logoColor=white)](https://coff.ee/mitarnikolic)
 
 ---
