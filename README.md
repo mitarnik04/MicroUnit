@@ -164,6 +164,10 @@ Assert::throws(fn() => 1 / 0, DivisionByZeroError::class);
 
 ### Fluent Assertions
 
+While the Assert class supports all below assertion methods by just calling them statically they are grouped into different kinds of assertions when using the fluent assertions api.
+
+#### Single Value Assertions
+
 ```php
 use MicroUnit\Assertion\AssertSingle;
 
@@ -173,7 +177,7 @@ AssertSingle::begin($result)
     ->instanceOf(int::class);
 ```
 
-### Array Assertions
+#### Array Assertions
 
 ```php
 use MicroUnit\Assertion\AssertArray;
@@ -185,7 +189,7 @@ AssertArray::begin([1, 2, 3])
     ->hasKey(0);
 ```
 
-### Numeric Assertions
+#### Numeric Assertions
 
 ```php
 use MicroUnit\Assertion\AssertNumeric;
@@ -213,8 +217,6 @@ $mock = MockBuilder::create(MyService::class)
 $instance = $mock->newInstance();
 $instance->getValue(); // returns 123
 
-AssertMock::begin($mock)
-    ->isCalledOnce('getValue');
 ```
 
 ### Advanced Mocking
@@ -230,6 +232,28 @@ $instance->getValue(); // 1
 $instance->getValue(); // 2
 $instance->getValue(); // 3
 
+```
+
+### Asserting Mocks
+
+You can assert different things on Mocks using the dedicated [`MicroUnit\Assertion\AssertMock`](src/Assertion/AssertMock.php) class.
+
+> Note: Since mocks require some extra logic under the hood to assert you can not assert them through static methods via the [`MicroUnit\Assertion\Assert`](src/Assertion/Assert.php) class.
+
+Looking at the provided example above let's add some Assertion logic to it.
+
+```php
+$mock = MockBuilder::create(MyService::class)
+    ->returnsSequence('getValue', 1, 2, 3)
+    ->throws('failMethod', new Exception('fail!'))
+    ->build();
+
+$instance = $mock->newInstance();
+$instance->getValue(); // 1
+$instance->getValue(); // 2
+$instance->getValue(); // 3
+
+//Assertion
 AssertMock::begin($mock)
     ->isCalledTimes('getValue', 3)
     ->isNotCalled('failMethod');
