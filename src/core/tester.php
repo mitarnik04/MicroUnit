@@ -16,7 +16,7 @@ class Tester
     private $setUp;
 
     /** @var callable(mixed $testResult, mixed $setUpResult): void */
-    private $teardown;
+    private $tearDown;
 
     /**
      * Define a setUp function that is called once **BEFORE** every test
@@ -28,13 +28,13 @@ class Tester
     }
 
     /** 
-     * Define a teardown function that is called once **AFTER** every test.
-     * The output of setup as well as the test result will be passed as arguments to the teardown method
+     * Define a tearDown function that is called once **AFTER** every test.
+     * The output of setup as well as the test result will be passed as arguments to the tearDown method
      * @return callable(mixed $testResult, mixed $setUpResult): void 
      */
-    public function teardown(callable $teardown)
+    public function tearDown(callable $tearDown)
     {
-        $this->teardown = $teardown;
+        $this->tearDown = $tearDown;
     }
 
 
@@ -88,8 +88,8 @@ class Tester
 
             $endTime = microtime(true);
 
-            if (isset($this->teardown)) {
-                ($this->teardown)($result, $setUpResult);
+            if (isset($this->tearDown)) {
+                ($this->tearDown)($result, $setUpResult);
             }
             return TestResult::success($test->name, $result, $endTime - $startTime);
         } catch (\Exception $e) {
