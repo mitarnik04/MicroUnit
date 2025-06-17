@@ -95,7 +95,7 @@ Install with Composer and get started in seconds.
 ### 1. Install
 
 ```sh
-composer require --dev your-vendor/microunit
+composer require --dev microunit/microunit
 ```
 
 ### 2. Configure
@@ -271,7 +271,9 @@ use MicroUnit\Output\FileTestWriter;
 
 return MicroUnitConfigBuilder::create()
     ->withTestDir('./tests')
+    // Output results to the console
     ->addTestWriter(new MinimalStringTestWriter())
+    // Also write results to a file
     ->addTestWriter(new FileTestWriter('./test-results.log'))
     ->build();
 ```
@@ -406,6 +408,19 @@ vendor/
 
 ---
 
+## Upcoming Features
+
+Listed below are the features for MicroUnit that are on the Roadmap for being released in the upcoming versions.
+
+### Support for parallel unit testing
+
+Currently MicroUnit only supports sequential testing. While this is still very fast we are aiming to provide support for parallel unit testing to make test execution even faster in places where you might need it.
+
+### Code Coverage
+
+A very useful feature in other popular unit testing frameworks is the ability to generate code coverage reports so you always know how much of your code you have covered with your tests.  
+That's why we are aiming to bring that feature to MicroUnit as well.
+
 ## Contributing
 
 We welcome issues, pull requests, and feature suggestions!  
@@ -440,4 +455,4 @@ No legacy, no plugins, no config files—just pure, modern PHP testing.
 
 ---
 
-**Minimal. Modern. Mighty. — MicroUnit**
+**Minimal. Modern. Mighty &rarr; MicroUnit**
