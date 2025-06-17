@@ -8,6 +8,7 @@ _The next-generation PHP unit testing framework for developers who want speed, c
 [![License Apache2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![PHP Version](https://img.shields.io/badge/php-8.0%2B-blue.svg)](https://www.php.net/)
 [![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)](#)
+[![buymeacoffee](https://img.shields.io/badge/donate-buy_me_a_coffee-ffdd00?style=flat&logo=buy-me-a-coffee&logoColor=black)](https://coff.ee/mitarnikolic)
 
 ---
 
@@ -28,6 +29,26 @@ MicroUnit isn’t just another testing framework—it’s a fresh take on what P
 - **All-in-One:** Mocking, assertions, setup/teardown, and output customization built-in.
 - **Effortless Integration:** Seamless CI/CD support and multiple output formats.
 - **Extensible:** Easily add your own custom test writers and assertions.
+
+---
+
+## Become a Sponsor
+
+MicroUnit isn’t just another testing tool—it’s the foundation for serious, modern PHP testing. If you're building professional-grade software with PHP 8+, MicroUnit is built for your stack, your speed, and your standards.
+
+By sponsoring MicroUnit, you're investing in the future of PHP development: faster test cycles, clearer code, and a cleaner ecosystem—without the legacy baggage.
+
+🙌 Keep MicroUnit free, open-source, and evolving at full speed.
+
+📢 Get recognized on our GitHub and website as a key supporter
+
+🧑‍💻 Help shape the roadmap and gain direct influence on upcoming features
+
+❤️ Be part of a growing movement to modernize PHP for the next generation
+
+Ready to lead the charge?  
+We are currently working on publishing our github sponsors page. Since that page is currently not live, in the meantime you can use below link to buy me a coffee.  
+[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-orange?style=for-the-badge&logo=buy-me-a-coffee&logoColor=white)](https://coff.ee/mitarnikolic)
 
 ---
 
