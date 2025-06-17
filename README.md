@@ -5,6 +5,12 @@ _The next-generation PHP unit testing framework for developers who want speed, c
 
 ---
 
+[![License](https://img.shields.io/badge/license-Custom-blue.svg)](LICENSE)
+[![PHP Version](https://img.shields.io/badge/php-8.0%2B-blue.svg)](https://www.php.net/)
+[![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)](#)
+
+---
+
 ## What is MicroUnit?
 
 MicroUnit is a modern, high-performance unit testing framework for PHP 8+. It’s designed for developers who want expressive, maintainable tests—without the bloat, legacy baggage, or steep learning curve of traditional frameworks. MicroUnit is code-first, configuration-light, and built for modern PHP projects of any size.
@@ -15,28 +21,30 @@ MicroUnit is a modern, high-performance unit testing framework for PHP 8+. It’
 
 MicroUnit isn’t just another testing framework—it’s a fresh take on what PHP testing should be. If you’re tired of slow test suites, cryptic configuration files, and frameworks that feel stuck in the past, MicroUnit is for you.
 
-- **Lightning Fast:** MicroUnit’s core is engineered for speed. Tests start instantly, and results are delivered in real time.
-- **Zero Bloat:** No unnecessary dependencies, no legacy code, no slowdowns. MicroUnit is as lean as it gets.
-- **Modern PHP:** Built from the ground up for PHP 8+, MicroUnit leverages the latest language features for type safety and expressiveness.
-- **Developer Experience First:** Clear error messages, beautiful diffs, and a fluent API make testing a joy, not a chore.
-- **All-in-One:** Mocking, assertions, setup/teardown, and output customization are all built in—no plugins required.
-- **Effortless Integration:** Works seamlessly with any CI/CD pipeline and outputs results in multiple formats.
+- **Lightning Fast:** Smart, recursive test discovery and instant execution.
+- **Zero Bloat:** No unnecessary dependencies or legacy code.
+- **Modern PHP:** Built for PHP 8+, leveraging the latest language features.
+- **Developer Experience First:** Clear error messages, beautiful diffs, and a fluent API.
+- **All-in-One:** Mocking, assertions, setup/teardown, and output customization built-in.
+- **Effortless Integration:** Seamless CI/CD support and multiple output formats.
+- **Extensible:** Easily add your own custom test writers and assertions.
 
 ---
 
-## Feature Overview
+## Features
 
 ### 🚀 Ultra-Fast Test Discovery & Execution
 
-MicroUnit uses smart, recursive test discovery to find and run your tests in a flash. There’s no waiting for autoloaders or parsing slow configuration files. Just point MicroUnit at your test directory and go.
+MicroUnit recursively scans your test directories and runs your tests with minimal startup time. No slow autoloaders or heavy configuration.
 
 ### 🧪 Expressive, Fluent Assertions
 
-MicroUnit’s assertion library is designed to be both powerful and readable. Write assertions that make your intent clear, with detailed error reporting and type safety. Whether you’re testing values, arrays, or objects, MicroUnit’s assertions have you covered.
+The fluent assertion library is designed to be both powerful and readable. Write assertions that make your intent clear, with detailed error reporting and type safety. Whether you’re testing values, arrays, or objects, MicroUnit’s assertions have you covered.
 
 ### 🧙‍♂️ Built-in Mocking
 
-No need for third-party libraries or complicated setup. MicroUnit’s mocking system lets you create mocks, stubs, and spies with a simple, intuitive API. Define return values, throw exceptions, and verify interactions—all in a few lines of code.
+No need for third-party libraries, plugins or complicated setup.  
+Create mocks, stubs, and spies with a simple, intuitive API. Define return values, throw exceptions, and verify interactions.
 
 ### 📝 Flexible Output Writers
 
@@ -47,15 +55,15 @@ MicroUnit is fully extensible: **You can write your own custom test writers** to
 
 ### 🔧 Simple, Code-First Configuration
 
-Forget about XML or YAML. MicroUnit is configured entirely in PHP, making your setup explicit, versionable, and easy to understand. Add or remove features as you need, with no hidden magic.
+Forget about XML, JSON or YAML. Configure everything entirely in PHP, making your setup explicit, versionable, and easy to understand with no hidden magic.
 
 ### 🛠️ Setup & Teardown
 
-MicroUnit supports per-suite and per-test setup and teardown hooks, so you can prepare your environment and clean up after tests with ease. Pass setup results directly to your tests for maximum flexibility.
+Per-suite and per-test setup/teardown hooks. Pass setup results directly to your tests.
 
 ### 📦 Zero-Dependency, Composer-Friendly
 
-Install MicroUnit with Composer and get started in seconds. No global installs, no vendor lock-in, and no unnecessary dependencies.
+Install with Composer and get started in seconds.
 
 ---
 
@@ -73,12 +81,12 @@ Install MicroUnit with Composer and get started in seconds. No global installs, 
 | Test Discovery       | ✅ (Glob/Rec) | ✅            | ✅          | ✅          |
 | Extensible           | ✅            | ✅            | ✅          | ✅          |
 
-**Why MicroUnit Outshines the Rest:**
+---
 
-- **No legacy baggage:** Unlike PHPUnit and Codeception, MicroUnit is built from scratch for PHP 8+.
-- **No plugins required:** Mocking and fluent assertions are built-in, not bolted on.
-- **No configuration headaches:** Everything is PHP code—no XML, no YAML, no magic.
-- **Minimalist core:** Focus on what matters—writing and running tests, not managing dependencies.
+## Requirements
+
+- **PHP 8.0 or higher**
+- Composer
 
 ---
 
@@ -92,7 +100,7 @@ composer require --dev your-vendor/microunit
 
 ### 2. Configure
 
-Create `microunit.config.php`:
+Create `microunit.config.php` in your project root:
 
 ```php
 <?php
@@ -107,9 +115,9 @@ return MicroUnitConfigBuilder::create()
 
 ---
 
-## Defining Tests
+## Writing Tests
 
-You can define individual tests using the `define` method:
+### Defining Individual Tests
 
 ```php
 $tester->define('test_addition', function($a, $b) {
@@ -118,12 +126,10 @@ $tester->define('test_addition', function($a, $b) {
 ```
 
 - The first argument is the test name.
-- The second argument is a function that contains your test logic.
-- Any additional arguments are passed to the test function.
+- The second argument is a function containing your test logic.
+- Additional arguments are passed to the test function.
 
 ### Defining Groups of Tests
-
-To define a group of related tests, use `defineGroup`:
 
 ```php
 $cases = [
@@ -138,33 +144,13 @@ $tester->defineGroup('addition', function($a, $b) {
 
 - The first argument is the base name for the group.
 - The second argument is the test function.
-- The third argument is an array of `TestCase` objects, each with a name and arguments.
-- This creates tests named `addition_case1`, `addition_case2`, etc.
-
-Refer to the documentation for more details on
+- The third argument is an array of `TestCase` objects.
 
 ---
 
-## Feature Deep Dive & Examples
+## Assertions
 
-### 🚀 Ultra-Fast Test Discovery & Execution
-
-MicroUnit scans your test directories recursively and runs only the tests you need. No more waiting for slow test runners or dealing with outdated caches.
-
-```php
-// microunit.config.php
-return MicroUnitConfigBuilder::create()
-    ->withTestDir('./tests')
-    ->build();
-```
-
----
-
-### 🧪 Expressive, Fluent Assertions
-
-MicroUnit’s assertion library is designed for clarity and power. Here’s how you can use it:
-
-#### Basic Assertions
+### Basic Assertions
 
 ```php
 use MicroUnit\Assertion\Assert;
@@ -176,7 +162,7 @@ Assert::isNull(null);
 Assert::throws(fn() => 1 / 0, DivisionByZeroError::class);
 ```
 
-#### Fluent Assertions
+### Fluent Assertions
 
 ```php
 use MicroUnit\Assertion\AssertSingle;
@@ -187,7 +173,7 @@ AssertSingle::begin($result)
     ->isInt();
 ```
 
-#### Array Assertions
+### Array Assertions
 
 ```php
 use MicroUnit\Assertion\AssertArray;
@@ -199,7 +185,7 @@ AssertArray::begin([1, 2, 3])
     ->hasKey(0);
 ```
 
-#### Numeric Assertions
+### Numeric Assertions
 
 ```php
 use MicroUnit\Assertion\AssertNumeric;
@@ -212,9 +198,9 @@ AssertNumeric::begin(10)
 
 ---
 
-### 🧙‍♂️ Built-in Mocking
+## Mocking
 
-Mocks are first-class citizens in MicroUnit. Create, configure, and verify mocks with ease:
+### Basic Mocking
 
 ```php
 use MicroUnit\Mock\MockBuilder;
@@ -231,7 +217,7 @@ AssertMock::begin($mock)
     ->isCalledOnce('getValue');
 ```
 
-#### Advanced Mocking
+### Advanced Mocking
 
 ```php
 $mock = MockBuilder::create(MyService::class)
@@ -251,7 +237,7 @@ AssertMock::begin($mock)
 
 ---
 
-### 📝 Flexible Output Writers
+## Output Writers
 
 MicroUnit lets you choose how your test results are displayed or stored. **You can configure multiple test writers at once**—for example, outputting results to the console and saving them to a file simultaneously. This makes it easy to tailor your reporting for both local development and CI/CD pipelines.
 
@@ -261,25 +247,14 @@ use MicroUnit\Output\FileTestWriter;
 
 return MicroUnitConfigBuilder::create()
     ->withTestDir('./tests')
-    // Output results to the console
     ->addTestWriter(new MinimalStringTestWriter())
-    // Also write results to a file
     ->addTestWriter(new FileTestWriter('./test-results.log'))
     ->build();
 ```
 
-**Explanation:**
+### Custom Output Writers
 
-- You can add as many test writers as you need using `addTestWriter()`.
-- Each writer will receive the test results, allowing you to combine real-time console output with persistent logs or custom formats.
-- Built-in writers include minimal, detailed, and file-based options.
-
-#### ✨ Writing Your Own Test Writers
-
-MicroUnit is fully extensible: **You can write your own custom test writers** to output results in any format you need (HTML, JSON, Slack notifications, dashboards, etc.).
-
-To create a custom test writer, implement the [`MicroUnit\Output\ITestWriter`](src/Output/ITestWriter.php) interface.  
-You **must** implement the following methods:
+Implement the [`MicroUnit\Output\ITestWriter`](src/Output/ITestWriter.php) interface:
 
 ```php
 use MicroUnit\Output\ITestWriter;
@@ -287,61 +262,20 @@ use MicroUnit\Core\TestResult;
 
 class MyCustomTestWriter implements ITestWriter
 {
-    public function writeResult(TestResult $result): void
-    {
-        // Output a single test result
-    }
-
-    public function writeResults(array $results): void
-    {
-        // Output all results for a suite
-    }
-
-    public function writeSummary(int $totalTests, int $successes, int $failures): void
-    {
-        // Output a summary at the end
-    }
-
-    public function writeSuite(string $suite): void
-    {
-        // Output when a suite starts
-    }
+    public function writeResult(TestResult $result): void { /* ... */ }
+    public function writeResults(array $results): void { /* ... */ }
+    public function writeSummary(int $totalTests, int $successes, int $failures): void { /* ... */ }
+    public function writeSuite(string $suite): void { /* ... */ }
 }
 ```
 
-Then add your writer in the config:
-
-```php
-return MicroUnitConfigBuilder::create()
-    ->withTestDir('./tests')
-    ->addTestWriter(new MyCustomTestWriter())
-    ->build();
-```
-
-See [`src/Output/MinimalStringTestWriter.php`](src/Output/MinimalStringTestWriter.php) or [`src/Output/FileTestWriter.php`](src/Output/FileTestWriter.php) for real examples.
+See [src/Output/MinimalStringTestWriter.php](src/Output/MinimalStringTestWriter.php) or [src/Output/FileTestWriter.php](src/Output/FileTestWriter.php) for examples.
 
 ---
 
-### 🔧 Simple, Code-First Configuration
+## Setup & Teardown
 
-All configuration is done in PHP, making it easy to version, review, and modify:
-
-```php
-return MicroUnitConfigBuilder::create()
-    ->withTestDir('./tests')
-    ->addTestWriter(new MinimalStringTestWriter())
-    ->build();
-```
-
----
-
-### 🛠️ Setup & Teardown
-
-Prepare your environment and clean up after tests with simple hooks.
-
-**If you use `setUp`, the value you return will be passed as the first argument to every test in that suite.**
-
-#### How to Use the Setup Result in Tests
+Use `setUp` and `tearDown` hooks for per-test preparation and cleanup.
 
 ```php
 $tester->setUp(function () {
@@ -400,21 +334,60 @@ Run your tests with a single command:
 php bin/run-tests.php
 ```
 
-- **Fast, clear output:** See results instantly.
-- **Fails fast:** Get detailed error messages and diffs.
-- **CI/CD ready:** Integrates with any pipeline.
+- Fast, clear output.
+- Fails fast with detailed error messages and diffs.
+- CI/CD ready.
+
+---
+
+## Directory Structure
+
+```
+src/
+    Assertion/
+    Bootstrap/
+    Cache/
+    Config/
+    Core/
+    Exceptions/
+    Helpers/
+    Mock/
+    Output/
+    Setup/
+tests/
+    microunit.config.php
+    ...
+bin/
+    run-tests.php
+    run_logs/
+vendor/
+    ...
+```
 
 ---
 
 ## Contributing
 
-We welcome issues, PRs, and feature requests! See [CONTRIBUTING.md](CONTRIBUTING.md).
+We welcome issues, pull requests, and feature suggestions!  
+Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 ---
 
 ## License
 
 See [LICENSE](LICENSE).
+
+---
+
+## Security
+
+If you discover a security vulnerability, please report it privately.
+
+---
+
+## Contact
+
+For questions or support, open an issue or contact the maintainers.
 
 ---
 
