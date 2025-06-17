@@ -7,7 +7,6 @@ use MicroUnit\Helpers\Diff;
 use MicroUnit\Helpers\ValueExporter;
 use MicroUnit\Mock\CallLog;
 use MicroUnit\Mock\MicroMock;
-use ValueError;
 
 class AssertMock
 {
@@ -26,13 +25,12 @@ class AssertMock
 
     public function isCalledTimes(string $method, int $expectedCallCount): self
     {
-        $actualCallCount = $this->callLog->getCallCount($method);
-        if ($actualCallCount !== $expectedCallCount) {
-            throw new TestFailedException("Expected Mock method $method to be called $expectedCallCount time(s)" . PHP_EOL .
-                "Actually called: $actualCallCount time(s)");
-        }
-
-        return $this;
+        return $this->compareToActualCallCount(
+            $method,
+            $expectedCallCount,
+            [0],
+            "Expected Mock method $method to be called $expectedCallCount time(s)"
+        );
     }
 
     public function isCalledOnce(string $method): self
@@ -48,52 +46,45 @@ class AssertMock
 
     public function isCalledAtLeast(string $method, int $minCallCount): self
     {
-        $actualCallCount = $this->callLog->getCallCount($method);
-
-        if ($actualCallCount < $minCallCount) {
-            throw new TestFailedException("Expected Mock method $method to be called at least $minCallCount time(s)" . PHP_EOL .
-                "Actually called: $actualCallCount time(s)");
-        }
-
-        return $this;
+        return $this->compareToActualCallCount(
+            $method,
+            $minCallCount,
+            [0, 1],
+            "Expected Mock method $method to be called at least $minCallCount time(s)"
+        );
     }
 
     public function isCalledMoreThan(string $method, int $minCallCount): self
     {
-        $actualCallCount = $this->callLog->getCallCount($method);
-
-        if ($actualCallCount <= $minCallCount) {
-            throw new TestFailedException("Expected Mock method $method to be called more than $minCallCount time(s)" . PHP_EOL .
-                "Actually called: $actualCallCount time(s)");
-        }
-
-        return $this;
+        return $this->compareToActualCallCount(
+            $method,
+            $minCallCount,
+            [1],
+            "Expected Mock method $method to be called more than $minCallCount time(s)"
+        );
     }
 
     public function isCalledAtMost(string $method, int $maxCallCount)
     {
-        $actualCallCount = $this->callLog->getCallCount($method);
-
-        if ($actualCallCount > $maxCallCount) {
-            throw new TestFailedException("Expected Mock method $method to be called at most $maxCallCount time(s)" . PHP_EOL .
-                "Actually called: $actualCallCount time(s)");
-        }
-
-        return $this;
+        return $this->compareToActualCallCount(
+            $method,
+            $maxCallCount,
+            [-1, 0],
+            "Expected Mock method $method to be called at most $maxCallCount time(s)"
+        );
     }
 
     public function isCalledLessThan(string $method, int $maxCallCount)
     {
-        $actualCallCount = $this->callLog->getCallCount($method);
-
-        if ($actualCallCount >= $maxCallCount) {
-            throw new TestFailedException("Expected Mock method $method to be called less than $maxCallCount time(s)" . PHP_EOL .
-                "Actually called: $actualCallCount time(s)");
-        }
-
-        return $this;
+        return $this->compareToActualCallCount(
+            $method,
+            $maxCallCount,
+            [-1],
+            "Expected Mock method $method to be called less than $maxCallCount time(s)"
+        );
     }
 
+    /** @param array<mixed> $expectedArgs */
     public function isCalledWith(string $method, array $expectedArgs, bool $showActualMethodCallsOnError = false)
     {
         $allCallArgs = $this->callLog->getAllCallArgs($method);
@@ -113,6 +104,7 @@ class AssertMock
         }
     }
 
+    /** @param array<mixed> $expectedArgs */
     public function isCalledWithOnSpecificCall(string $method, array $expectedArgs, int $onCall)
     {
         $callArgs = $this->callLog->getAllCallArgs($method)[$onCall - 1];
@@ -122,5 +114,25 @@ class AssertMock
             throw new TestFailedException("Method $method on call $onCall was not called with specified arguments" . PHP_EOL
                 . ValueExporter::export($diff));
         }
+    }
+
+    /** @param callable(AssertMockMethod $assert): void $checkFunction */
+    public function checkMethod(string $method, callable $assertMethod): self
+    {
+        $assertMethod(new AssertMockMethod($this, $method));
+        return $this;
+    }
+
+    private function compareToActualCallCount(string $method, int $callCount, array $allowedSpaceShipResults, string $expectedMessage): self
+    {
+        $actualCallCount = $this->callLog->getCallCount($method);
+        $comparisonResult = $actualCallCount <=> $callCount;
+
+        if (!in_array($comparisonResult, $allowedSpaceShipResults)) {
+            throw new TestFailedException($expectedMessage . PHP_EOL .
+                "Actually called: $actualCallCount time(s)");
+        }
+
+        return $this;
     }
 }
