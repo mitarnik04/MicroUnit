@@ -127,6 +127,8 @@ composer require --dev microunit/microunit
 
 Create `microunit.config.php` in your project root:
 
+> Note: All paths are going to be resolved relative to the location of your config file.
+
 ```php
 <?php
 use MicroUnit\Config\MicroUnitConfigBuilder;
@@ -134,7 +136,8 @@ use MicroUnit\Output\MinimalStringTestWriter;
 
 return MicroUnitConfigBuilder::create()
     ->withTestDir('./tests')
-    ->addTestWriter(new MinimalStringTestWriter())
+    ->withTestFilePatterns('*Test.php') // If not configured '*-tests.php' will be used
+    ->addTestWriter(new MinimalStringTestWriter()) //If not configured MinimalStringTestWriter will be used
     ->build();
 ```
 
@@ -142,9 +145,28 @@ return MicroUnitConfigBuilder::create()
 
 ## Writing Tests
 
+### Setup
+
+After you have defined your target test-directory and your testFile patterns you can create your test files.  
+For the configuration above we would create a directory called `tests` and let's say we create a file `tests/ExampleTest.php` to match our defined test file pattern above.
+
+The First thing we have to do in our test file is get a Tester instance. Each tester is tied to a Testsuite so you have to specify that when calling `TestSetup::getTester($testSuite)`
+
+```php
+<?php
+
+use MicroUnit\Setup\TestSetup;
+
+$tester = TestSetup::getTester("YOUR_TEST_SUITE_NAME");
+```
+
+After that the `$tester` instance can be used to define tests inside that suite (see following sections).
+
 ### Defining Individual Tests
 
 ```php
+use MicroUnit\Assertion\Assert;
+
 $tester->define('test_addition', function($a, $b) {
     Assert::equals($a + $b, 4);
 }, 2, 2);
