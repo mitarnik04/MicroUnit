@@ -1,6 +1,27 @@
 #!/usr/bin/env php
 <?php
-require_once __DIR__ . '/../vendor/autoload.php';
+
+const AUTOLOADER_PATH_CACHE_KEY = 'autoloaderPath';
+
+//Using require_once since autoloader isn't available yet here. 
+require_once __DIR__ . '/../src/Helpers/Utils.php';
+require_once __DIR__ . '/../src/Cache/ICache.php';
+require_once __DIR__ . '/../src/Cache/JsonCache.php';
+
+$cache = new MicroUnit\Cache\JsonCache('cache');
+
+$autoloader = $cache->get(AUTOLOADER_PATH_CACHE_KEY);
+
+//If the file got moved to a new location or is not cached yet we want to rescan the directories to find it.
+if (is_null($autoloader) || !file_exists($autoloader)) {
+    $autoloader = MicroUnit\Helpers\Utils::findFileInDirectoryOrAbove('vendor/autoload.php', __DIR__);
+    $cache->set(AUTOLOADER_PATH_CACHE_KEY, $autoloader);
+};
+if (is_null($autoloader)) {
+    die('Could not find the autoloader. Please run "composer install" first.');
+}
+
+require_once $autoloader;
 
 use MicroUnit\Helpers\Utils;
 use MicroUnit\Bootstrap\ConfigInitializer;
@@ -13,8 +34,6 @@ use MicroUnit\Bootstrap\LoggingInitializer;
 
 const SRC_DIR = __DIR__ . '/../src';
 const RUN_LOG_FOLDER = __DIR__ . '/run_logs';
-
-
 
 if (!is_dir(RUN_LOG_FOLDER)) {
     mkdir(RUN_LOG_FOLDER);
