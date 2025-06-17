@@ -24,7 +24,5 @@
   ],
   "scripts": {
     "test": "php bin/run-tests.php"
-  },
-  "minimum-stability": "stable",
-  "prefer-stable": true
+  }
 }
