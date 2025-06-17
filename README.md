@@ -5,7 +5,7 @@ _The next-generation PHP unit testing framework for developers who want speed, c
 
 ---
 
-[![License](https://img.shields.io/badge/license-Custom-blue.svg)](LICENSE)
+[![License: CDDL-1.0](https://img.shields.io/badge/License-CDDL%201.0-blue.svg)](https://opensource.org/licenses/CDDL-1.0)
 [![PHP Version](https://img.shields.io/badge/php-8.0%2B-blue.svg)](https://www.php.net/)
 [![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)](#)
 
