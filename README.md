@@ -398,7 +398,7 @@ When using `setUp`, always remember:
 Run your tests with a single command:
 
 ```sh
-php bin/run-tests.php
+.\vendor\bin\microunit
 ```
 
 - Fast, clear output.
