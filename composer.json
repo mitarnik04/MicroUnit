@@ -3,5 +3,9 @@
     "psr-4": {
       "MicroUnit\\": "src/"
     }
-  }
+  },
+  "name": "microunit/microunit",
+  "bin": [
+    "bin/microunit"
+  ]
 }
