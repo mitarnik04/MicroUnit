@@ -170,7 +170,7 @@ use MicroUnit\Assertion\AssertSingle;
 AssertSingle::begin($result)
     ->equals(42)
     ->notNull()
-    ->isInt();
+    ->instanceOf(int::class);
 ```
 
 ### Array Assertions
@@ -254,7 +254,8 @@ return MicroUnitConfigBuilder::create()
 
 ### Custom Output Writers
 
-Implement the [`MicroUnit\Output\ITestWriter`](src/Output/ITestWriter.php) interface:
+To create a custom test writer, implement the [`MicroUnit\Output\ITestWriter`](src/Output/ITestWriter.php) interface.  
+You **must** implement the following methods:
 
 ```php
 use MicroUnit\Output\ITestWriter;
@@ -262,10 +263,25 @@ use MicroUnit\Core\TestResult;
 
 class MyCustomTestWriter implements ITestWriter
 {
-    public function writeResult(TestResult $result): void { /* ... */ }
-    public function writeResults(array $results): void { /* ... */ }
-    public function writeSummary(int $totalTests, int $successes, int $failures): void { /* ... */ }
-    public function writeSuite(string $suite): void { /* ... */ }
+    public function writeResult(TestResult $result): void
+    {
+        // Output a single test result
+    }
+
+    public function writeResults(array $results): void
+    {
+        // Output all results for a suite
+    }
+
+    public function writeSummary(int $totalTests, int $successes, int $failures): void
+    {
+        // Output a summary at the end
+    }
+
+    public function writeSuite(string $suite): void
+    {
+        // Output when a suite starts
+    }
 }
 ```
 
