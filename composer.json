@@ -1,11 +1,30 @@
 {
+  "name": "microunit/microunit",
+  "description": "Minimal. Modern. Mighty. The next-generation PHP unit testing framework for developers who want speed, clarity, and power.",
+  "type": "library",
+  "license": "Apache-2.0",
+  "authors": [
+    {
+      "name": "Mitar Nikolic",
+      "email": "mitar.mn5@gmail.com",
+      "homepage": "https://mitarnikolic.hstn.me",
+      "role": "Developer"
+    }
+  ],
+  "require": {
+    "php": "^8.0"
+  },
   "autoload": {
     "psr-4": {
       "MicroUnit\\": "src/"
     }
   },
-  "name": "microunit/microunit",
   "bin": [
     "bin/microunit"
-  ]
+  ],
+  "scripts": {
+    "test": "php bin/run-tests.php"
+  },
+  "minimum-stability": "stable",
+  "prefer-stable": true
 }
