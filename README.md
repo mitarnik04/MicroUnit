@@ -421,14 +421,9 @@ src/
     Mock/
     Output/
     Setup/
-tests/
-    microunit.config.php
-    ...
 bin/
     run-tests.php
     run_logs/
-vendor/
-    ...
 ```
 
 ---
