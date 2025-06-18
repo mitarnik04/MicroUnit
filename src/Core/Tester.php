@@ -48,11 +48,7 @@ class Tester
     {
         foreach ($cases as $case) {
             $testName = "{$baseName}_{$case->testNameSuffix}";
-            if (is_array($case->params)) {
-                $this->tests[] = new Test($testName, $testCallable, ...$case->params);
-            } else {
-                $this->tests[] = new Test($testName, $testCallable, $case->params);
-            }
+            $this->tests[] = new Test($testName, $testCallable, $case->params);
         }
     }
 
