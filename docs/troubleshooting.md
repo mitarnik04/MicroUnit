@@ -12,10 +12,10 @@ A list of common Errors and problems you might encounter when trying to set up /
 
 - [Configuration Issues](#configuration-issues)
   - [Your configuration settings are not being applied](#your-configuration-settings-are-not-being-applied)
-  - [Fatal error: Uncaught TypeError...](#fatal-error-uncaught-typeerror)
-  - [PHP Fatal error: Uncaught UnexpectedValueException...](#php-fatal-error-uncaught-unexpectedvalueexception)
+  - [Fatal error: Uncaught TypeError...](#fatal-error-uncaught-typeerror-configproviderset-argument-1-config-must-be-of-type-microunitconfig-)
+  - [Fatal error: Uncaught UnexpectedValueException...](#php-fatal-error-uncaught-unexpectedvalueexception-recursivedirectoryiterator__construct-)
 - [Test File Issues](#test-file-issues)
-  - [PHP Fatal error: Uncaught ArgumentCountError...](#php-fatal-error-uncaught-argumentcounterror-too-few-arguments-to-function)
+  - [Fatal error: Uncaught ArgumentCountError...](#php-fatal-error-uncaught-argumentcounterror-too-few-arguments-to-function-closuresomepathtoclosure--passed-in-)
   - [Unrecognized types and classes](#types-and-classes-are-not-recognized)
 - [More yet to be added](#more-yet-to-be-added)
 
