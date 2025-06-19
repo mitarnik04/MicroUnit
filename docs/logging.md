@@ -1,3 +1,7 @@
+---
+layout: default
+---
+
 # Logging
 
 Each test run is logged under `microunit/bin/run_logs`. This folder will contain one log file for every time you run your tests. By default this folder will only contain one file which is the log from your latest run.

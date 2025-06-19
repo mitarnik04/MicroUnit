@@ -1,3 +1,7 @@
+---
+layout: default
+---
+
 # Usage
 
 All about how to create your test file(s), define individual or grouped tests, etc.

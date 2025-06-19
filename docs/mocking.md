@@ -1,3 +1,7 @@
+---
+layout: default
+---
+
 # Mocking
 
 MicroUnit provides a flexible mocking engine.  

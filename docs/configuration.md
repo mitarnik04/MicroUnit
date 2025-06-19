@@ -1,3 +1,7 @@
+---
+layout: default
+---
+
 # Configuration
 
 MicroUnit can be configured via a builder pattern using a php config file.

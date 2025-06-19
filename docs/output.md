@@ -1,3 +1,7 @@
+---
+layout: default
+---
+
 # Output
 
 MicroUnit supports multiple output writers.  

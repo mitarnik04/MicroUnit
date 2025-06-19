@@ -1,3 +1,7 @@
+---
+layout: default
+---
+
 # Troubleshooting
 
 A list of common Errors and problems you might encounter when trying to set up / work with MicroUnit and how to solve them.
