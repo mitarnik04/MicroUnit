@@ -2,7 +2,7 @@
 layout: default
 ---
 
-**[← Back to Home](/)**
+**[← Back to Home](index.md)**
 
 # Output
 
@@ -76,4 +76,4 @@ Writes the suite name.
 
 ## MicroUnit calls this method **once every time before calling `writeResults`**.
 
-**[⬆ Back to Top](#table-of-contents)** • **[📘 Home](/)**
+**[⬆ Back to Top](#output)** • **[📘 Home](index.md)**

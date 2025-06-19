@@ -2,7 +2,7 @@
 layout: default
 ---
 
-**[← Back to Home](/)**
+**[← Back to Home](index.md)**
 
 # Troubleshooting
 
@@ -246,4 +246,4 @@ But every time I have some space I will be refining this documentation further a
 
 ---
 
-**[⬆ Back to Top](#table-of-contents)** • **[📘 Home](/)**
+**[⬆ Back to Top](#troubleshooting)** • **[📘 Home](/)**

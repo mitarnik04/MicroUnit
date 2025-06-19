@@ -2,7 +2,7 @@
 layout: default
 ---
 
-**[← Back to Home](/)**
+**[← Back to Home](index.md)**
 
 # Assertions
 
@@ -367,4 +367,4 @@ AssertMock::begin($mock)->isCalledWith('bar', [1, 2]);
 
 ---
 
-**[⬆ Back to Top](#table-of-contents)** • **[📘 Home](/)**
+**[⬆ Back to Top](#assertions)** • **[📘 Home](index.md)**

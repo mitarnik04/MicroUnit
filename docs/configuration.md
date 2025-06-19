@@ -2,7 +2,7 @@
 layout: default
 ---
 
-**[← Back to Home](/)**
+**[← Back to Home](index.md)**
 
 # Configuration
 
@@ -160,4 +160,4 @@ return MicroUnitConfigBuilder::create()
 
 ---
 
-**[⬆ Back to Top](#table-of-contents)** • **[📘 Home](/)**
+**[⬆ Back to Top](#configuration)** • **[📘 Home](index.md)**

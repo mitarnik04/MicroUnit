@@ -2,7 +2,7 @@
 layout: default
 ---
 
-**[← Back to Home](/)**
+**[← Back to Home](index.md)**
 
 # Usage
 
@@ -225,4 +225,4 @@ vendor/bin/microunit
 
 ---
 
-**[⬆ Back to Top](#table-of-contents)** • **[📘 Home](/)**
+**[⬆ Back to Top](#usage)** • **[📘 Home](/index.md)**

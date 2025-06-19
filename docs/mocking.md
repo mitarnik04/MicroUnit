@@ -133,4 +133,4 @@ $args = $log->getAllCallArgs('foo');
 
 ---
 
-**[⬆ Back to Top](#table-of-contents)** • **[📘 Home](/)**
+**[⬆ Back to Top](#mocking)** • **[📘 Home](index.md)**

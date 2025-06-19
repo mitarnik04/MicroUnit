@@ -2,7 +2,7 @@
 layout: default
 ---
 
-**[← Back to Home](/)**
+**[← Back to Home](index.md)**
 
 # Logging
 
@@ -24,4 +24,4 @@ Adds the ability to Configure a custom logs folder where the run logs are going 
 
 ## Currently the log level is fixed to `E_ALL`, however it is planned to provide a way to customize this log level depending on the level of detail you want.
 
-**[⬆ Back to Top](#table-of-contents)** • **[📘 Home](/)**
+**[⬆ Back to Top](#logging)** • **[📘 Home](index.md)**
