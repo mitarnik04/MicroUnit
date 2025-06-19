@@ -125,7 +125,7 @@ composer require --dev microunit/microunit
 
 ### 2. Configure
 
-Create `microunit.config.php` in your project root:
+Create `microunit.config.php` in your current working directory or any parent directories:
 
 > Note: All paths are going to be resolved relative to the location of your config file.
 
