@@ -4,6 +4,8 @@ Each test run is logged under `microunit/bin/run_logs`. This folder will contain
 
 If you want to keep all run logs see [Configuration: persistRunLogs](configuration.md#persistrunlogs) for details.
 
+---
+
 ## Upcoming Features
 
 Even tho currently not supported by MicroUnit below is a list of features coming soon in regards to logging.
