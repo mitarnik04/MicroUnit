@@ -2,6 +2,8 @@
 layout: default
 ---
 
+**[← Back to Home](/)**
+
 # Assertions
 
 MicroUnit provides several assertion classes.  
@@ -362,3 +364,7 @@ Asserts that the mock method was called with the specified arguments.
 ```php
 AssertMock::begin($mock)->isCalledWith('bar', [1, 2]);
 ```
+
+---
+
+**[⬆ Back to Top](#table-of-contents)** • **[📘 Home](/)**

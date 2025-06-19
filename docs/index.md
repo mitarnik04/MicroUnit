@@ -94,3 +94,7 @@ It is designed to help you write clear, maintainable, and robust tests for your 
 
 - [GitHub Repository](https://github.com/mitarnik04/MicroUnit)
 - [X (aka Twitter)](https://x.com/MicroUnitPHP)
+
+---
+
+**[⬆ Back to Top](#table-of-contents)**

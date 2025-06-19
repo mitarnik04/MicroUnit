@@ -2,6 +2,8 @@
 layout: default
 ---
 
+**[← Back to Home](/)**
+
 # Configuration
 
 MicroUnit can be configured via a builder pattern using a php config file.
@@ -155,3 +157,7 @@ return MicroUnitConfigBuilder::create()
     ->persistRunLogs()
     ->build();
 ```
+
+---
+
+**[⬆ Back to Top](#table-of-contents)** • **[📘 Home](/)**

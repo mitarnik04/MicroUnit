@@ -2,6 +2,8 @@
 layout: default
 ---
 
+**[← Back to Home](/)**
+
 # Logging
 
 Each test run is logged under `microunit/bin/run_logs`. This folder will contain one log file for every time you run your tests. By default this folder will only contain one file which is the log from your latest run.
@@ -20,4 +22,6 @@ Adds the ability to Configure a custom logs folder where the run logs are going 
 
 ### Configurable log level
 
-Currently the log level is fixed to `E_ALL`, however it is planned to provide a way to customize this log level depending on the level of detail you want.
+## Currently the log level is fixed to `E_ALL`, however it is planned to provide a way to customize this log level depending on the level of detail you want.
+
+**[⬆ Back to Top](#table-of-contents)** • **[📘 Home](/)**

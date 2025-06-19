@@ -2,6 +2,8 @@
 layout: default
 ---
 
+**[← Back to Home](/)**
+
 # Mocking
 
 MicroUnit provides a flexible mocking engine.  
@@ -128,3 +130,7 @@ Returns all arguments passed to a method.
 ```php
 $args = $log->getAllCallArgs('foo');
 ```
+
+---
+
+**[⬆ Back to Top](#table-of-contents)** • **[📘 Home](/)**

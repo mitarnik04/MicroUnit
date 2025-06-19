@@ -2,6 +2,8 @@
 layout: default
 ---
 
+**[← Back to Home](/)**
+
 # Troubleshooting
 
 A list of common Errors and problems you might encounter when trying to set up / work with MicroUnit and how to solve them.
@@ -241,3 +243,7 @@ Because I am currently one person single handedly maintaining and working on thi
 This page will be filled with more content as MicroUnit is getting developed but currently my focus in on bringing new features and driving MicroUnit towards it's first stable relase.
 
 But every time I have some space I will be refining this documentation further and therefore expanding this troubleshooting page as well.
+
+---
+
+**[⬆ Back to Top](#table-of-contents)** • **[📘 Home](/)**

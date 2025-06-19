@@ -2,6 +2,8 @@
 layout: default
 ---
 
+**[← Back to Home](/)**
+
 # Output
 
 MicroUnit supports multiple output writers.  
@@ -72,4 +74,6 @@ Writes the suite name.
 
 #### When is it called by the MicroUnit logic
 
-MicroUnit calls this method **once every time before calling `writeResults`**.
+## MicroUnit calls this method **once every time before calling `writeResults`**.
+
+**[⬆ Back to Top](#table-of-contents)** • **[📘 Home](/)**
