@@ -1,7 +1,3 @@
----
-layout: default
----
-
 # MicroUnit Documentation
 
 Welcome to the MicroUnit documentation!
