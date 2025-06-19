@@ -129,7 +129,7 @@ composer require --dev microunit/microunit
 
 Create `microunit.config.php` in your current working directory or any parent directories.
 
-See [Full Documentation: Configuration](https://mitarnik04.github.io/MicroUnit/configuration) for a full list of configuration options
+See [Configuration](https://mitarnik04.github.io/MicroUnit/configuration) for a full list of configuration options
 
 > Note: All paths are going to be resolved relative to the location of your config file.
 
@@ -149,7 +149,7 @@ return MicroUnitConfigBuilder::create()
 
 ## Writing Tests
 
-See [Full Documentation: Usage](https://mitarnik04.github.io/MicroUnit/usage) for a more detailed and in-depth explanation on how to start writing your first tests.
+See [Usage](https://mitarnik04.github.io/MicroUnit/usage) for a more detailed and in-depth explanation on how to start writing your first tests.
 
 ### Setup
 
@@ -203,7 +203,7 @@ $tester->defineGroup('addition', function($a, $b) {
 
 ## Assertions
 
-See [Full Documentation: Assertions](https://mitarnik04.github.io/MicroUnit/assertions) for a complete list of the available assertion methods and a more detailed explanation.
+See [Assertions](https://mitarnik04.github.io/MicroUnit/assertions) for a complete list of the available assertion methods and a more detailed explanation.
 
 ### Basic Assertions
 
@@ -259,7 +259,7 @@ AssertNumeric::begin(10)
 
 ## Mocking
 
-See [Full Documentation: Mocking](https://mitarnik04.github.io/MicroUnit/Mocking) for a full list of available builder methods and a more detailed explanation.
+See [Mocking](https://mitarnik04.github.io/MicroUnit/Mocking) for a full list of available builder methods and a more detailed explanation.
 
 ### Basic Mocking
 
@@ -322,7 +322,7 @@ AssertMock::begin($mock)
 
 MicroUnit lets you choose how your test results are displayed or stored. **You can configure multiple test writers at once** for example, outputting results to the console and saving them to a file simultaneously. This makes it easy to tailor your reporting for both local development and CI/CD pipelines.
 
-See [Full Documentation: Output](https://mitarnik04.github.io/MicroUnit/Output) for a more detailed explanation.
+See [Output](https://mitarnik04.github.io/MicroUnit/Output) for a more detailed explanation.
 
 ```php
 use MicroUnit\Output\MinimalStringTestWriter;
@@ -376,7 +376,7 @@ See [src/Output/MinimalStringTestWriter.php](src/Output/MinimalStringTestWriter.
 
 ## Setup & Teardown
 
-See [Full Documentation: Usage](https://mitarnik04.github.io/MicroUnit/usage) for a detailed explanation on using MicroUnit. And see [Full Documentation: Usage &rarr; Lifecycle-Hooks](https://mitarnik04.github.io/MicroUnit/usage#lifecycle-hooks) for a more detailed explanation on Setup & Teardown
+See [Usage &rarr; Lifecycle-Hooks](https://mitarnik04.github.io/MicroUnit/usage#lifecycle-hooks) for a more detailed explanation on Setup & Teardown
 
 Use `setUp` and `tearDown` hooks for per-test preparation and cleanup.
 
@@ -431,7 +431,7 @@ When using `setUp`, always remember:
 
 ## MicroUnit in Action
 
-See [Full Documentation: Usage &rarr; Running Tests](https://mitarnik04.github.io/MicroUnit/usage#running-tests) for a more detailed explanation on how to run MicroUnit.
+See [Usage &rarr; Running Tests](https://mitarnik04.github.io/MicroUnit/usage#running-tests) for a more detailed explanation on how to run your MicroUnit tests.
 
 Run your tests with a single command:
 
