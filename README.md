@@ -18,13 +18,13 @@ _The next-generation PHP unit testing framework for developers who want speed, c
 
 ## What is MicroUnit?
 
-MicroUnit is a modern, high-performance unit testing framework for PHP 8+. It’s designed for developers who want expressive, maintainable tests—without the bloat, legacy baggage, or steep learning curve of traditional frameworks. MicroUnit is code-first, configuration-light, and built for modern PHP projects of any size.
+MicroUnit is a modern, high-performance unit testing framework for PHP 8+. It’s designed for developers who want expressive, maintainable tests, without the bloat, legacy baggage, or steep learning curve of traditional frameworks. MicroUnit is code-first, configuration-light, and built for modern PHP projects of any size.
 
 ---
 
 ## Why Choose MicroUnit?
 
-MicroUnit isn’t just another testing framework—it’s a fresh take on what PHP testing should be. If you’re tired of slow test suites, cryptic configuration files, and frameworks that feel stuck in the past, MicroUnit is for you.
+MicroUnit isn’t just another testing framework, it’s a fresh take on what PHP testing should be. If you’re tired of slow test suites, cryptic configuration files, and frameworks that feel stuck in the past, MicroUnit is for you.
 
 - **Lightning Fast:** Smart, recursive test discovery and instant execution.
 - **Zero Bloat:** No unnecessary dependencies or legacy code.
@@ -38,9 +38,9 @@ MicroUnit isn’t just another testing framework—it’s a fresh take on what P
 
 ## Become a Sponsor
 
-MicroUnit isn’t just another testing tool—it’s the foundation for serious, modern PHP testing. If you're building professional-grade software with PHP 8+, MicroUnit is built for your stack, your speed, and your standards.
+MicroUnit isn’t just another testing tool, it’s the foundation for serious, modern PHP testing. No matter if you are building a professional-grade software or just a small library with PHP 8+, MicroUnit is built for your stack, your speed, and your standards.
 
-By sponsoring MicroUnit, you're investing in the future of PHP development: faster test cycles, clearer code, and a cleaner ecosystem—without the legacy baggage.
+By sponsoring MicroUnit, you're investing in the future of PHP development: faster test cycles, clearer code, and a cleaner ecosystem, without the legacy baggage.
 
 🙌 Keep MicroUnit free, open-source, and evolving at full speed.
 
@@ -73,7 +73,7 @@ Create mocks, stubs, and spies with a simple, intuitive API. Define return value
 
 ### 📝 Flexible Output Writers
 
-Choose from minimal, detailed, or file-based reporters out of the box. **You can configure multiple test writers at once**—for example, outputting results to the console and saving them to a file simultaneously. This makes it easy to tailor your reporting for both local development and CI/CD pipelines.
+Choose from minimal, detailed, or file-based reporters out of the box. **You can configure multiple test writers at once** for example, outputting results to the console and saving them to a file simultaneously. This makes it easy to tailor your reporting for both local development and CI/CD pipelines.
 
 **Want even more control?**  
 MicroUnit is fully extensible: **You can write your own custom test writers** to output results in any format you need (HTML, JSON, Slack notifications, dashboards, etc.).
@@ -310,7 +310,7 @@ AssertMock::begin($mock)
 
 ## Output Writers
 
-MicroUnit lets you choose how your test results are displayed or stored. **You can configure multiple test writers at once**—for example, outputting results to the console and saving them to a file simultaneously. This makes it easy to tailor your reporting for both local development and CI/CD pipelines.
+MicroUnit lets you choose how your test results are displayed or stored. **You can configure multiple test writers at once** for example, outputting results to the console and saving them to a file simultaneously. This makes it easy to tailor your reporting for both local development and CI/CD pipelines.
 
 ```php
 use MicroUnit\Output\MinimalStringTestWriter;
@@ -491,7 +491,7 @@ For questions or support, open an issue or contact the maintainers.
 ## Ready to Ditch the Bloat?
 
 **MicroUnit** is for developers who want to test smarter, not harder.  
-No legacy, no plugins, no config files—just pure, modern PHP testing.
+No legacy, no plugins, no config files &rarr; just pure, modern PHP testing.
 
 **Try MicroUnit today and experience the difference!**
 
