@@ -1,0 +1,4 @@
+# This file is used to configure the documentation site.
+# It is rquired by GitHub Pages to be able to configure the site.
+
+theme: jekyll-theme-cayman
