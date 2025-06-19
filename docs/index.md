@@ -1,4 +1,4 @@
-# MicroUnit Documentation
+# Welcome to MicroUnits official documentation page
 
 Welcome to the MicroUnit documentation!
 

@@ -3,6 +3,8 @@
 **Minimal. Modern. Mighty.**  
 _The next-generation PHP unit testing framework for developers who want speed, clarity, and power._
 
+[For a detailed Documentation click here](https://mitarnik04.github.io/MicroUnit/)
+
 ---
 
 [![License Apache2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
