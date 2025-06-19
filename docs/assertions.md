@@ -367,4 +367,4 @@ AssertMock::begin($mock)->isCalledWith('bar', [1, 2]);
 
 ---
 
-**[⬆ Back to Top](#MicroUnit)** • **[📘 Home](index.md)**
+**[⬆ Back to Top](#)** • **[📘 Home](index.md)**
