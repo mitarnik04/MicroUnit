@@ -43,8 +43,8 @@ Now we are all set to start writing our first tests.
 
 After obtaining a $tester instance we can start to write tests.
 
-The first we can do this is by calling `$tester->define(string $testName, callable $test, ...$args)`.  
-The last argument is only relevant if anonymous function has parameters. Then you pass the values of these parameters as `...$args`
+The first way we can do this is by calling `$tester->define(string $testName, callable $test, ...$args)`.  
+The last argument is only relevant if the anonymous function has parameters. Then you pass the values of these parameters as `...$args`
 
 ```php
 $tester->define('should_add_numbers', function () {
@@ -101,7 +101,7 @@ Called **once** before each test
 ```php
 $tester->setUp(function () {
     // Is executed once before each test
-    // Return any value you want to share with your test tests
+    // Return any value you want to share with your tests
 });
 ```
 

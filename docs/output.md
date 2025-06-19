@@ -56,7 +56,7 @@ if not the most basic implementation would be just creating a loop that calls `w
 
 #### When is it called by the MicroUnit logic
 
-MicroUnit calls this method after running the tests of one test suite to output the results.
+MicroUnit calls this method **each time** after running the tests of one test suite to output the results.
 
 ### `writeSummary(int $total, int $successes, int $failures)`
 

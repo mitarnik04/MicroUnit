@@ -57,7 +57,7 @@ Adds an output writer for test results.
 
 Calling this method two times and calling `withTestWriters(ITestWriter ...$writers)` with two (or more) arguments behaves the same it just comes down to preference.
 
-> Note: The TestWriters are it's own thing and the logic internally works different so you **should** be using \***\*DIR\*\*** here.
+> Note: The TestWriters are it's own thing and the logic internally works different so you **should** be using `__DIR__` here.
 
 ```php
 MicroUnitConfigBuilder()::create()

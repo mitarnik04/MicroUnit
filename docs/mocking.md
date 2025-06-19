@@ -75,7 +75,7 @@ $mock = $mockBuilder->build();
 
 Creates a new instance of the mocked class.
 
-This instance can be used where an instanced of the mocked class is expected.
+This instance can be used where an instance of the mocked class is expected.
 
 ```php
 $instance = $mock->newInstance();
