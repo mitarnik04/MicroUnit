@@ -1,7 +1,5 @@
 # Welcome to MicroUnits official documentation page
 
-Welcome to the MicroUnit documentation!
-
 MicroUnit is a lightweight, expressive, and flexible unit testing framework for PHP.  
 It is designed to help you write clear, maintainable, and robust tests for your PHP projects with minimal setup and maximum power.
 
