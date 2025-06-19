@@ -2,8 +2,6 @@
 layout: default
 ---
 
-<h6 stlye="display: hidden;" id="anchor">Anchor</h6>
-
 **[← Back to Home](index.md)**
 
 # Mocking
@@ -135,4 +133,4 @@ $args = $log->getAllCallArgs('foo');
 
 ---
 
-**[⬆ Back to Top](#anchor)** • **[📘 Home](index.md)**
+**[⬆ Back to Top](#)** • **[📘 Home](index.md)**
