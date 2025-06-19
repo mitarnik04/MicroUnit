@@ -1,3 +1,7 @@
+---
+layout: default
+---
+
 # Assertions
 
 MicroUnit provides several assertion classes.  
