@@ -109,7 +109,7 @@ Enhancement suggestions are tracked as [GitHub issues](/issues).
 
 ### Your First Code Contribution
 
-#### General guidelines
+#### General Guidelines
 
 Every contribution **must** follow these core rules:
 
