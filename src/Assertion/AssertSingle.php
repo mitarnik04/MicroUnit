@@ -19,9 +19,9 @@ class AssertSingle
         return $this;
     }
 
-    public function notEquals(mixed $expected): self
+    public function notEquals(mixed $unexpected): self
     {
-        Assert::notEquals($expected, $this->source);
+        Assert::notEquals($unexpected, $this->source);
         return $this;
     }
 
@@ -31,9 +31,9 @@ class AssertSingle
         return $this;
     }
 
-    public function notExact(mixed $expected): self
+    public function notExact(mixed $unexpected): self
     {
-        Assert::notExact($expected, $this->source);
+        Assert::notExact($unexpected, $this->source);
         return $this;
     }
 

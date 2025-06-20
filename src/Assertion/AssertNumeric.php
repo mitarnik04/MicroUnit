@@ -13,6 +13,18 @@ class AssertNumeric
         return new AssertNumeric($source);
     }
 
+    public function exact(int|float $expected): self
+    {
+        Assert::exact($expected, $this->source);
+        return $this;
+    }
+
+    public function notExact(int|float $unexpected): self
+    {
+        Assert::notExact($unexpected, $this->source);
+        return $this;
+    }
+
     public function isGreaterThan(int|float $expected): self
     {
         Assert::isGreaterThan($expected, $this->source);

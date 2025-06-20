@@ -20,12 +20,12 @@ class Assert
         }
     }
 
-    public static function notEquals(mixed $expected, $actual)
+    public static function notEquals(mixed $unexpected, $actual)
     {
-        if ($expected == $actual) {
+        if ($unexpected == $actual) {
             throw new TestFailedException(
                 'Expected two values to be not equal. But actually they are' . PHP_EOL .
-                    'Value: ' . ValueExporter::export($expected)
+                    'Value: ' . ValueExporter::export($unexpected)
             );
         }
     }
@@ -41,12 +41,12 @@ class Assert
         }
     }
 
-    public static function notExact(mixed $expected, $actual)
+    public static function notExact(mixed $unexpected, $actual)
     {
-        if ($expected === $actual) {
+        if ($unexpected === $actual) {
             throw new TestFailedException(
                 'Expected two values to not be exactly equal (type, value). But actually they are' . PHP_EOL
-                    . 'Value: ' . ValueExporter::export($expected)
+                    . 'Value: ' . ValueExporter::export($unexpected)
             );
         }
     }

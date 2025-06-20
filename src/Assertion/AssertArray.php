@@ -19,9 +19,9 @@ class AssertArray
         return $this;
     }
 
-    public function notEquals(array $expected): self
+    public function notEquals(array $unexpected): self
     {
-        Assert::notEquals($expected, $this->source);
+        Assert::notEquals($unexpected, $this->source);
         return $this;
     }
 
@@ -31,9 +31,9 @@ class AssertArray
         return $this;
     }
 
-    public function notExact(array $expected): self
+    public function notExact(array $unexpected): self
     {
-        Assert::notExact($expected, $this->source);
+        Assert::notExact($unexpected, $this->source);
         return $this;
     }
 

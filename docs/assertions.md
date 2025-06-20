@@ -186,6 +186,30 @@ AssertSingle::begin($value)->notNull();
 
 Defines assertion methods for numeric values.
 
+### `exact($expected)` _(Planned)_
+
+Asserts that the value is exactly equal to `$expected` (===).
+
+> **Note:** This method is planned for a future release and is not yet available in the current version.
+
+**Example:**
+
+```php
+AssertNumeric::begin($value)->exact(42);
+```
+
+### `notExact($unexpected)` _(Planned)_
+
+Asserts that the value is not exactly equal to `$unexpected` (===).
+
+> **Note:** This method is planned for a future release and is not yet available in the current version.
+
+**Example:**
+
+```php
+AssertNumeric::begin($value)->notExact(36);
+```
+
 ### `isGreaterThan($min)`
 
 Asserts that the value is greater than `$min`.
