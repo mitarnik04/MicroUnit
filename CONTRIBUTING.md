@@ -135,6 +135,7 @@ Once ready:
 4. Update the documentation if needed see [this section](#improving-and-upating-the-documentation) for details
 5. Make sure your changes fit the described [Naming Conventions](#naming-conventions)
 6. Submit a Pull Request with a clear explanation of your change
+   - Ensure that all code in the pull request has been tested and functions as intended.
    - Provide as much context as possible to make it easier for reviewers to spot, understand and review your changes.
    - Make sure to add screenshot if the changes are visual.
 
