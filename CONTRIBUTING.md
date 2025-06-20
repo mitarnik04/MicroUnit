@@ -265,5 +265,5 @@ Become a part of MicroUnit by making your first contribution. Whether it's fixin
 Don't forget to
 
 - Star the Project on GitHub
-- Share it on your Socials and with your friends and Coworkers
+- Share it on your Socials and with your friends and coworkers
 - Follow us on X ([click here](https://x.com/MicroUnitPHP)) to always stay up to date with the latest news
