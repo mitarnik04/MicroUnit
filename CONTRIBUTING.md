@@ -109,6 +109,16 @@ Enhancement suggestions are tracked as [GitHub issues](/issues).
 
 ### Your First Code Contribution
 
+#### General guidelines
+
+Every contribution **must** follow these core rules:
+
+1. We strive to be **fast and lightweight** always do your best to contribute code that follows this principle. Also, make performance optimizations where possible.
+
+2. We have a **zero dependency** philosophy so whatever you implement has to be coded from scratch &rarr; **NO** external dependencies
+
+#### Getting started
+
 Unsure where to start? Look for issues labeled [`good first issue`](https://github.com/yourrepo/issues?q=label%3A%22good+first+issue%22). These are selected to help new contributors get familiar with the codebase.
 
 If you need help:
