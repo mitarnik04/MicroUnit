@@ -54,13 +54,13 @@ class AssertMockMethod
     }
 
 
-    public function isCalledWith(array $expectedArgs, bool $showActualMethodCallsOnError = false)
+    public function isCalledWith(array $expectedArgs, bool $showActualMethodCallsOnError = false): self
     {
         $this->assertMock->isCalledWith($this->method, $expectedArgs, $showActualMethodCallsOnError);
         return $this;
     }
 
-    public function isCalledWithOnSpecificCall(array $expectedArgs, int $onCall)
+    public function isCalledWithOnSpecificCall(array $expectedArgs, int $onCall): self
     {
         $this->assertMock->isCalledWithOnSpecificCall($this->method, $expectedArgs, $onCall);
         return $this;

@@ -64,7 +64,7 @@ class AssertMock
         );
     }
 
-    public function isCalledAtMost(string $method, int $maxCallCount)
+    public function isCalledAtMost(string $method, int $maxCallCount): self
     {
         return $this->compareToActualCallCount(
             $method,
@@ -74,7 +74,7 @@ class AssertMock
         );
     }
 
-    public function isCalledLessThan(string $method, int $maxCallCount)
+    public function isCalledLessThan(string $method, int $maxCallCount): self
     {
         return $this->compareToActualCallCount(
             $method,
@@ -85,7 +85,7 @@ class AssertMock
     }
 
     /** @param array<mixed> $expectedArgs */
-    public function isCalledWith(string $method, array $expectedArgs, bool $showActualMethodCallsOnError = false)
+    public function isCalledWith(string $method, array $expectedArgs, bool $showActualMethodCallsOnError = false): self
     {
         $allCallArgs = $this->callLog->getAllCallArgs($method);
         foreach ($allCallArgs as $callArgs) {
@@ -102,10 +102,12 @@ class AssertMock
             }
             throw new TestFailedException($message);
         }
+
+        return $this;
     }
 
     /** @param array<mixed> $expectedArgs */
-    public function isCalledWithOnSpecificCall(string $method, array $expectedArgs, int $onCall)
+    public function isCalledWithOnSpecificCall(string $method, array $expectedArgs, int $onCall): self
     {
         $callArgs = $this->callLog->getAllCallArgs($method)[$onCall - 1];
         if ($callArgs !== $expectedArgs) {
@@ -114,6 +116,8 @@ class AssertMock
             throw new TestFailedException("Method $method on call $onCall was not called with specified arguments" . PHP_EOL
                 . ValueExporter::export($diff));
         }
+
+        return $this;
     }
 
     /** @param callable(AssertMockMethod $assert): void $checkFunction */

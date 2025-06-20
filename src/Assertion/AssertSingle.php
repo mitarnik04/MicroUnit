@@ -8,60 +8,60 @@ class AssertSingle
         public readonly mixed $source
     ) {}
 
-    public static function begin(mixed $source): AssertSingle
+    public static function begin(mixed $source): self
     {
         return new AssertSingle($source);
     }
 
-    public function equals(mixed $expected): AssertSingle
+    public function equals(mixed $expected): self
     {
         Assert::equals($expected, $this->source);
         return $this;
     }
 
-    public function notEquals(mixed $expected): AssertSingle
+    public function notEquals(mixed $expected): self
     {
         Assert::notEquals($expected, $this->source);
         return $this;
     }
 
-    public function exact(mixed $expected): AssertSingle
+    public function exact(mixed $expected): self
     {
         Assert::exact($expected, $this->source);
         return $this;
     }
 
-    public function notExact(mixed $expected): AssertSingle
+    public function notExact(mixed $expected): self
     {
         Assert::notExact($expected, $this->source);
         return $this;
     }
 
-    public function instanceOf($expectedInstance): AssertSingle
+    public function instanceOf($expectedInstance): self
     {
         Assert::instanceOf($expectedInstance, $this->source);
         return $this;
     }
 
-    public function isTrue(): AssertSingle
+    public function isTrue(): self
     {
         Assert::isTrue($this->source);
         return $this;
     }
 
-    public function isFalse(): AssertSingle
+    public function isFalse(): self
     {
         Assert::isFalse($this->source);
         return $this;
     }
 
-    public function isNull(): AssertSingle
+    public function isNull(): self
     {
         Assert::isNull($this->source);
         return $this;
     }
 
-    public function notNull(): AssertSingle
+    public function notNull(): self
     {
         Assert::notNull($this->source);
         return $this;
