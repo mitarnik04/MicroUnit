@@ -453,12 +453,13 @@ src/
     Bootstrap/
     Cache/
     Config/
-    Core/
+    Core/           # contains the core logic that is needed to run unit tests
     Exceptions/
-    Helpers/
+    Helpers/        # contains a set of internal helpers
     Mock/
     Output/
     Setup/
+    Toolkit/        # contains set of useful tools for users when writing unit tests (yet to be released)
 bin/
     run-tests.php
     run_logs/

@@ -109,7 +109,8 @@ $tester->setUp(function () {
 
 #### Using the setUp metods return value
 
-Whatever you return from setUp **must** be the first argument of your test functions.
+Whatever you return from `setUp` **must** be the first argument of your test functions.  
+See [ValueBundle (yet to be released)](toolkit.md#valuebundle) for an easy way to **return mutiple values** from `setUp`.
 
 > **Note:** For the test functions that have no arguments at all you **don't** need to specify your setUp's return value as the first argument.  
 > This is only true for functions that have **subsequent arguments** as not passing your setUps return value as the first argument will result in an `ArgumentCountError`.

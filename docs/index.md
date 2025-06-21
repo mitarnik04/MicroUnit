@@ -26,10 +26,13 @@ It is designed to help you write clear, maintainable, and robust tests for your 
   Get started with defining, grouping, and running tests.
 
 - **[Logging](logging.md)**  
-  Learn more about the logging system in microunit, how it works, where your logs are, etc
+  Learn more about the logging system in microunit, how it works, where your logs are, etc.
+
+- **[Toolkit](toolkit.md) _(Planned)_**
+  Explore helpful tools designed to simplify common testing tasks and enhance code readability.
 
 - **[Troubleshooting](troubleshooting.md)**  
-  Are you having trouble with running your tests? Check out this section where the usual pitfalls are documented and how to overcome them
+  Are you having trouble with running your tests? Check out this section where the usual pitfalls and errors are documented and how to overcome them.
 
 ---
 
