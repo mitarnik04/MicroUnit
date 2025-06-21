@@ -29,7 +29,7 @@ $bundle->user = new User('John', 'Smith');
 echo $bundle->user->lastname; // outputs: 'Smith'
 ```
 
-To define readonly properties use the `set($name, $value)` method.
+To define readonly properties use the `set($name, $value, $readonly = false)` method.
 
 ```php
 
