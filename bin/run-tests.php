@@ -6,7 +6,16 @@ const AUTOLOADER_PATH_CACHE_KEY = 'autoloaderPath';
 //Using require_once since autoloader isn't available yet here. 
 require_once __DIR__ . '/../src/Helpers/Utils.php';
 require_once __DIR__ . '/../src/Cache/ICache.php';
-require_once __DIR__ . '/../src/Cache/JsonCache.php';
+
+// Start: BinarySerializer and Dependencies
+require_once __DIR__ . '/../src/Binary/BinarySerializer.php';
+require_once __DIR__ . '/../src/Binary/Constants/BitUnits.php';
+require_once __DIR__ . '/../src/Binary/Constants/Formats.php';
+require_once __DIR__ . '/../src/Binary/Constants/Types.php';
+// End: BinarySerializer and Dependencies
+
+// Depends on BinarySerializer
+require_once __DIR__ . '/../src/Cache/MicroCache.php';
 
 set_exception_handler(function (Throwable $e) {
     error_log($e);
@@ -16,8 +25,7 @@ set_exception_handler(function (Throwable $e) {
     die(1);
 });
 
-
-$cache = new MicroUnit\Cache\JsonCache('cache');
+$cache = new MicroUnit\Cache\MicroCache('cache');
 
 $autoloader = $cache->get(AUTOLOADER_PATH_CACHE_KEY);
 

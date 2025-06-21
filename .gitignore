@@ -1,4 +1,4 @@
 tests
-src/cache/cache.json
+src/cache/cache.mu
 bin/run_logs/
 vendor

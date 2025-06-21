@@ -4,7 +4,7 @@ namespace MicroUnit\Bootstrap;
 
 use MicroUnit\Config\ConfigProvider;
 use MicroUnit\Config\MicroUnitConfig;
-use MicroUnit\Cache\JsonCache;
+use MicroUnit\Cache\MicroCache;
 use MicroUnit\Helpers\Utils;
 
 class ConfigInitializer
@@ -13,7 +13,7 @@ class ConfigInitializer
 
     public static function initConfiguration(): ConfigInitializationResult
     {
-        $cache = new JsonCache('cache');
+        $cache = new MicroCache('cache');
 
         $cachedConfigFile = null;
         if ($cache->hasKey(self::CONFIG_FILE_CACHE_KEY)) {
