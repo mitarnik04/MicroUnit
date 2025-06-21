@@ -12,7 +12,9 @@ class StringTestWriter implements ITestWriter
     {
         $this->writeHeader($testResult);
 
-        echo isset($testResult->time) ? number_format($testResult->time * 1000, 2) . 'ms' : 'N/A';
+        echo 'Time: '
+            . (isset($testResult->time) ? number_format($testResult->time * 1000, 2) . 'ms' : 'N/A')
+            . PHP_EOL;
 
         if ($testResult->isError) {
             $this->writeStacktrace($testResult->exception ?? null);
