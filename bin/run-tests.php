@@ -8,6 +8,15 @@ require_once __DIR__ . '/../src/Helpers/Utils.php';
 require_once __DIR__ . '/../src/Cache/ICache.php';
 require_once __DIR__ . '/../src/Cache/JsonCache.php';
 
+set_exception_handler(function (Throwable $e) {
+    error_log($e);
+    fwrite(STDERR, 'Something unexpected occured during test execution:' . PHP_EOL);
+    fwrite(STDERR, '- Check for syntax errors in your test files' . PHP_EOL);
+    fwrite(STDERR, '- Also check the run logs under \'microunit/bin/run_logs\' for more information' . PHP_EOL);
+    die(1);
+});
+
+
 $cache = new MicroUnit\Cache\JsonCache('cache');
 
 $autoloader = $cache->get(AUTOLOADER_PATH_CACHE_KEY);
@@ -18,7 +27,8 @@ if (is_null($autoloader) || !file_exists($autoloader)) {
     $cache->set(AUTOLOADER_PATH_CACHE_KEY, $autoloader);
 };
 if (is_null($autoloader)) {
-    die('Could not find the autoloader. Please run "composer install" first.');
+    fwrite(STDERR, 'Could not find the autoloader. Please run "composer install" first.');
+    die(1);
 }
 
 require_once $autoloader;
