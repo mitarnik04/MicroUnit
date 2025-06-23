@@ -54,6 +54,7 @@ final class JsonCache implements ICache
 
         $this->cache[$key] = $value;
 
+        //TODO: Don't rewrite the whole file on every set 
         if (!file_put_contents($this->cacheFullPath, json_encode($this->cache, JSON_PRETTY_PRINT))) {
             trigger_error("Couldn't write cache file '{$this->cacheFullPath}'.");
         };
