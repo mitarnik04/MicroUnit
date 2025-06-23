@@ -164,6 +164,29 @@ To stay PSR-4 compliant each file should contain only one class. You need to cre
 
 Refer to [Filenames](#filenames) for how to name your file.
 
+### Formatting
+
+Since the number of devs working on this project is very limited (currently only one) **PHP Intelephsense** with default settings should be used (available as vs code extension).
+
+### Ordering
+
+The contents of a PHP file should be ordered like this:
+
+- Namespace
+- Constants (defined via `const`)
+- `use` statements (e.g. `use MicroUnit\Helpers\Utils`)
+- The class definition (e.g. `class Tester {...}`)
+  - Inside the class the ordering is as follows:
+    - class level constants (defined via `const`)
+    - public fields/properties
+    - private fields/properties
+    - constructor (if present)
+    - 'magic' methods (like `__get` or `__set`)
+    - public methods
+    - private methods
+
+> **Note:** If you encounter any files where this might not be the case feel free to fix them and submit a seperate Pull-Request or add the changes to one you might already be working on.
+
 ### Naming Conventions
 
 #### Folders
