@@ -166,7 +166,9 @@ Refer to [Filenames](#filenames) for how to name your file.
 
 ### Formatting
 
-Since the number of devs working on this project is very limited (currently only one) **PHP Intelephsense** with default settings should be used (available as vs code extension).
+Since the number of devs working on this project is very limited (currently only one) **PHP Intelephsense** with default settings should be used (available as VS Code extension).
+
+> **Note:** If this extension may be unavailable to you just make sure your formatting matches already existing files in the codebase.
 
 ### Ordering
 
