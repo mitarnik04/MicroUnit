@@ -4,15 +4,24 @@ namespace MicroUnit\Cache;
 
 use MicroUnit\Helpers\Utils;
 
-class JsonCache implements ICache
+final class JsonCache implements ICache
 {
     private ?array $cache;
     private readonly string $cacheFullPath;
 
+    private static string $cacheDirectory = __DIR__;
+
+    public static function setCacheDirectory(string $directory)
+    {
+        self::$cacheDirectory = $directory;
+    }
+
     public function __construct(string $cacheFileName)
     {
-        //TODO: Check that it's really a valid file name ! 
-        $this->cacheFullPath = __DIR__ . "/$cacheFileName.json";
+        $this->cacheFullPath = rtrim(self::$cacheDirectory, '\/')
+            . '/'
+            . ltrim($cacheFileName, '\/')
+            . '.json';
 
         if (!Utils::tryGetJsonContent($this->cacheFullPath, $this->cache, false)) {
             $this->cache = [];
@@ -34,13 +43,11 @@ class JsonCache implements ICache
 
     public function set(string $key, mixed $value, bool $throwOnKeyExists = false): void
     {
-        if (!$throwOnKeyExists || $this->hasKey($key)) {
-            $this->cache[$key] = json_encode($value);
-        }
-        if ($throwOnKeyExists) {
+        if ($throwOnKeyExists && !$this->hasKey($key)) {
             throw new \RuntimeException("The key '$key' is already present in the cache");
         }
 
+        $this->cache[$key] = json_encode($value);
         file_put_contents($this->cacheFullPath, json_encode($this->cache, JSON_PRETTY_PRINT));
     }
 
