@@ -1,3 +1,4 @@
+microunit.config.php
 tests
 src/cache/cache.json
 bin/run_logs/
