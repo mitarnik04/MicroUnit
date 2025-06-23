@@ -3,13 +3,15 @@
 namespace MicroUnit\Cache;
 
 use MicroUnit\Helpers\Utils;
+use RuntimeException;
 
 final class JsonCache implements ICache
 {
+    private static string $cacheDirectory;
+
     private ?array $cache;
     private readonly string $cacheFullPath;
 
-    private static string $cacheDirectory = __DIR__;
 
     public static function setCacheDirectory(string $directory)
     {
@@ -18,20 +20,23 @@ final class JsonCache implements ICache
 
     public function __construct(string $cacheFileName)
     {
+        if (!isset(self::$cacheDirectory)) {
+            throw new \RuntimeException('use setCacheDirectory to set the cash directory before caches can be created.');
+        }
+
         $this->cacheFullPath = rtrim(self::$cacheDirectory, '\/')
             . '/'
             . ltrim($cacheFileName, '\/')
             . '.json';
 
-        if (!Utils::tryGetJsonContent($this->cacheFullPath, $this->cache, false)) {
-            $this->cache = [];
-        };
+        $this->cache = [];
+        Utils::tryGetJsonContent($this->cacheFullPath, $this->cache, false);
     }
 
     public function get(string $key, bool $throwOnNotFound = false): mixed
     {
         if ($this->hasKey($key)) {
-            return json_decode($this->cache[$key]);
+            return $this->cache[$key];
         }
 
         if ($throwOnNotFound) {
@@ -43,16 +48,19 @@ final class JsonCache implements ICache
 
     public function set(string $key, mixed $value, bool $throwOnKeyExists = false): void
     {
-        if ($throwOnKeyExists && !$this->hasKey($key)) {
+        if ($throwOnKeyExists && $this->hasKey($key)) {
             throw new \RuntimeException("The key '$key' is already present in the cache");
         }
 
-        $this->cache[$key] = json_encode($value);
-        file_put_contents($this->cacheFullPath, json_encode($this->cache, JSON_PRETTY_PRINT));
+        $this->cache[$key] = $value;
+
+        if (!file_put_contents($this->cacheFullPath, json_encode($this->cache, JSON_PRETTY_PRINT))) {
+            trigger_error("Couldn't write cache file '{$this->cacheFullPath}'.");
+        };
     }
 
     public function hasKey(string $key): bool
     {
-        return isset($this->cache) && array_key_exists($key, $this->cache);
+        return array_key_exists($key, $this->cache);
     }
 }
