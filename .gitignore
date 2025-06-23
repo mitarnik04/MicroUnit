@@ -2,3 +2,4 @@ tests
 src/cache/cache.json
 bin/run_logs/
 vendor
+.vscode/launch.json
