@@ -6,8 +6,6 @@ layout: default
 
 # Toolkit
 
-> **Note:** The Toolkit along with all explained tools are planned for a future release and are not yet available in the current version.
-
 MicroUnit provides a set of helpful tools to make writing tests faster, cleaner and more straight foreward.
 Listed below you will find all available tools along with their provided functionally.  
 Each tool has a section called "Usage Examples" where a full usage example is provided.

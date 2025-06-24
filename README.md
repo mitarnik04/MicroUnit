@@ -459,7 +459,7 @@ src/
     Mock/
     Output/
     Setup/
-    Toolkit/        # contains set of useful tools for users when writing unit tests (yet to be released)
+    Toolkit/        # contains a set of useful tools for writing unit tests
 bin/
     run-tests.php
     run_logs/
@@ -469,7 +469,7 @@ bin/
 
 ## Upcoming Features
 
-Listed below are the features for MicroUnit that are on the Roadmap for being released in the upcoming versions.
+Listed below are the features for MicroUnit that are on the roadmap for being released in the upcoming versions.
 
 ### Support for parallel unit testing
 

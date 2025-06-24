@@ -22,6 +22,6 @@ Adds the ability to Configure a custom logs folder where the run logs are going 
 
 ### Configurable log level
 
-## Currently the log level is fixed to `E_ALL`, however it is planned to provide a way to customize this log level depending on the level of detail you want.
+Currently the log level is fixed to `E_ALL`, however it is _planned_ to provide a way to customize this log level depending on the level of detail you want.
 
 **[⬆ Back to Top](#)** • **[📘 Home](index.md)**
