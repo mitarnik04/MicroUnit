@@ -28,7 +28,7 @@ It is designed to help you write clear, maintainable, and robust tests for your 
 - **[Logging](logging.md)**  
   Learn more about the logging system in microunit, how it works, where your logs are, etc.
 
-- **[Toolkit](toolkit.md)**
+- **[Toolkit](toolkit.md)**  
   Explore helpful tools designed to simplify common testing tasks and enhance code readability.
 
 - **[Troubleshooting](troubleshooting.md)**  
