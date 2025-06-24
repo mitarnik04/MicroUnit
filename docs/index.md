@@ -45,7 +45,7 @@ It is designed to help you write clear, maintainable, and robust tests for your 
    composer require your-vendor/microunit --dev
    ```
 
-2. **Create your microunit.config.php**
+2. **Create your microunit.config.php**  
    Create `microunit.config.php` in your current working directory or any parent directories:
 
    > Note: All paths are going to be resolved relative to the location of your config file.
