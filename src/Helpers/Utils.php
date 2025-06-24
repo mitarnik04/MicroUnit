@@ -62,6 +62,7 @@ class Utils
         return '/^' . $regex . '$/i';
     }
 
+    //TODO: Remove once JsonCache get's removed.
     public static function tryGetJsonContent(string $path, ?array &$jsonContentResult, bool $errorLogIfFileNotFound = true): bool
     {
         if (file_exists($path)) {
@@ -74,7 +75,7 @@ class Utils
         return false;
     }
 
-    public static function deleteMatchingFiles(string $pattern, array $filePathWhitelist = [])
+    public static function deleteMatchingFiles(string $pattern, array $filePathWhitelist = []): void
     {
         $files = array_diff(glob($pattern), $filePathWhitelist);
 
@@ -82,6 +83,32 @@ class Utils
             if (is_file($file)) {
                 unlink($file);
             }
+        }
+    }
+
+    public static function countLineNumbers(string $file): ?int
+    {
+        $lineCount = 0;
+
+        $handle = fopen($file, 'r');
+        if (!$handle) {
+            return null;
+        }
+
+        while (!feof($handle)) {
+            if (fgets($handle) !== false) {
+                $lineCount++;
+            }
+        }
+
+        fclose($handle);
+        return $lineCount;
+    }
+
+    public static function createDirectoryIfNotExists(string $directory): void
+    {
+        if (!is_dir($directory)) {
+            mkdir($directory, recursive: false);
         }
     }
 }

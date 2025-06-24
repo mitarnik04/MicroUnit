@@ -1,5 +1,17 @@
-#!/usr/bin/env php
 <?php
+
+/**
+ * Entry point to load and run all tests.
+ * Use in CLI or build pipelines to execute the full test suite.
+ */
+
+const CACHE_DIRECTORY = __DIR__ . '/cache';
+const RUN_LOG_DIRECTORY = __DIR__ . '/run_logs';
+
+require_once __DIR__ . '/../src/Bootstrap/AutoloadingInitializer.php';
+require_once __DIR__ . '/../src/Cache/ICache.php';
+require_once __DIR__ . '/../src/Cache/LineJsonCache.php';
+require_once __DIR__ . '/../src/Helpers/Utils.php';
 
 set_exception_handler(function (Throwable $e) {
     error_log($e);
@@ -9,32 +21,26 @@ set_exception_handler(function (Throwable $e) {
     die(1);
 });
 
-require_once __DIR__ . '/../src/Bootstrap/AutoloadingInitializer.php';
-\MicroUnit\Bootstrap\AutoloadingInitializer::initAutoLoadig();
+MicroUnit\Helpers\Utils::createDirectoryIfNotExists(CACHE_DIRECTORY);
+$cache = new \MicroUnit\Cache\LineJsonCache(CACHE_DIRECTORY, 'microunitCache');
+$cache->autoCompact();
+$cache->set('random', rand(1, 1000));
+\MicroUnit\Bootstrap\AutoloadingInitializer::initAutoLoadig($cache);
 
 use MicroUnit\Helpers\Utils;
 use MicroUnit\Bootstrap\ConfigInitializer;
 use MicroUnit\Bootstrap\LoggingInitializer;
 
-/**
- * Entry point to load and run all tests.
- * Use in CLI or build pipelines to execute the full test suite.
- */
-
-const RUN_LOG_FOLDER = __DIR__ . '/run_logs';
-
-if (!is_dir(RUN_LOG_FOLDER)) {
-    mkdir(RUN_LOG_FOLDER);
-}
+Utils::createDirectoryIfNotExists(RUN_LOG_DIRECTORY);
 $currentUtcDateTime = gmdate('Y-m-d\TH-i-s\Z');
-LoggingInitializer::setFileOnlyLogging(E_ALL, RUN_LOG_FOLDER . "/$currentUtcDateTime.log");
+LoggingInitializer::setFileOnlyLogging(E_ALL, RUN_LOG_DIRECTORY . "/$currentUtcDateTime.log");
 
-$configInitResult = ConfigInitializer::initConfiguration();
+$configInitResult = ConfigInitializer::initConfiguration($cache);
 $config = $configInitResult->config;
 $configFile = $configInitResult->configFullPath;
 
 if (!$config->persistRunLogs) {
-    Utils::deleteMatchingFiles(RUN_LOG_FOLDER . '/*.log', [RUN_LOG_FOLDER . "/$currentUtcDateTime.log"]);
+    Utils::deleteMatchingFiles(RUN_LOG_DIRECTORY . '/*.log', [RUN_LOG_DIRECTORY . "/$currentUtcDateTime.log"]);
 }
 
 $baseDir = $configFile ? dirname($configFile) : getcwd();

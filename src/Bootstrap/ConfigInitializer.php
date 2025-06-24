@@ -2,22 +2,20 @@
 
 namespace MicroUnit\Bootstrap;
 
+use MicroUnit\Cache\ICache;
 use MicroUnit\Config\ConfigProvider;
 use MicroUnit\Config\MicroUnitConfig;
-use MicroUnit\Cache\JsonCache;
 use MicroUnit\Helpers\Utils;
 
 class ConfigInitializer
 {
     private const CONFIG_FILE_CACHE_KEY = 'configFilePath';
 
-    public static function initConfiguration(): ConfigInitializationResult
+    public static function initConfiguration(?ICache $cache = null): ConfigInitializationResult
     {
-        $cache = new JsonCache('cache');
-
         $cachedConfigFile = null;
-        if ($cache->hasKey(self::CONFIG_FILE_CACHE_KEY)) {
-            $cachedConfigFile = $cache->get(self::CONFIG_FILE_CACHE_KEY, true);
+        if ($cache?->hasKey(self::CONFIG_FILE_CACHE_KEY)) {
+            $cachedConfigFile = $cache?->get(self::CONFIG_FILE_CACHE_KEY, true);
         }
 
         //If the file got moved we want to rescan.
@@ -41,7 +39,7 @@ class ConfigInitializer
 
         if (!$usingDefaultConfig && !$isCachedFileValid) {
             trigger_error("Caching the config file path $configFile since it was either added or moved to a new location.", E_USER_NOTICE);
-            $cache->set(self::CONFIG_FILE_CACHE_KEY, $configFile);
+            $cache?->set(self::CONFIG_FILE_CACHE_KEY, $configFile);
         }
 
         return new ConfigInitializationResult($config, $configFile);

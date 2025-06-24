@@ -1,6 +1,6 @@
 microunit.config.php
 tests
-bin/cache/cache.json
+bin/cache/
 bin/run_logs/
 vendor
 .vscode/launch.json
