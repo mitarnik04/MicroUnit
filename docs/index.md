@@ -62,7 +62,7 @@ It is designed to help you write clear, maintainable, and robust tests for your 
        ->build();
    ```
 
-3. **Write your first test**
+3. **Write your first test**  
    Create a test file in your specified test directory (or any child directory) and start testing.
 
    ```php
