@@ -62,19 +62,6 @@ class Utils
         return '/^' . $regex . '$/i';
     }
 
-    //TODO: Remove once JsonCache get's removed.
-    public static function tryGetJsonContent(string $path, ?array &$jsonContentResult, bool $errorLogIfFileNotFound = true): bool
-    {
-        if (file_exists($path)) {
-            $jsonContentResult = json_decode(file_get_contents($path), true);
-            return true;
-        }
-        if ($errorLogIfFileNotFound) {
-            error_log("JSON-file not found. PATH: $path");
-        }
-        return false;
-    }
-
     public static function deleteMatchingFiles(string $pattern, array $filePathWhitelist = []): void
     {
         $files = array_diff(glob($pattern), $filePathWhitelist);
