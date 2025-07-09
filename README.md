@@ -322,7 +322,7 @@ AssertMock::begin($mock)
 
 MicroUnit lets you choose how your test results are displayed or stored. **You can configure multiple test writers at once** for example, outputting results to the console and saving them to a file simultaneously. This makes it easy to tailor your reporting for both local development and CI/CD pipelines.
 
-See [Output](https://mitarnik04.github.io/MicroUnit/Output) for a more detailed explanation.
+See [Output](https://mitarnik04.github.io/MicroUnit/output) for a more detailed explanation.
 
 ```php
 use MicroUnit\Output\MinimalStringTestWriter;
