@@ -37,7 +37,7 @@ $bundle->set('user', new User('John', 'Smith'), true);
 // Then access it at a later point
 echo $bundle->user->lastname; // outputs: 'Smith'
 
-$bundle->user = new User('Mark', 'Stevens'); // throws RuntimeException
+$bundle->user = new User('Mark', 'Stevens'); // throws a RuntimeException
 ```
 
 ---
@@ -54,7 +54,7 @@ $tester->setUp(function (): ValueBundle {
     return $valueBundle;
 });
 
-$tester->define("EqualsFails", function (ValueBundle $values) {
+$tester->define("test_value_bundle", function (ValueBundle $values) {
     Assert::equals($values->username, 'SomeUsername'); // Is Successfull
     Assert::equals($values->immutable, 123); // Is Successfull
 
