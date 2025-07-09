@@ -202,7 +202,7 @@ use MicroUnit\Assertion\AssertMock;
 
 use Exception;
 
-//In this example we mock a class but you can also mock abstract classes and interfaces of course.
+// In this example we mock a class but you can also mock abstract classes and interfaces of course.
 class UserService {
 
     public function __construct(protected string $prefix = '') {}
