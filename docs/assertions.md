@@ -382,18 +382,6 @@ Defines assertion methods for mock objects.
 
 ---
 
-### `begin(MicroMock $source): AssertMock`
-
-Starts assertions on the given mock object.
-
-**Example:**
-
-```php
-AssertMock::begin($mock);
-```
-
----
-
 ### `isCalledTimes(string $method, int $count): self`
 
 Asserts that the specified method was called **exactly** `$count` times.
