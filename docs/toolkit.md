@@ -47,28 +47,19 @@ $bundle->user = new User('Mark', 'Stevens'); // throws RuntimeException
 ```php
 use MicroUnit\Toolkit\ValueContext;
 
-class MyTest extends \MicroUnit\TestCase
-{
-    public function setUp(): ValueContext
-    {
-        $context = new ValueContext();
-        $context->userId = 42;
-        $context->token = 'secret-token';
-        $context->isAdmin = false;
+$tester->setUp(function (): ValueBundle {
+    $valueBundle =  new ValueBundle();
+    $valueBundle->username = "SomeUsername";
+    $valueBundle->set('immutable', 123, true); // define a readonly property
+    return $valueBundle;
+});
 
-        // Mark token as read-only to prevent accidental overwrite
-        $context->setReadonly('token');
+$tester->define("EqualsFails", function (ValueBundle $values) {
+    Assert::equals($values->username, 'SomeUsername'); // Is Successfull
+    Assert::equals($values->immutable, 123); // Is Successfull
 
-        return $context;
-    }
+    $values->username = 'OtherUsername'; // Works since it's not readonly
+    $values->immutable = 456; // throws a RuntimeException
+});
 
-    public function testUserStatus(ValueContext $ctx)
-    {
-        $this->assertEquals(42, $ctx->userId);
-        $this->assertFalse($ctx->isAdmin);
-
-        // This will throw if uncommented:
-        // $ctx->token = 'changed';
-    }
-}
 ```
