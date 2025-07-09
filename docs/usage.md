@@ -107,7 +107,7 @@ $tester->setUp(function () {
 });
 ```
 
-#### Using the setUp metods return value
+#### Using the setUp methods return value
 
 Whatever you return from `setUp` **must** be the first argument of your test functions.  
 See [ValueBundle](toolkit.md#valuebundle) for an easy way to **return mutiple values** from `setUp`.
