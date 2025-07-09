@@ -304,7 +304,7 @@ Asserts that the array is empty.
 AssertArray::begin($array)->empty();
 ```
 
-### `notEmpty()_ self`
+### `notEmpty(): self`
 
 Asserts that the array is not empty.
 
