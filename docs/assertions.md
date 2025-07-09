@@ -314,7 +314,7 @@ Asserts that the array is not empty.
 AssertArray::begin($array)->notEmpty();
 ```
 
-### `contains(mixed $element, bool $shouldUseStrict = true)`
+### `contains(mixed $element, bool $shouldUseStrict = true): self`
 
 Asserts that the array contains the given element. If `$shouldUseStrict` is `true` the type is checked as well.
 
