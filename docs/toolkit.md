@@ -49,7 +49,7 @@ use MicroUnit\Assertion\Assert;
 use MicroUnit\Setup\TestSetup;
 use MicroUnit\Toolkit\ValueBundle;
 
-$tester = TestSetup::getTester("ValueBundle Test Suit");
+$tester = TestSetup::getTester("ValueBundle Test Suite");
 
 $tester->setUp(function (): ValueBundle {
     $valueBundle =  new ValueBundle();
