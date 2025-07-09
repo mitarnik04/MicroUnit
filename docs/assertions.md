@@ -13,6 +13,18 @@ Most assertion methods can be called either via an assertion chain (e.g., `Asser
 
 ---
 
+## Table of Contents
+
+- **[Static Assert Methods](#static-assert-methods)**
+- **[Fluent Assertions](#fluent-assertions)**
+  - **[AssertSingle](#assertsingle)**
+  - **[AssertNumeric](#assertnumeric)**
+  - **[AssertArray](#assertarray)**
+- **[AssertMock](#assertmock)**
+- **[AssertMockMethod](#assertmockmethod)**
+
+---
+
 ## Static Assert Methods
 
 Most assertion methods can be called statically via the `Assert` class.
@@ -20,67 +32,67 @@ These static methods get used under the hood by AssertSingle, AssertArray and As
 
 ### List of Available Static Methods
 
-- `Assert::equals($value, $expected)`  
-  Asserts that `$value == $expected`.
+- `Assert::equals(mixed $expected, mixed $actual): void`  
+  Asserts that `$expected == $actual`.
 
-- `Assert::notEquals($value, $unexpected)`  
-  Asserts that `$value != $unexpected`.
+- `Assert::notEquals(mixed $unexpected, mixed $actual): void`  
+  Asserts that `$unexpected != $actual`.
 
-- `Assert::exact($value, $expected)`  
-  Asserts that `$value === $expected`.
+- `Assert::exact(mixed $expected, mixed $actual): void`  
+  Asserts that `$expected === $actual`.
 
-- `Assert::notExact($value, $unexpected)`  
-  Asserts that `$value !== $unexpected`.
+- `Assert::notExact(mixed $unexpected, mixed $actual): void`  
+  Asserts that `$unexpected !== $actual`.
 
-- `Assert::isTrue($value)`  
+- `Assert::isTrue(mixed $value): void`  
   Asserts that `$value === true`.
 
-- `Assert::isFalse($value)`  
+- `Assert::isFalse(mixed $value): void`  
   Asserts that `$value === false`.
 
-- `Assert::isNull($value)`  
+- `Assert::isNull(mixed $value): void`  
   Asserts that `$value === null`.
 
-- `Assert::notNull($value)`  
+- `Assert::notNull(mixed $value): void`  
   Asserts that `$value !== null`.
 
-- `Assert::isGreaterThan($value, $min)`  
+- `Assert::isGreaterThan(int|float $value, int|float $min): void`  
   Asserts that `$value > $min`.
 
-- `Assert::isLessThan($value, $max)`  
+- `Assert::isLessThan(int|float  $value, int|float  $max): void`  
   Asserts that `$value < $max`.
 
-- `Assert::isBetween($value, $min, $max, $inclusive = true)`  
+- `Assert::isBetween(int | float  $min, int|float  $max, int|float  $value, bool $inclusive = true): void`  
   Asserts that `$value` is between `$min` and `$max`. Inclusive by default.
 
-- `Assert::empty($array)`  
+- `Assert::empty(array $array): void`  
   Asserts that the array is empty.
 
-- `Assert::notEmpty($array)`  
+- `Assert::notEmpty(array $array): void`  
   Asserts that the array is not empty.
 
-- `Assert::contains($array, $element)`  
-  Asserts that `$element` exists in `$array`.
+- `Assert::contains(mixed $element, array $source, bool $shouldUseStrict = true): void`  
+  Asserts that `$element` exists in `$source`. If `shouldUseStrict` is true it will also make sure the type of `$element` matches the given element in `$source`.
 
-- `Assert::countEquals($array, $count)`  
+- `Assert::countEquals(int $expected, array|\Countable $source): void`  
   Asserts that the array contains exactly `$count` elements.
 
-- `Assert::hasKey($array, $key)`  
+- `Assert::hasKey(mixed $key, array $array): void`  
   Asserts that the array has the specified key.
 
-- `Assert::notHasKey($array, $key)`  
+- `Assert::notHasKey(mixed $key, array $array): void`  
   Asserts that the array does not have the specified key.
 
-- `Assert::keysEqual($array, $expectedKeys)`  
+- `Assert::keysEqual(array $expectedKeys, array $array): void`  
   Asserts that the keys of `$array` match `$expectedKeys` in order and value.
 
-- `Assert::containsOnly($array, $allowedValues)`  
+- `Assert::containsOnly(array $allowedValues, array $array): void`  
   Asserts that all elements in `$array` are among `$allowedValues`.
 
-- `Assert::instanceOf($value, $className)`  
+- `Assert::instanceOf(string $expectedInstance, object $object): void`  
    Asserts that `$value` is an instance of the given class or interface.
 
-- `Assert::throws(callable $fn, $exceptionClass)`  
+- `Assert::throws(callable $method, ?string $exceptionType): void`  
   Asserts that executing `$fn` throws an exception of type `$exceptionClass`.
 
 > **Note:**  
@@ -88,11 +100,13 @@ These static methods get used under the hood by AssertSingle, AssertArray and As
 
 ## Fluent Assertions
 
+No matter which fluent assertion class you are using to start the fluent assertion process you call `AssertClass::begin($value)` (e.g `AssertSingle::begin('something')`).
+
 ### AssertSingle
 
 Defines different assertion methods for single values (bool, string, int, float, etc.).
 
-### `equals($expected)`
+### `equals(mixed $expected): self`
 
 Asserts that the value is equal to `$expected` (==).
 
@@ -102,7 +116,7 @@ Asserts that the value is equal to `$expected` (==).
 AssertSingle::begin($value)->equals(42);
 ```
 
-### `notEquals($unexpected)`
+### `notEquals(mixed $unexpected): self`
 
 Asserts that the value is not equal to `$unexpected` (==).
 
@@ -112,7 +126,7 @@ Asserts that the value is not equal to `$unexpected` (==).
 AssertSingle::begin($value)->notEquals(0);
 ```
 
-### `exact($expected)`
+### `exact(mixed $expected): self`
 
 Asserts that the value is exactly equal to `$expected` (===).
 
@@ -122,7 +136,7 @@ Asserts that the value is exactly equal to `$expected` (===).
 AssertSingle::begin($value)->exact('foo');
 ```
 
-### `notExact($unexpected)`
+### `notExact(mixed $unexpected): self`
 
 Asserts that the value is not exactly equal to `$unexpected` (===).
 
@@ -132,7 +146,7 @@ Asserts that the value is not exactly equal to `$unexpected` (===).
 AssertSingle::begin($value)->notExact(false);
 ```
 
-### `instanceOf($className)`
+### `instanceOf(string $expectedInstance): self`
 
 Asserts that the value is an instance of the given class/interface.
 
@@ -142,7 +156,7 @@ Asserts that the value is an instance of the given class/interface.
 AssertSingle::begin($object)->instanceOf(DateTime::class);
 ```
 
-### `isTrue()`
+### `isTrue(): self`
 
 Asserts that the value is `true`.
 
@@ -152,7 +166,7 @@ Asserts that the value is `true`.
 AssertSingle::begin($flag)->isTrue();
 ```
 
-### `isFalse()`
+### `isFalse(): self`
 
 Asserts that the value is `false`.
 
@@ -162,7 +176,7 @@ Asserts that the value is `false`.
 AssertSingle::begin($flag)->isFalse();
 ```
 
-### `isNull()`
+### `isNull(): self`
 
 Asserts that the value is `null`.
 
@@ -172,7 +186,7 @@ Asserts that the value is `null`.
 AssertSingle::begin($value)->isNull();
 ```
 
-### `notNull()`
+### `notNull(): self`
 
 Asserts that the value is not `null`.
 
@@ -186,7 +200,7 @@ AssertSingle::begin($value)->notNull();
 
 Defines assertion methods for numeric values.
 
-### `exact($expected)`
+### `exact(int|float $expected): self`
 
 Asserts that the value is exactly equal to `$expected` (===).
 
@@ -196,7 +210,7 @@ Asserts that the value is exactly equal to `$expected` (===).
 AssertNumeric::begin($value)->exact(42);
 ```
 
-### `notExact($unexpected)`
+### `notExact(int|float $unexpected): self`
 
 Asserts that the value is not exactly equal to `$unexpected` (===).
 
@@ -206,7 +220,7 @@ Asserts that the value is not exactly equal to `$unexpected` (===).
 AssertNumeric::begin($value)->notExact(36);
 ```
 
-### `isGreaterThan($min)`
+### `isGreaterThan(int|float $min): self`
 
 Asserts that the value is greater than `$min`.
 
@@ -216,7 +230,7 @@ Asserts that the value is greater than `$min`.
 AssertNumeric::begin($number)->isGreaterThan(10);
 ```
 
-### `isLessThan($max)`
+### `isLessThan(int|float $max): self`
 
 Asserts that the value is less than `$max`.
 
@@ -226,9 +240,9 @@ Asserts that the value is less than `$max`.
 AssertNumeric::begin($number)->isLessThan(100);
 ```
 
-### `isBetween($min, $max, $inclusive = true)`
+### `isBetween(int|float $min, int|float $max, bool $inclusive = true)`
 
-Asserts that the value is between `$min` and `$max` (inclusive by default).
+Asserts that the value is between `$min` and `$max`.
 
 **Example:**
 
@@ -240,7 +254,7 @@ AssertNumeric::begin($number)->isBetween(1, 10);
 
 Defines assertion methods for arrays.
 
-### `equals($expected)`
+### `equals(array $expected): self`
 
 Asserts that the array is equal to `$expected` (==).
 
@@ -250,7 +264,7 @@ Asserts that the array is equal to `$expected` (==).
 AssertArray::begin($array)->equals(['a', 'b']);
 ```
 
-### `notEquals($unexpected)`
+### `notEquals(array $unexpected): self`
 
 Asserts that the array is not equal to `$unexpected` (==).
 
@@ -260,7 +274,7 @@ Asserts that the array is not equal to `$unexpected` (==).
 AssertArray::begin($array)->notEquals([]);
 ```
 
-### `exact($expected)`
+### `exact(array $expected): self`
 
 Asserts that the array is exactly equal to `$expected` (===).
 
@@ -270,7 +284,7 @@ Asserts that the array is exactly equal to `$expected` (===).
 AssertArray::begin($array)->exact(['a' => 1, 'b' => 2]);
 ```
 
-### `notExact($unexpected)`
+### `notExact(array $unexpected): self`
 
 Asserts that the array is not exactly equal to `$unexpected` (===).
 
@@ -280,7 +294,7 @@ Asserts that the array is not exactly equal to `$unexpected` (===).
 AssertArray::begin($array)->notExact(['a' => 2]);
 ```
 
-### `empty()`
+### `empty(): self`
 
 Asserts that the array is empty.
 
@@ -290,7 +304,7 @@ Asserts that the array is empty.
 AssertArray::begin($array)->empty();
 ```
 
-### `notEmpty()`
+### `notEmpty()_ self`
 
 Asserts that the array is not empty.
 
@@ -300,9 +314,9 @@ Asserts that the array is not empty.
 AssertArray::begin($array)->notEmpty();
 ```
 
-### `contains($element)`
+### `contains(mixed $element, bool $shouldUseStrict = true)`
 
-Asserts that the array contains the given element.
+Asserts that the array contains the given element. If `$shouldUseStrict` is `true` the type is checked as well.
 
 **Example:**
 
@@ -310,7 +324,7 @@ Asserts that the array contains the given element.
 AssertArray::begin($array)->contains('foo');
 ```
 
-### `countEquals($count)`
+### `countEquals(int $count): self`
 
 Asserts that the array has exactly `$count` elements.
 
@@ -320,7 +334,7 @@ Asserts that the array has exactly `$count` elements.
 AssertArray::begin($array)->countEquals(3);
 ```
 
-### `hasKey($key)`
+### `hasKey(mixed $key): self`
 
 Asserts that the array has the specified key.
 
@@ -330,7 +344,7 @@ Asserts that the array has the specified key.
 AssertArray::begin($array)->hasKey('id');
 ```
 
-### `notHasKey($key)`
+### `notHasKey(mixed $key): self`
 
 Asserts that the array does not have the specified key.
 
@@ -340,7 +354,7 @@ Asserts that the array does not have the specified key.
 AssertArray::begin($array)->notHasKey('password');
 ```
 
-### `keysEqual($expectedKeys)`
+### `keysEqual(array $expectedKeys): self`
 
 Asserts that the array's keys are equal to `$expectedKeys`.
 
@@ -350,7 +364,7 @@ Asserts that the array's keys are equal to `$expectedKeys`.
 AssertArray::begin($array)->keysEqual(['id', 'name']);
 ```
 
-### `containsOnly($allowedValues)`
+### `containsOnly(array $allowedValues): self`
 
 Asserts that the array contains only the specified values.
 
@@ -360,14 +374,29 @@ Asserts that the array contains only the specified values.
 AssertArray::begin($array)->containsOnly([1, 2, 3]);
 ```
 
-### AssertMock
+## AssertMock
 
-Defines assertion methods for mock objects.  
-**Note:** Static calls are not available for `AssertMock` methods.
+Defines assertion methods for mock objects.
 
-### `isCalledTimes($method, $count)`
+> **Note:** Static calls are not available for `AssertMock` methods. Use `AssertMock::begin($mock)` to initiate the assertion via fluent api.
 
-Asserts that the mock method was called `$count` times.
+---
+
+### `begin(MicroMock $source): AssertMock`
+
+Starts assertions on the given mock object.
+
+**Example:**
+
+```php
+AssertMock::begin($mock);
+```
+
+---
+
+### `isCalledTimes(string $method, int $count): self`
+
+Asserts that the specified method was called **exactly** `$count` times.
 
 **Example:**
 
@@ -375,15 +404,177 @@ Asserts that the mock method was called `$count` times.
 AssertMock::begin($mock)->isCalledTimes('foo', 2);
 ```
 
-### `isCalledWith($method, $args)`
+---
 
-Asserts that the mock method was called with the specified arguments.
+### `isCalledOnce(string $method): self`
+
+Asserts that the specified method was called **exactly once**.
+
+**Example:**
+
+```php
+AssertMock::begin($mock)->isCalledOnce('foo');
+```
+
+---
+
+### `isNotCalled(string $method): self`
+
+Asserts that the specified method was **never called**.
+
+**Example:**
+
+```php
+AssertMock::begin($mock)->isNotCalled('foo');
+```
+
+---
+
+### `isCalledAtLeast(string $method, int $minCallCount): self`
+
+Asserts that the specified method was called **at least** `$minCallCount` times.
+
+**Example:**
+
+```php
+AssertMock::begin($mock)->isCalledAtLeast('foo', 3);
+```
+
+---
+
+### `isCalledMoreThan(string $method, int $minCallCount): self`
+
+Asserts that the specified method was called **more than** `$minCallCount` times.
+
+**Example:**
+
+```php
+AssertMock::begin($mock)->isCalledMoreThan('foo', 2);
+```
+
+---
+
+### `isCalledAtMost(string $method, int $maxCallCount): self`
+
+Asserts that the specified method was called **at most** `$maxCallCount` times.
+
+**Example:**
+
+```php
+AssertMock::begin($mock)->isCalledAtMost('foo', 5);
+```
+
+---
+
+### `isCalledLessThan(string $method, int $maxCallCount): self`
+
+Asserts that the specified method was called **less than** `$maxCallCount` times.
+
+**Example:**
+
+```php
+AssertMock::begin($mock)->isCalledLessThan('foo', 3);
+```
+
+---
+
+### `isCalledWith(string $method, array $args, bool $showActualMethodCallsOnError = false): self`
+
+Asserts that the specified method was called **with the given arguments** at least once.
+
+- Use `$showActualMethodCallsOnError` to include actual arguments in failure messages.
 
 **Example:**
 
 ```php
 AssertMock::begin($mock)->isCalledWith('bar', [1, 2]);
 ```
+
+---
+
+### `isCalledWithOnSpecificCall(string $method, array $args, int $onCall): self`
+
+Asserts that the method was called with the given arguments **on a specific call number** (1-based index).
+
+**Example:**
+
+```php
+AssertMock::begin($mock)->isCalledWithOnSpecificCall('foo', ['arg'], 2);
+```
+
+---
+
+### `checkMethod(string $method, callable $assertMethod): self`
+
+Provides a fluent way to group method assertions using a callback that receives an `AssertMockMethod` instance. See [AssertMockMethod](#assertmockmethod) for details.
+
+**Example:**
+
+```php
+AssertMock::begin($mock)->checkMethod('foo', function ($assert) {
+    $assert->isCalledOnce()->isCalledWith(['x']);
+});
+```
+
+---
+
+## AssertMockMethod
+
+Helper class for scoped assertions on a **specific mock method**, used via `$assertMock->checkMethod()`. See [checkMethod description](#checkmethodstring-method-callable-assertmethod-self) for details.
+
+---
+
+### `isCalledTimes(int $expectedCallCount): self`
+
+Asserts that the method was called exactly `$expectedCallCount` times.
+
+---
+
+### `isCalledOnce(): self`
+
+Asserts that the method was called exactly once.
+
+---
+
+### `isNotCalled(): self`
+
+Asserts that the method was never called.
+
+---
+
+### `isCalledAtLeast(int $minCallCount): self`
+
+Asserts that the method was called at least `$minCallCount` times.
+
+---
+
+### `isCalledMoreThan(int $minCallCount): self`
+
+Asserts that the method was called more than `$minCallCount` times.
+
+---
+
+### `isCalledAtMost(int $maxCallCount): self`
+
+Asserts that the method was called at most `$maxCallCount` times.
+
+---
+
+### `isCalledLessThan(int $maxCallCount): self`
+
+Asserts that the method was called less than `$maxCallCount` times.
+
+---
+
+### `isCalledWith(array $expectedArgs, bool $showActualMethodCallsOnError = false): self`
+
+Asserts that the method was called with the given arguments at least once.
+
+---
+
+### `isCalledWithOnSpecificCall(array $expectedArgs, int $onCall): self`
+
+Asserts that the method was called with the given arguments on a specific call number.
 
 ---
 

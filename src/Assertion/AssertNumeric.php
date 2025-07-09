@@ -25,15 +25,15 @@ class AssertNumeric
         return $this;
     }
 
-    public function isGreaterThan(int|float $expected): self
+    public function isGreaterThan(int|float $min): self
     {
-        Assert::isGreaterThan($expected, $this->source);
+        Assert::isGreaterThan($this->source, $min);
         return $this;
     }
 
-    public function isLessThan(int|float $expected): self
+    public function isLessThan(int|float $max): self
     {
-        Assert::isLessThan($expected, $this->source);
+        Assert::isLessThan($this->source, $max);
         return $this;
     }
 

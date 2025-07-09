@@ -9,7 +9,7 @@ use MicroUnit\Exceptions\TestFailedException;
 class Assert
 {
     //Single-Value
-    public static function equals(mixed $expected, mixed $actual)
+    public static function equals(mixed $expected, mixed $actual): void
     {
         if ($expected != $actual) {
             $diff = Diff::generate(ValueExporter::export($expected), ValueExporter::export($actual));
@@ -20,7 +20,7 @@ class Assert
         }
     }
 
-    public static function notEquals(mixed $unexpected, $actual)
+    public static function notEquals(mixed $unexpected, mixed $actual): void
     {
         if ($unexpected == $actual) {
             throw new TestFailedException(
@@ -30,7 +30,7 @@ class Assert
         }
     }
 
-    public static function exact(mixed $expected, mixed $actual)
+    public static function exact(mixed $expected, mixed $actual): void
     {
         if ($expected !== $actual) {
             $diff = Diff::generate(ValueExporter::export($expected), ValueExporter::export($actual));
@@ -41,7 +41,7 @@ class Assert
         }
     }
 
-    public static function notExact(mixed $unexpected, $actual)
+    public static function notExact(mixed $unexpected, $actual): void
     {
         if ($unexpected === $actual) {
             throw new TestFailedException(
@@ -89,37 +89,37 @@ class Assert
     }
 
     //Numeric 
-    public static function isGreaterThan(int | float $expected, int | float $actual): void
+    public static function isGreaterThan(int | float $value, int | float $min): void
     {
-        if (!($actual > $expected)) {
+        if (!($value > $min)) {
             throw new TestFailedException(
-                'Expected value to be greater than ' . ValueExporter::export($expected) . PHP_EOL .
-                    'Actual: ' . ValueExporter::export($actual)
+                'Expected value to be greater than ' . ValueExporter::export($min) . PHP_EOL .
+                    'Actual: ' . ValueExporter::export($value)
             );
         }
     }
 
-    public static function isLessThan(int | float  $expected, int | float  $actual): void
+    public static function isLessThan(int | float  $value, int | float  $max): void
     {
-        if (!($actual < $expected)) {
+        if (!($value < $max)) {
             throw new TestFailedException(
-                'Expected value to be less than ' . ValueExporter::export($expected) . PHP_EOL .
-                    'Actual: ' . ValueExporter::export($actual)
+                'Expected value to be less than ' . ValueExporter::export($max) . PHP_EOL .
+                    'Actual: ' . ValueExporter::export($value)
             );
         }
     }
 
-    public static function isBetween(int | float  $min, int | float  $max, int | float  $actual, bool $inclusive = true): void
+    public static function isBetween(int | float  $min, int | float  $max, int | float  $value, bool $inclusive = true): void
     {
         $ok = $inclusive
-            ? ($actual >= $min && $actual <= $max)
-            : ($actual > $min && $actual < $max);
+            ? ($value >= $min && $value <= $max)
+            : ($value > $min && $value < $max);
 
         if (!$ok) {
             $inclusivity = $inclusive ? 'inclusive' : 'exclusive';
             throw new TestFailedException(
                 "Expected value to be between {$min} and {$max} ({$inclusivity})" . PHP_EOL .
-                    'Actual: ' . ValueExporter::export($actual)
+                    'Actual: ' . ValueExporter::export($value)
             );
         }
     }
@@ -215,7 +215,7 @@ class Assert
         }
     }
 
-    public static function instanceOf($expectedInstance, $object)
+    public static function instanceOf(string $expectedInstance, object $object): void
     {
         if (!($object instanceof $expectedInstance)) {
             throw new TestFailedException(

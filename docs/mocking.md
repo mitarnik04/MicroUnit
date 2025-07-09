@@ -9,11 +9,21 @@ layout: default
 MicroUnit provides a flexible mocking engine.  
 Each method is listed below with its signature and a concise explanation.
 
+For an explanation on how to perform assertions on mocks see [Assertions](assertion.md).
+
+---
+
+## Table of Contents
+
+- **[MockBuilder](#mockbuilder)**
+- **[MicroMock](#micromock)**
+- **[CallLog](#calllog)**
+
 ---
 
 ## MockBuilder
 
-### `create($className)`
+### `create(string $class): self`
 
 Creates a mock builder for the given class.
 
@@ -21,7 +31,7 @@ Creates a mock builder for the given class.
 $mock = MockBuilder::create(SomeClass::class);
 ```
 
-### `returns($method, $value)`
+### `returns(string $method, mixed $value): self`
 
 Sets a return value for a method.
 
@@ -29,7 +39,7 @@ Sets a return value for a method.
 $mockBuilder->returns('getName', 'John');
 ```
 
-### `returnsSequence($method, ...$values)`
+### `returnsSequence(string $method, mixed ...$values): self`
 
 Sets a sequence of return values for a method. It moves from one return value to the next each time the method is called.
 
@@ -43,7 +53,7 @@ $mockBuilder->returnsSequence('next', 'first', 'second', 'third');
 
 ```
 
-### `returnsCallback($method, callable $fn)`
+### `returnsCallback(string $method, callable $fn): self`
 
 Sets a callback that is executed when the method get's called.
 
@@ -51,29 +61,29 @@ Sets a callback that is executed when the method get's called.
 $mockBuilder->returnsCallback('sum', fn($a, $b) => $a + $b);
 ```
 
-### `throws($method, $exception)`
+### `throws(string $method, \Throwable $e): self`
 
-Makes the method throw the given exception.
+Makes the method throw the given throwable.
 
 ```php
 $mockBuilder->throws('fail', new Exception('fail!'));
 ```
 
-### `build()`
+### `build(): MicroMock`
 
 Finalizes and returns the mock object (`MicroUnit\Mocking\MicroMock`).
-
-See upcoming section for information on how that obtained instance can be used.
 
 ```php
 $mock = $mockBuilder->build();
 ```
 
+See [MicroMock section ](#micromock) for information on how that obtained mock object can be used.
+
 ---
 
 ## MicroMock
 
-### `newInstance()`
+### `newInstance(): object`
 
 Creates a new instance of the mocked class.
 
@@ -83,39 +93,31 @@ This instance can be used where an instance of the mocked class is expected.
 $instance = $mock->newInstance();
 ```
 
-### `getCallLog()`
+### `getCallLog(): CallLog`
 
-Returns the call log for the mock.
+Returns the call log for the mock. See [CallLog Section](#calllog) for details.
 
 ```php
 $log = $mock->getCallLog();
 ```
 
-This will give you an array similar to the following sample.
+### `setReturnPlan(string $method, ReturnPlanType $returnType, mixed $return): void`
 
-```php
-[
-    'fooMethod' => [
-        'callLog' => 2, //Number of times the method was called
-        'argLog' => [
-            [1, 2],
-            ['bar' => 'baz'],
-        ], // Arguments passed for each call (argLog[0] = arguments for first call and so on...)
-    ],
-    'barMethod' => [
-        'callLog' => 1,
-        'argLog' => [
-            [],
-        ],
-    ],
-]
-```
+Used by the `MockBuilder` to define the different returns for methods. Calling this method directly on `MicroMock` is not recommended.
 
----
+### `handleCall(string $method, array $args): mixed`
+
+> **⚠️ Warning:** This method is intended for internal use only. Do **not** call it directly.
+
+Invoked internally by the auto-generated methods in mock classes to execute defined behavior and track method calls.
 
 ## CallLog
 
-### `getCallCount($method)`
+A utility class that wraps internal method call data, providing helper methods to access and inspect call details.
+
+> **Note:** For most use cases, it is recommended to validate method calls using the [AssertMock class](assertions.md#assertmock), which uses `Calllog` internally to provide assertion methods for mocks.
+
+### `getCallCount(string $method): int`
 
 Returns the number of times a method was called.
 
@@ -123,12 +125,20 @@ Returns the number of times a method was called.
 $count = $log->getCallCount('foo');
 ```
 
-### `getAllCallArgs($method)`
+### `getAllCallArgs(string $method): array`
 
 Returns all arguments passed to a method.
 
 ```php
 $args = $log->getAllCallArgs('foo');
+```
+
+### `hasCalls(string $method): bool`
+
+Checks if the given method has any calls.
+
+```php
+$args = $log->hasCalls('foo');
 ```
 
 ---

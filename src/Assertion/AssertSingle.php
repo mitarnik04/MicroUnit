@@ -37,7 +37,7 @@ class AssertSingle
         return $this;
     }
 
-    public function instanceOf($expectedInstance): self
+    public function instanceOf(string $expectedInstance): self
     {
         Assert::instanceOf($expectedInstance, $this->source);
         return $this;
