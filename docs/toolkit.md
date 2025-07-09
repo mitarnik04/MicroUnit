@@ -14,7 +14,7 @@ Each tool has a section called "Usage Examples" where a full usage example is pr
 
 ## ValueBundle
 
-`ValueContext` is a simple container for bundling multiple values, especially useful for returning multiple values from `setUp` or test methods. It offers convenient property-style access and supports marking values as read-only to avoid accidental changes.
+A simple container for bundling multiple values, especially useful for returning multiple values from `setUp` or test methods. It offers convenient property-style access and supports marking values as read-only to avoid accidental changes.
 
 You can define and access properties on it, on the fly.
 
