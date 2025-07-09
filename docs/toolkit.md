@@ -21,18 +21,18 @@ You can define and access properties on it, on the fly.
 ```php
 
 $bundle = new ValueBundle();
-$bundle->user = new User('John', 'Smith');
+$bundle->user = new User('John', 'Smith'); // Or use the 'set' method instead.
 
 // Then access it at a later point
 echo $bundle->user->lastname; // outputs: 'Smith'
 ```
 
-To define readonly properties use the `set($name, $value, $readonly = false)` method.
+To define readonly properties use the `set($name, $value, $readonly = false)` method and pass `true` for `$readonly`.
 
 ```php
 
 $bundle = new ValueBundle();
-$bundle->set('user', new User('John', 'Smith'));
+$bundle->set('user', new User('John', 'Smith'), true);
 
 // Then access it at a later point
 echo $bundle->user->lastname; // outputs: 'Smith'
