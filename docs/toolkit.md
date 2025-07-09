@@ -45,7 +45,11 @@ $bundle->user = new User('Mark', 'Stevens'); // throws a RuntimeException
 ### Usage Example
 
 ```php
-use MicroUnit\Toolkit\ValueContext;
+use MicroUnit\Assertion\Assert;
+use MicroUnit\Setup\TestSetup;
+use MicroUnit\Toolkit\ValueBundle;
+
+$tester = TestSetup::getTester("ValueBundle Test Suit");
 
 $tester->setUp(function (): ValueBundle {
     $valueBundle =  new ValueBundle();
@@ -61,5 +65,4 @@ $tester->define("test_value_bundle", function (ValueBundle $values) {
     $values->username = 'OtherUsername'; // Works since it's not readonly
     $values->immutable = 456; // throws a RuntimeException
 });
-
 ```
