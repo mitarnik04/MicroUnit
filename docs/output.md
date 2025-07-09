@@ -9,6 +9,8 @@ layout: default
 MicroUnit supports multiple output writers.  
 Each writer and its methods are listed below with a concise explanation.
 
+One or more output writers can be passed to the microunit configuration (`microunit.config.php`) to **define how the test results should be outputted**. See [Configuration: withTestWriters](configuration.md#withtestwritersitestwriter-writers) and [Configuration: addTestWriter](configuration.md#addtestwriteritestwriter-writer) for more details.
+
 ---
 
 ## Built-in Writers
@@ -35,9 +37,7 @@ new FileTestWriter(__DIR__ . '/tmp/results.log')
 
 Implement the `ITestWriter` interface with the methods below to create a custom writer.
 
-Your custom test writer can then be passed to the configuration just like the build in ones.
-
-> **Note:** See [Configuration: WithTestWriters](configuration.md#withtestwritersitestwriter-writers) and [Configuration: AddTestWriter](configuration.md#addtestwriteritestwriter-writer) for more details.
+Your custom output writer can then be passed to the configuration just like the build in ones.
 
 ### `writeResult(TestResult $result)`
 
