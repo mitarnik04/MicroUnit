@@ -53,12 +53,12 @@ $tester = TestSetup::getTester("ValueBundle Test Suit");
 
 $tester->setUp(function (): ValueBundle {
     $valueBundle =  new ValueBundle();
-    $valueBundle->username = "SomeUsername";
+    $valueBundle->username = 'SomeUsername';
     $valueBundle->set('immutable', 123, true); // define a readonly property
     return $valueBundle;
 });
 
-$tester->define("test_value_bundle", function (ValueBundle $values) {
+$tester->define('test_value_bundle', function (ValueBundle $values) {
     Assert::equals($values->username, 'SomeUsername'); // is successfull !
     Assert::equals($values->immutable, 123); // is successfull !
 
