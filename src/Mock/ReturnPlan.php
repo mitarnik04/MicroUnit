@@ -25,7 +25,7 @@ class ReturnPlan
             ReturnPlanType::FIXED => $this->data,
             ReturnPlanType::SEQUENCE => array_shift($this->sequence),
             ReturnPlanType::CALLBACK => ($this->data)(...$args),
-            ReturnPlanType::EXCEPTION => throw $this->data,
+            ReturnPlanType::THROWABLE => throw $this->data,
             default => null,
         };
     }
