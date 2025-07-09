@@ -21,9 +21,9 @@ You can define and access properties on it, on the fly.
 ```php
 
 $bundle = new ValueBundle();
-$bundle->user = new User('John', 'Smith'); // Or use the 'set' method instead.
+$bundle->user = new User('John', 'Smith'); // or use the 'set' method instead.
 
-// Then access it at a later point
+// then access it at a later point
 echo $bundle->user->lastname; // outputs: 'Smith'
 ```
 
@@ -34,7 +34,7 @@ To define readonly properties use the `set($name, $value, $readonly = false)` me
 $bundle = new ValueBundle();
 $bundle->set('user', new User('John', 'Smith'), true);
 
-// Then access it at a later point
+// then access it at a later point
 echo $bundle->user->lastname; // outputs: 'Smith'
 
 $bundle->user = new User('Mark', 'Stevens'); // throws a RuntimeException
@@ -59,10 +59,10 @@ $tester->setUp(function (): ValueBundle {
 });
 
 $tester->define("test_value_bundle", function (ValueBundle $values) {
-    Assert::equals($values->username, 'SomeUsername'); // Is Successfull
-    Assert::equals($values->immutable, 123); // Is Successfull
+    Assert::equals($values->username, 'SomeUsername'); // is successfull !
+    Assert::equals($values->immutable, 123); // is successfull !
 
-    $values->username = 'OtherUsername'; // Works since it's not readonly
+    $values->username = 'OtherUsername'; // works since it's not readonly
     $values->immutable = 456; // throws a RuntimeException
 });
 ```
