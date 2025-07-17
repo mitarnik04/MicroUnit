@@ -54,7 +54,7 @@ class AssertMockMethod
     }
 
 
-    public function isCalledWith(array $expectedArgs, bool $showActualMethodCallsOnError = false): self
+    public function isCalledWith(array $expectedArgs, bool $showActualMethodCallsOnError = true): self
     {
         $this->assertMock->isCalledWith($this->method, $expectedArgs, $showActualMethodCallsOnError);
         return $this;
@@ -63,6 +63,32 @@ class AssertMockMethod
     public function isCalledWithOnSpecificCall(array $expectedArgs, int $onCall): self
     {
         $this->assertMock->isCalledWithOnSpecificCall($this->method, $expectedArgs, $onCall);
+        return $this;
+    }
+
+    public function isOnlyCalledWith(array $expectedArgs, bool $showActualMethodCallsOnError = true): self
+    {
+        $this->assertMock->isOnlyCalledWith($this->method, $expectedArgs, $showActualMethodCallsOnError);
+        return $this;
+    }
+
+    /** @param callable(array $callArgs): bool $matcher */
+    public function isOnlyCalledWithMatchingArgs(callable $matcher, bool $showActualMethodCallsOnError = true): self
+    {
+        $this->assertMock->isOnlyCalledWithMatchingArgs($this->method, $matcher, $showActualMethodCallsOnError);
+        return $this;
+    }
+
+    /** @param callable(array $callArgs): bool $matcher */
+    public function isCalledWithMatchingOnSpecificCall(callable $matcher, int $onCall): self
+    {
+        $this->assertMock->isCalledWithMatchingOnSpecificCall($this->method, $matcher, $onCall);
+        return $this;
+    }
+
+    public function isCalledOn(int $callNumber): self
+    {
+        $this->assertMock->isCalledOn($this->method, $callNumber);
         return $this;
     }
 }

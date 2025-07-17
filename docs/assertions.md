@@ -466,19 +466,17 @@ AssertMock::begin($mock)->isCalledLessThan('foo', 3);
 
 ---
 
-### `isCalledWith(string $method, array $args, bool $showActualMethodCallsOnError = false): self`
+### `isCalledWith(string $method, array $args, bool $showActualMethodCallsOnError = true): self`
 
-Asserts that the specified method was called **with the given arguments** at least once.
+Asserts that the method was called **at least once** with the given arguments.
 
-- Use `$showActualMethodCallsOnError` to include actual arguments in failure messages.
+If `$showActualMethodCallsOnError` is set to `false` the actual method calls along with their arguments are not going to be printed in the erorr message. This saves a bit of time when executing the test.
 
 **Example:**
 
 ```php
 AssertMock::begin($mock)->isCalledWith('bar', [1, 2]);
 ```
-
----
 
 ### `isCalledWithOnSpecificCall(string $method, array $args, int $onCall): self`
 
@@ -490,7 +488,77 @@ Asserts that the method was called with the given arguments **on a specific call
 AssertMock::begin($mock)->isCalledWithOnSpecificCall('foo', ['arg'], 2);
 ```
 
----
+### `isOnlyCalledWith(string $method, array $expectedArgs, bool $showActualMethodCallsOnError = true): self` ![Not Yet Released](https://img.shields.io/badge/status-not%20yet%20released-red)
+
+_This method will be available in the next release._
+
+Asserts that the method was **only** called with the given arguments.
+
+If `$showActualMethodCallsOnError` is set to `false` the actual method calls along with their arguments are not going to be printed in the erorr message. This saves a bit of time when executing the test.
+
+**Example:**
+
+```php
+AssertMock::begin($mock)->isOnlyCalledWith('bar', [1, 2]);
+```
+
+### `isOnlyCalledWithMatchingArgs(string $method, callable $matcher, bool $showActualMethodCallsOnError = true): self` ![Not Yet Released](https://img.shields.io/badge/status-not%20yet%20released-red)
+
+_This method will be available in the next release._
+
+Asserts that the method was **only** called with arguments where `$matcher` returns `true`.
+
+If `$showActualMethodCallsOnError` is set to `false` the actual method calls along with their arguments are not going to be printed in the erorr message. This saves a bit of time when executing the test.
+
+**Example:**
+
+```php
+AssertMock::begin($mock)->isOnlyCalledWithMatchingArgs('bar', function (array $args): bool {
+                    $arg1 = $args[0];
+                    $arg2 = $args[1];
+
+                    if ($arg1 !== 'foo') {
+                        return false;
+                    }
+
+                    if ($arg2 !== 15 || $arg2 !== 7) {
+                        return false;
+                    }
+
+                    return true;
+                });
+```
+
+### `isCalledWithMatchingOnSpecificCall(string $method, callable $matcher, int $onCall): self` ![Not Yet Released](https://img.shields.io/badge/status-not%20yet%20released-red)
+
+_This method will be available in the next release._
+
+Asserts that the method was called with arguments where `$matcher` returns `true` **on a specifc call**.
+
+**Example:**
+
+```php
+AssertMock::begin($mock)->isOnlyCalledWithMatchingArgs('bar', function (array $args): bool {
+                    $arg1 = $args[0];
+                    $arg2 = $args[1];
+
+                    if ($arg1 !== 'foo') {
+                        return false;
+                    }
+
+                    return true;
+                }, 2) // -> Only relevant when method is called the second time !
+```
+
+### `isCalledOn(string $method, int $callNumber): self` ![Not Yet Released](https://img.shields.io/badge/status-not%20yet%20released-red)
+
+_This method will be available in the next release._
+
+Checks that the method was called at a **specific point** across all method calls made on the mock.
+
+```php
+AssertMock::begin($mock)->isCalledOn('bar', 2) // 'bar' has to be the second method that get's called on the mock
+```
 
 ### `checkMethod(string $method, callable $assertMethod): self`
 
@@ -554,15 +622,45 @@ Asserts that the method was called less than `$maxCallCount` times.
 
 ---
 
-### `isCalledWith(array $expectedArgs, bool $showActualMethodCallsOnError = false): self`
+### `isCalledWith(array $expectedArgs, bool $showActualMethodCallsOnError = true): self`
 
-Asserts that the method was called with the given arguments at least once.
+Asserts that the method was called at least once with the given arguments.
+
+if `$showActualMethodCallsOnError` is set to `false` the actual method calls and their arguments are not going to be printed in the error message. This saves a bit of time when executing the test.
 
 ---
 
 ### `isCalledWithOnSpecificCall(array $expectedArgs, int $onCall): self`
 
 Asserts that the method was called with the given arguments on a specific call number.
+
+### `isOnlyCalledWith(array $expectedArgs, bool $showActualMethodCallsOnError = true): self` ![Not Yet Released](https://img.shields.io/badge/status-not%20yet%20released-red)
+
+_This method will be available in the next release._
+
+Asserts that the method was **only** called with the given arguments.
+
+If `$showActualMethodCallsOnError` is set to `false` the actual method calls along with their arguments are not going to be printed in the erorr message. This saves a bit of time when executing the test.
+
+### `isOnlyCalledWithMatchingArgs(callable $matcher, bool $showActualMethodCallsOnError = true): self` ![Not Yet Released](https://img.shields.io/badge/status-not%20yet%20released-red)
+
+_This method will be available in the next release._
+
+Asserts that the method was **only** called with arguments where `$matcher` returns `true`.
+
+If `$showActualMethodCallsOnError` is set to `false` the actual method calls along with their arguments are not going to be printed in the erorr message. This saves a bit of time when executing the test.
+
+### `isCalledWithMatchingOnSpecificCall(callable $matcher, int $onCall): self` ![Not Yet Released](https://img.shields.io/badge/status-not%20yet%20released-red)
+
+_This method will be available in the next release._
+
+Asserts that the method was called with arguments where `$matcher` returns `true` **on a specifc call**.
+
+### `isCalledOn(string $method, int $callNumber): self` ![Not Yet Released](https://img.shields.io/badge/status-not%20yet%20released-red)
+
+_This method will be available in the next release._
+
+Checks that the method was called at a **specific point** across all method calls made on the mock.
 
 ---
 

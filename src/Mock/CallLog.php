@@ -5,6 +5,7 @@ namespace MicroUnit\Mock;
 class CallLog
 {
     private array $callLog = [];
+    private array $callSequence = [];
 
     public function addCall(string $method, array $callArgs = []): void
     {
@@ -17,6 +18,7 @@ class CallLog
 
         $this->callLog[$method]['argLog'][] = $callArgs;
         $this->callLog[$method]['callLog']++;
+        $this->callSequence[] = $method;
     }
 
     public function getCallCount(string $method): int
@@ -32,5 +34,11 @@ class CallLog
     public function hasCalls(string $method): bool
     {
         return !empty($this->callLog[$method]['callLog']);
+    }
+
+    /** @return array<string> */
+    public function getCallSequence(): array
+    {
+        return $this->callSequence;
     }
 }

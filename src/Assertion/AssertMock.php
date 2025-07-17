@@ -85,7 +85,7 @@ class AssertMock
     }
 
     /** @param array<mixed> $expectedArgs */
-    public function isCalledWith(string $method, array $expectedArgs, bool $showActualMethodCallsOnError = false): self
+    public function isCalledWith(string $method, array $expectedArgs, bool $showActualMethodCallsOnError = true): self
     {
         $allCallArgs = $this->callLog->getAllCallArgs($method);
         foreach ($allCallArgs as $callArgs) {
@@ -95,7 +95,7 @@ class AssertMock
             }
         }
         if (!$matched) {
-            $message = "Expected {$method} to be called with " . ValueExporter::export($expectedArgs);
+            $message = "Expected method '$method' to be called with: " . ValueExporter::export($expectedArgs);
             if ($showActualMethodCallsOnError) {
                 $message .= PHP_EOL .
                     'Actually called with: ' . ValueExporter::export($allCallArgs);
@@ -113,8 +113,78 @@ class AssertMock
         if ($callArgs !== $expectedArgs) {
             $diff = Diff::generate(ValueExporter::export($expectedArgs), ValueExporter::export($callArgs));
 
-            throw new TestFailedException("Method $method on call $onCall was not called with specified arguments" . PHP_EOL
+            throw new TestFailedException("Method '$method' on call $onCall was not called with specified arguments" . PHP_EOL
                 . ValueExporter::export($diff));
+        }
+
+        return $this;
+    }
+
+    public function isOnlyCalledWith(string $method, array $expectedArgs, bool $showActualMethodCallsOnError = true): self
+    {
+        $allCallArgs = $this->callLog->getAllCallArgs($method);
+        $matched = true;
+        foreach ($allCallArgs as $callArgs) {
+            if ($callArgs !== $expectedArgs) {
+                $matched = false;
+                break;
+            }
+        }
+        if (!$matched) {
+            $message = "Expected method '$method' to only be called with: " . ValueExporter::export($expectedArgs);
+            if ($showActualMethodCallsOnError) {
+                $message .= PHP_EOL .
+                    'Actually called with: ' . ValueExporter::export($allCallArgs);
+            }
+            throw new TestFailedException($message);
+        }
+
+        return $this;
+    }
+
+    /** @param callable(array $callArgs): bool $matcher */
+    public function isOnlyCalledWithMatchingArgs(string $method, callable $matcher, bool $showActualMethodCallsOnError = true): self
+    {
+        $allCallArgs = $this->callLog->getAllCallArgs($method);
+        $matched = true;
+        foreach ($allCallArgs as $callArgs) {
+            if (!$matcher($callArgs)) {
+                $matched = false;
+                break;
+            }
+        }
+        if (!$matched) {
+            $message = "Expected '$method' to only be called with arguments matching the callable conditions";
+            if ($showActualMethodCallsOnError) {
+                $message .= PHP_EOL .
+                    'Actually called with: ' . ValueExporter::export($allCallArgs);
+            }
+            throw new TestFailedException($message);
+        }
+
+        return $this;
+    }
+
+    /** @param callable(array $callArgs): bool $matcher */
+    public function isCalledWithMatchingOnSpecificCall(string $method, callable $matcher, int $onCall): self
+    {
+        $callArgs = $this->callLog->getAllCallArgs($method)[$onCall - 1];
+        if (!$matcher($callArgs)) {
+            throw new TestFailedException("Arguments passed to method '$method' on call $onCall did not match callable conditions" . PHP_EOL
+                . 'Actual args: ' . ValueExporter::export($callArgs));
+        }
+
+        return $this;
+    }
+
+
+    public function isCalledOn(string $method, int $callNumber): self
+    {
+        $callSequence = $this->callLog->getCallSequence();
+        $actualCalledMethod = $callSequence[$callNumber - 1];
+        if ($actualCalledMethod !== $method) {
+            throw new TestFailedException("Method '$method' was not called on call $callNumber.
+Actual called method: '$actualCalledMethod'");
         }
 
         return $this;
