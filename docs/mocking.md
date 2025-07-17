@@ -192,6 +192,17 @@ Checks if the given method has any calls.
 $args = $log->hasCalls('foo');
 ```
 
+### `getCallSequence(): array`
+
+Returns the full call sequence for all method calls made on the mock.
+
+```php
+$sequence = $log->getCallSequence();
+
+echo $sequence;
+// Prints something like: ['foo', 'bar', 'foo', 'foo']
+```
+
 ---
 
 # Full Example

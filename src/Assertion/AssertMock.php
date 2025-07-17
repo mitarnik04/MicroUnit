@@ -41,7 +41,8 @@ class AssertMock
 
     public function isNotCalled(string $method): self
     {
-        return $this->isCalledTimes($method, 0);
+        !$this->callLog->hasCalls($method);
+        return $this;
     }
 
     public function isCalledAtLeast(string $method, int $minCallCount): self
