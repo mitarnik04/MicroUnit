@@ -28,7 +28,9 @@ MicroUnit is a modern, high-performance unit testing framework for PHP 8+. It’
 
 ## Why Choose MicroUnit?
 
-MicroUnit tries to provide a different take on Unit Testing. Giving the user more freedom in choosing the way his tests outputs look and even giving a couple options in how you want to write your tests while still providing all the crucial features you need in a Unit Testing Framework. The focus clearly lies on simplicity, speed and a zero dependency philosophy without loosing out on functionality.
+MicroUnit tries to provide a different take on Unit Testing. Giving the user more freedom in choosing the way his test outputs look and even giving a couple options as to how you want to write your tests while still providing all the crucial features you need in a Unit Testing Framework.
+
+The focus clearly lies on simplicity, speed and a zero dependency philosophy without loosing out on functionality.
 
 ---
 
@@ -422,20 +424,6 @@ bin/
     run-tests.php
     run_logs/
 ```
-
----
-
-MicroUnit isn’t just another testing framework, it’s a fresh take on what PHP testing should be. If you’re tired of slow test suites, cryptic configuration files, and frameworks that feel stuck in the past, MicroUnit is for you.
-
-- **Lightning Fast:** Smart, recursive test discovery and instant execution.
-- **Zero Bloat:** No unnecessary dependencies or legacy code.
-- **Modern PHP:** Built for PHP 8+, leveraging the latest language features.
-- **Developer Experience First:** Clear error messages, beautiful diffs, and a fluent API.
-- **All-in-One:** Mocking, assertions, setup/teardown, and output customization built-in.
-- **Effortless Integration:** Seamless CI/CD support and multiple output formats.
-- **Extensible:** Easily add your own custom test writers and assertions.
-
----
 
 ## Become a Sponsor
 
