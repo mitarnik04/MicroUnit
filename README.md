@@ -13,7 +13,7 @@ See [Full Documentation](https://mitarnik04.github.io/MicroUnit/) for an in-dept
 [![PHP Version](https://img.shields.io/badge/php-8.0%2B-blue.svg)](https://www.php.net/)
 [![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)](#)
 [![Beta](https://img.shields.io/badge/status-beta-yellow.svg)](#)
-[![buymeacoffee](https://img.shields.io/badge/donate-buy_me_a_coffee-ffdd00?style=flat&logo=buy-me-a-coffee&logoColor=black)](https://coff.ee/mitarnikolic)
+[![Sponsor](https://img.shields.io/github/sponsors/mitarnik04?label=Sponsor&logo=GitHub)](https://github.com/sponsors/mitarnik04)
 
 ---
 
@@ -55,8 +55,13 @@ By sponsoring MicroUnit, you're investing in the future of PHP development: fast
 ❤️ Be part of a growing movement to modernize PHP for the next generation
 
 Ready to lead the charge?  
-I am currently working on publishing my github sponsors page. Since that page is not live yet, you can use the link below if you wish to sponsor the project. **Any donation is very much appreciated and will be listed in this readme**.  
+I have finally managed to publish my **github sponsors** profile so donations can now be made through there!  
+[![Sponsor](https://img.shields.io/github/sponsors/mitarnik04?label=Sponsor&logo=GitHub)](https://github.com/sponsors/mitarnik04)
+
+If you prefer a one-time contribution, you can also buy me a coffee &rarr; MicroUnit runs on PHP, but the maintainer runs on caffeine.  
 [![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-orange?style=for-the-badge&logo=buy-me-a-coffee&logoColor=white)](https://coff.ee/mitarnikolic)
+
+**Any donation is very much appreciated and will be listed on the [official documentation site](https://mitarnik04.github.io/MicroUnit)**.
 
 ---
 
