@@ -28,40 +28,7 @@ MicroUnit is a modern, high-performance unit testing framework for PHP 8+. It’
 
 ## Why Choose MicroUnit?
 
-MicroUnit isn’t just another testing framework, it’s a fresh take on what PHP testing should be. If you’re tired of slow test suites, cryptic configuration files, and frameworks that feel stuck in the past, MicroUnit is for you.
-
-- **Lightning Fast:** Smart, recursive test discovery and instant execution.
-- **Zero Bloat:** No unnecessary dependencies or legacy code.
-- **Modern PHP:** Built for PHP 8+, leveraging the latest language features.
-- **Developer Experience First:** Clear error messages, beautiful diffs, and a fluent API.
-- **All-in-One:** Mocking, assertions, setup/teardown, and output customization built-in.
-- **Effortless Integration:** Seamless CI/CD support and multiple output formats.
-- **Extensible:** Easily add your own custom test writers and assertions.
-
----
-
-## Become a Sponsor
-
-MicroUnit isn’t just another testing tool, it’s the foundation for serious, modern PHP testing. No matter if you are building a professional-grade software or just a small library with PHP 8+, MicroUnit is built for your stack, your speed, and your standards.
-
-By sponsoring MicroUnit, you're investing in the future of PHP development: faster test cycles, clearer code, and a cleaner ecosystem, without the legacy baggage.
-
-🙌 Keep MicroUnit free, open-source, and evolving at full speed.
-
-📢 Get recognized on our GitHub and website as a key supporter
-
-🧑‍💻 Help shape the roadmap and gain direct influence on upcoming features
-
-❤️ Be part of a growing movement to modernize PHP for the next generation
-
-Ready to lead the charge?  
-I have finally managed to publish my **github sponsors** profile so donations can now be made through there!  
-[![Sponsor](https://img.shields.io/github/sponsors/mitarnik04?label=Sponsor&logo=GitHub)](https://github.com/sponsors/mitarnik04)
-
-If you prefer a one-time contribution, you can also buy me a coffee &rarr; MicroUnit runs on PHP, but the maintainer runs on caffeine.  
-[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-orange?style=for-the-badge&logo=buy-me-a-coffee&logoColor=white)](https://coff.ee/mitarnikolic)
-
-**Any donation is very much appreciated and will be listed on the [official documentation site](https://mitarnik04.github.io/MicroUnit)**.
+MicroUnit tries to provide a different take on Unit Testing. Giving the user more freedom in choosing the way his tests outputs look and even giving a couple options in how you want to write your tests while still providing all the crucial features you need in a Unit Testing Framework. The focus clearly lies on simplicity, speed and a zero dependency philosophy without loosing out on functionality.
 
 ---
 
@@ -98,22 +65,6 @@ Per-suite and per-test setup/teardown hooks. Pass setup results directly to your
 ### 📦 Zero-Dependency, Composer-Friendly
 
 Install with Composer and get started in seconds.
-
----
-
-## MicroUnit vs. Popular Alternatives
-
-| Feature              | MicroUnit     | PHPUnit       | Pest        | Codeception |
-| -------------------- | ------------- | ------------- | ----------- | ----------- |
-| Modern PHP Support   | ✅ (PHP 8+)   | ⚠️ (Legacy)   | ✅          | ⚠️          |
-| Fluent Assertions    | ✅            | ⚠️            | ✅          | ⚠️          |
-| Built-in Mocking     | ✅            | ⚠️ (Separate) | ⚠️ (Plugin) | ⚠️ (Plugin) |
-| Config in PHP        | ✅            | ❌ (XML)      | ✅          | ⚠️          |
-| Output Customization | ✅            | ⚠️            | ⚠️          | ⚠️          |
-| Zero Bloat           | ✅            | ❌            | ⚠️          | ❌          |
-| Fast Startup         | ✅            | ❌            | ✅          | ❌          |
-| Test Discovery       | ✅ (Glob/Rec) | ✅            | ✅          | ✅          |
-| Extensible           | ✅            | ✅            | ✅          | ✅          |
 
 ---
 
@@ -474,6 +425,43 @@ bin/
 
 ---
 
+MicroUnit isn’t just another testing framework, it’s a fresh take on what PHP testing should be. If you’re tired of slow test suites, cryptic configuration files, and frameworks that feel stuck in the past, MicroUnit is for you.
+
+- **Lightning Fast:** Smart, recursive test discovery and instant execution.
+- **Zero Bloat:** No unnecessary dependencies or legacy code.
+- **Modern PHP:** Built for PHP 8+, leveraging the latest language features.
+- **Developer Experience First:** Clear error messages, beautiful diffs, and a fluent API.
+- **All-in-One:** Mocking, assertions, setup/teardown, and output customization built-in.
+- **Effortless Integration:** Seamless CI/CD support and multiple output formats.
+- **Extensible:** Easily add your own custom test writers and assertions.
+
+---
+
+## Become a Sponsor
+
+MicroUnit isn’t just another testing tool, it’s the foundation for serious, modern PHP testing. No matter if you are building a professional-grade software or just a small library with PHP 8+, MicroUnit is built for your stack, your speed, and your standards.
+
+By sponsoring MicroUnit, you're investing in the future of PHP development: faster test cycles, clearer code, and a cleaner ecosystem, without the legacy baggage.
+
+🙌 Keep MicroUnit free, open-source, and evolving at full speed.
+
+📢 Get recognized on our GitHub and website as a key supporter
+
+🧑‍💻 Help shape the roadmap and gain direct influence on upcoming features
+
+❤️ Be part of a growing movement to modernize PHP for the next generation
+
+Ready to lead the charge?  
+I have finally managed to publish my **github sponsors** profile so donations can now be made through there!  
+[![Sponsor](https://img.shields.io/github/sponsors/mitarnik04?label=Sponsor&logo=GitHub)](https://github.com/sponsors/mitarnik04)
+
+If you prefer a one-time contribution, you can also buy me a coffee &rarr; MicroUnit runs on PHP, but the maintainer runs on caffeine.  
+[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-orange?style=for-the-badge&logo=buy-me-a-coffee&logoColor=white)](https://coff.ee/mitarnikolic)
+
+**Any donation is very much appreciated and will be listed on the [official documentation site](https://mitarnik04.github.io/MicroUnit)**.
+
+---
+
 ## Upcoming Features
 
 Listed below are the features for MicroUnit that are on the roadmap for being released in the upcoming versions.
@@ -512,7 +500,7 @@ For questions or support, open an issue or contact the maintainers.
 
 ---
 
-## Ready to Ditch the Bloat?
+## Do you enjoy this take on Unit Tests?
 
 **MicroUnit** is for developers who want to test smarter, not harder.  
 No legacy, no plugins, no config files &rarr; just pure, modern PHP testing.
