@@ -1,3 +1,5 @@
+![MicroUnit Banner](images//microunit_banner_wide.png "MicroUnit")
+
 # MicroUnit
 
 **Minimal. Modern. Mighty.**  
