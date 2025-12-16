@@ -425,6 +425,8 @@ bin/
     run_logs/
 ```
 
+---
+
 ## Become a Sponsor
 
 MicroUnit isn’t just another testing tool, it’s the foundation for serious, modern PHP testing. No matter if you are building a professional-grade software or just a small library with PHP 8+, MicroUnit is built for your stack, your speed, and your standards.
