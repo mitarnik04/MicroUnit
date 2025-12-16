@@ -488,9 +488,7 @@ Asserts that the method was called with the given arguments **on a specific call
 AssertMock::begin($mock)->isCalledWithOnSpecificCall('foo', ['arg'], 2);
 ```
 
-### `isOnlyCalledWith(string $method, array $expectedArgs, bool $showActualMethodCallsOnError = true): self` ![Not Yet Released](https://img.shields.io/badge/status-not%20yet%20released-red)
-
-_This method will be available in the next release._
+### `isOnlyCalledWith(string $method, array $expectedArgs, bool $showActualMethodCallsOnError = true): self`
 
 Asserts that the method was **only** called with the given arguments.
 
@@ -502,9 +500,7 @@ If `$showActualMethodCallsOnError` is set to `false` the actual method calls alo
 AssertMock::begin($mock)->isOnlyCalledWith('bar', [1, 2]);
 ```
 
-### `isOnlyCalledWithMatchingArgs(string $method, callable $matcher, bool $showActualMethodCallsOnError = true): self` ![Not Yet Released](https://img.shields.io/badge/status-not%20yet%20released-red)
-
-_This method will be available in the next release._
+### `isOnlyCalledWithMatchingArgs(string $method, callable $matcher, bool $showActualMethodCallsOnError = true): self`
 
 Asserts that the method was **only** called with arguments where `$matcher` returns `true`.
 
@@ -529,9 +525,7 @@ AssertMock::begin($mock)->isOnlyCalledWithMatchingArgs('bar', function (array $a
                 });
 ```
 
-### `isCalledWithMatchingOnSpecificCall(string $method, callable $matcher, int $onCall): self` ![Not Yet Released](https://img.shields.io/badge/status-not%20yet%20released-red)
-
-_This method will be available in the next release._
+### `isCalledWithMatchingOnSpecificCall(string $method, callable $matcher, int $onCall): self`
 
 Asserts that the method was called with arguments where `$matcher` returns `true` **on a specifc call**.
 
@@ -550,9 +544,7 @@ AssertMock::begin($mock)->isOnlyCalledWithMatchingArgs('bar', function (array $a
                 }, 2) // -> Only relevant when method is called the second time !
 ```
 
-### `isCalledOn(string $method, int $callNumber): self` ![Not Yet Released](https://img.shields.io/badge/status-not%20yet%20released-red)
-
-_This method will be available in the next release._
+### `isCalledOn(string $method, int $callNumber): self`
 
 Checks that the method was called at a **specific point** across all method calls made on the mock.
 
@@ -634,31 +626,23 @@ if `$showActualMethodCallsOnError` is set to `false` the actual method calls and
 
 Asserts that the method was called with the given arguments on a specific call number.
 
-### `isOnlyCalledWith(array $expectedArgs, bool $showActualMethodCallsOnError = true): self` ![Not Yet Released](https://img.shields.io/badge/status-not%20yet%20released-red)
-
-_This method will be available in the next release._
+### `isOnlyCalledWith(array $expectedArgs, bool $showActualMethodCallsOnError = true): self`
 
 Asserts that the method was **only** called with the given arguments.
 
 If `$showActualMethodCallsOnError` is set to `false` the actual method calls along with their arguments are not going to be printed in the erorr message. This saves a bit of time when executing the test.
 
-### `isOnlyCalledWithMatchingArgs(callable $matcher, bool $showActualMethodCallsOnError = true): self` ![Not Yet Released](https://img.shields.io/badge/status-not%20yet%20released-red)
-
-_This method will be available in the next release._
+### `isOnlyCalledWithMatchingArgs(callable $matcher, bool $showActualMethodCallsOnError = true): self`
 
 Asserts that the method was **only** called with arguments where `$matcher` returns `true`.
 
 If `$showActualMethodCallsOnError` is set to `false` the actual method calls along with their arguments are not going to be printed in the erorr message. This saves a bit of time when executing the test.
 
-### `isCalledWithMatchingOnSpecificCall(callable $matcher, int $onCall): self` ![Not Yet Released](https://img.shields.io/badge/status-not%20yet%20released-red)
-
-_This method will be available in the next release._
+### `isCalledWithMatchingOnSpecificCall(callable $matcher, int $onCall): self`
 
 Asserts that the method was called with arguments where `$matcher` returns `true` **on a specifc call**.
 
-### `isCalledOn(string $method, int $callNumber): self` ![Not Yet Released](https://img.shields.io/badge/status-not%20yet%20released-red)
-
-_This method will be available in the next release._
+### `isCalledOn(string $method, int $callNumber): self`
 
 Checks that the method was called at a **specific point** across all method calls made on the mock.
 

@@ -70,9 +70,7 @@ Makes the method throw the given throwable.
 $mockBuilder->throws('fail', new Exception('fail!'));
 ```
 
-### `keepOriginalMethodBehaviour(string $method): self` ![Not Yet Released](https://img.shields.io/badge/status-not%20yet%20released-red)
-
-_This method will be available in the next release._
+### `keepOriginalMethodBehaviour(string $method): self`
 
 Enables execution of the original method logic contained inside the class to be mocked.
 
@@ -82,9 +80,7 @@ if no custom return is defined the method will return its original return value.
 $mock = $mockBuilder->keepOriginalMethodBehaviour('foo');
 ```
 
-### `disableOriginalConstructor(): self` ![Not Yet Released](https://img.shields.io/badge/status-not%20yet%20released-red)
-
-_This method will be available in the next release._
+### `disableOriginalConstructor(): self`
 
 Defines that when creating a mock instance the original constructor of the mocked class should not be called.
 
@@ -92,9 +88,7 @@ Defines that when creating a mock instance the original constructor of the mocke
 $mock = $mockBuilder->disableOrginalConstructor();
 ```
 
-### `executeInConstructor(callable $fn): self` ![Not Yet Released](https://img.shields.io/badge/status-not%20yet%20released-red)
-
-_This method will be available in the next release._
+### `executeInConstructor(callable $fn): self`
 
 Sets a callable that will be executed inside the constructor.
 If the original constructor is getting called the callable will be executed after the original constructor was called.  
@@ -106,9 +100,7 @@ $mock = $mockBuilder->executeInConstructor(function (array $constructorArgs) {
         });
 ```
 
-### `withConstructorArgs(array $args): self` ![Not Yet Released](https://img.shields.io/badge/status-not%20yet%20released-red)
-
-_This method will be available in the next release._
+### `withConstructorArgs(array $args): self`
 
 Sets the arguments that are going to be passed to the constructor and original constructor when an instance of the mocked class is created.
 
@@ -142,9 +134,7 @@ This instance can be used where an instance of the mocked class is expected.
 $instance = $mock->newInstance();
 ```
 
-### `newAlternateInstance(array $constructorArgs): object` ![Not Yet Released](https://img.shields.io/badge/status-not%20yet%20released-red)
-
-_This method will be available in the next release._
+### `newAlternateInstance(array $constructorArgs): object`
 
 Creates an alternate instance of the mocked class using the specified constructor arguments instead of the ones defined during mock building (via `$mockBuilder->withConstructorArgs(array $args)`).
 
