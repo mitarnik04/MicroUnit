@@ -11,23 +11,20 @@ class Diff
 
     /**
      * Generate a simple line-by-line diff similar to xdiff_string_diff.
-     * @return string A unified diff string.
      */
-    public static function generate(string $expected, string $actual): Diff
+    public static function generate(mixed $expected, mixed $actual): Diff
     {
-        $expectedLines = explode("\n", $expected);
-        $actualLines = explode("\n", $actual);
+        $expectedLines = explode("\n",  ValueExporter::export($expected));
+        $actualLines = explode("\n", ValueExporter::export($actual));
 
-        $expectedCount = count($expectedLines);
-        $actualCount = count($actualLines);
-        $max = $expectedCount > $actualCount ? $expectedCount : $actualCount;
+        $max = max(count($expectedLines), count($actualLines));
 
         /** @var array<DiffLine> */
         $diffLines = [];
 
         for ($i = 0; $i < $max; ++$i) {
-            $e = trim($expectedLines[$i], "\n\r");
-            $a = trim($actualLines[$i], "\n\r");
+            $e = $expectedLines[$i];
+            $a = $actualLines[$i];
 
             if ($e === $a) {
                 $diffLines[] = new DiffLine(DiffLineType::Same, $e);
@@ -37,7 +34,7 @@ class Diff
                 $diffLines[] = new DiffLine(DiffLineType::ExpectedDifferent, $e);
             }
             if ($a !== null) {
-                $diffLines[] = new DiffLine(DiffLineType::AcutalDifferent, $a);
+                $diffLines[] = new DiffLine(DiffLineType::ActualDifferent, $a);
             }
         }
 

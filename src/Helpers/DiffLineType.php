@@ -6,5 +6,5 @@ enum DiffLineType
 {
     case Same;
     case ExpectedDifferent;
-    case AcutalDifferent;
+    case ActualDifferent;
 }

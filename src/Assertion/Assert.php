@@ -2,20 +2,23 @@
 
 namespace MicroUnit\Assertion;
 
-use MicroUnit\Helpers\Diff;
-use MicroUnit\Helpers\ValueExporter;
 use MicroUnit\Exceptions\TestFailedException;
+use MicroUnit\Assertion\AssertionFailure;
+use MicroUnit\Helpers\Diff;
 
-class Assert
+final class Assert
 {
     //Single-Value
     public static function equals(mixed $expected, mixed $actual): void
     {
         if ($expected != $actual) {
-            $diff = Diff::generate(ValueExporter::export($expected), ValueExporter::export($actual));
             throw new TestFailedException(
-                'The provided two values are not equal' . PHP_EOL
-                    . ValueExporter::export($diff)
+                new AssertionFailure(
+                    'Expected values to be equal',
+                    $expected,
+                    $actual,
+                    Diff::generate($expected, $actual)
+                )
             );
         }
     }
@@ -24,8 +27,11 @@ class Assert
     {
         if ($unexpected == $actual) {
             throw new TestFailedException(
-                'Expected two values to be not equal. But actually they are' . PHP_EOL .
-                    'Value: ' . ValueExporter::export($unexpected)
+                new AssertionFailure(
+                    'Expected values to not be equal',
+                    $unexpected,
+                    $actual
+                )
             );
         }
     }
@@ -33,20 +39,26 @@ class Assert
     public static function exact(mixed $expected, mixed $actual): void
     {
         if ($expected !== $actual) {
-            $diff = Diff::generate(ValueExporter::export($expected), ValueExporter::export($actual));
             throw new TestFailedException(
-                'The provided two values are not exactly equal (type, value)' . PHP_EOL
-                    .  ValueExporter::export($diff)
+                new AssertionFailure(
+                    'Expected values to be exactly equal (type and value)',
+                    $expected,
+                    $actual,
+                    Diff::generate($expected, $actual)
+                )
             );
         }
     }
 
-    public static function notExact(mixed $unexpected, $actual): void
+    public static function notExact(mixed $unexpected, mixed $actual): void
     {
         if ($unexpected === $actual) {
             throw new TestFailedException(
-                'Expected two values to not be exactly equal (type, value). But actually they are' . PHP_EOL
-                    . 'Value: ' . ValueExporter::export($unexpected)
+                new AssertionFailure(
+                    'Expected values to not be exactly equal (type and value)',
+                    $unexpected,
+                    $actual
+                )
             );
         }
     }
@@ -55,8 +67,11 @@ class Assert
     {
         if ($value !== true) {
             throw new TestFailedException(
-                'Expected TRUE' . PHP_EOL .
-                    'Got: ' . ValueExporter::export($value)
+                new AssertionFailure(
+                    'Expected value to be TRUE',
+                    true,
+                    $value
+                )
             );
         }
     }
@@ -65,8 +80,11 @@ class Assert
     {
         if ($value !== false) {
             throw new TestFailedException(
-                'Expected FALSE' . PHP_EOL .
-                    'Got: ' . ValueExporter::export($value)
+                new AssertionFailure(
+                    'Expected value to be FALSE',
+                    false,
+                    $value
+                )
             );
         }
     }
@@ -75,8 +93,11 @@ class Assert
     {
         if ($value !== null) {
             throw new TestFailedException(
-                'Expected value to be NULL.' . PHP_EOL .
-                    'Got: ' . ValueExporter::export($value)
+                new AssertionFailure(
+                    'Expected value to be NULL',
+                    null,
+                    $value
+                )
             );
         }
     }
@@ -84,42 +105,55 @@ class Assert
     public static function notNull(mixed $value): void
     {
         if ($value === null) {
-            throw new TestFailedException('Expected NOT NULL but got NULL.');
+            throw new TestFailedException(
+                new AssertionFailure(
+                    'Expected value to be NOT NULL',
+                    actual: $value
+                )
+            );
         }
     }
 
     //Numeric 
-    public static function isGreaterThan(int | float $value, int | float $min): void
+    public static function isGreaterThan(int|float $value, int|float $min): void
     {
-        if (!($value > $min)) {
+        if ($value <= $min) {
             throw new TestFailedException(
-                'Expected value to be greater than ' . ValueExporter::export($min) . PHP_EOL .
-                    'Actual: ' . ValueExporter::export($value)
+                new AssertionFailure(
+                    "Expected value to be greater than $min",
+                    "> $min",
+                    $value
+                )
             );
         }
     }
 
-    public static function isLessThan(int | float  $value, int | float  $max): void
+    public static function isLessThan(int|float $value, int|float $max): void
     {
-        if (!($value < $max)) {
+        if ($value >= $max) {
             throw new TestFailedException(
-                'Expected value to be less than ' . ValueExporter::export($max) . PHP_EOL .
-                    'Actual: ' . ValueExporter::export($value)
+                new AssertionFailure(
+                    "Expected value to be less than $max",
+                    "< $max",
+                    $value
+                )
             );
         }
     }
 
-    public static function isBetween(int | float  $min, int | float  $max, int | float  $value, bool $inclusive = true): void
+    public static function isBetween(int|float $min, int|float $max, int|float $value, bool $inclusive = true): void
     {
         $ok = $inclusive
             ? ($value >= $min && $value <= $max)
             : ($value > $min && $value < $max);
 
         if (!$ok) {
-            $inclusivity = $inclusive ? 'inclusive' : 'exclusive';
             throw new TestFailedException(
-                "Expected value to be between {$min} and {$max} ({$inclusivity})" . PHP_EOL .
-                    'Actual: ' . ValueExporter::export($value)
+                new AssertionFailure(
+                    "Expected value to be between {$min} and {$max}" . ($inclusive ? ' (inclusive)' : ' (exclusive)'),
+                    actual: $value,
+                    metadata: ['inclusive' => $inclusive]
+                )
             );
         }
     }
@@ -129,8 +163,11 @@ class Assert
     {
         if (!empty($array)) {
             throw new TestFailedException(
-                'Expected array to be EMPTY.' . PHP_EOL .
-                    'Actual: ' . ValueExporter::export($array)
+                new AssertionFailure(
+                    'Expected array to be EMPTY',
+                    null,
+                    $array
+                )
             );
         }
     }
@@ -139,8 +176,10 @@ class Assert
     {
         if (empty($array)) {
             throw new TestFailedException(
-                'Expected array to be NOT EMPTY.' . PHP_EOL .
-                    'Actual: []'
+                new AssertionFailure(
+                    'Expected array to be NOT EMPTY',
+                    actual: $array
+                )
             );
         }
     }
@@ -149,21 +188,28 @@ class Assert
     {
         if (!in_array($element, $source, $shouldUseStrict)) {
             throw new TestFailedException(
-                'Array does not contain the given element.' . PHP_EOL
-                    . 'Expected to contain: ' . ValueExporter::export($element) . PHP_EOL
-                    . 'Actual: ' . ValueExporter::export($source)
+                new AssertionFailure(
+                    'Array does not contain the given element',
+                    $element,
+                    $source,
+                    null,
+                    ['strict' => $shouldUseStrict]
+                )
             );
         }
     }
 
-    public static function countEquals(int $expected, array | \Countable $source): void
+    public static function countEquals(int $expected, array|\Countable $source): void
     {
-        $arrayCount = count($source);
-        if ($expected !== $arrayCount) {
+        $actual = count($source);
+
+        if ($expected !== $actual) {
             throw new TestFailedException(
-                'Array length mismatch:' . PHP_EOL .
-                    'Expected: ' . ValueExporter::export($expected) . PHP_EOL .
-                    'Actual: ' . ValueExporter::export($arrayCount)
+                new AssertionFailure(
+                    'Array length mismatch',
+                    $expected,
+                    $actual
+                )
             );
         }
     }
@@ -172,8 +218,11 @@ class Assert
     {
         if (!array_key_exists($key, $array)) {
             throw new TestFailedException(
-                'Expected array to have key: ' . ValueExporter::export($key) . PHP_EOL .
-                    'Array keys: ' . ValueExporter::export(array_keys($array))
+                new AssertionFailure(
+                    'Expected array to have key',
+                    $key,
+                    array_keys($array)
+                )
             );
         }
     }
@@ -182,8 +231,11 @@ class Assert
     {
         if (array_key_exists($key, $array)) {
             throw new TestFailedException(
-                'Expected array NOT to have key: ' . ValueExporter::export($key) . PHP_EOL .
-                    'Array keys: ' . ValueExporter::export(array_keys($array))
+                new AssertionFailure(
+                    'Expected array NOT to have key',
+                    "not having $key",
+                    array_keys($array)
+                )
             );
         }
     }
@@ -193,11 +245,14 @@ class Assert
         $actualKeys = array_keys($array);
         sort($expectedKeys);
         sort($actualKeys);
+
         if ($expectedKeys !== $actualKeys) {
             throw new TestFailedException(
-                'Expected array keys to be exactly equal' . PHP_EOL .
-                    'Expected keys: ' . ValueExporter::export($expectedKeys) . PHP_EOL .
-                    'Actual keys: ' . ValueExporter::export($actualKeys)
+                new AssertionFailure(
+                    'Expected array keys to be exactly equal',
+                    $expectedKeys,
+                    $actualKeys
+                )
             );
         }
     }
@@ -207,9 +262,11 @@ class Assert
         foreach ($array as $item) {
             if (!in_array($item, $allowedValues, true)) {
                 throw new TestFailedException(
-                    'Array contains value(s) not specified as allowed' . PHP_EOL .
-                        'Allowed: ' . ValueExporter::export($allowedValues) . PHP_EOL .
-                        'Actual: ' . ValueExporter::export($array)
+                    new AssertionFailure(
+                        'Array contains value(s) not allowed',
+                        $allowedValues,
+                        $array
+                    )
                 );
             }
         }
@@ -219,31 +276,45 @@ class Assert
     {
         if (!($object instanceof $expectedInstance)) {
             throw new TestFailedException(
-                "The object is not an instance of $expectedInstance." . PHP_EOL .
-                    'Actual object type: ' . $object::class
+                new AssertionFailure(
+                    "Object is not an instance of $expectedInstance",
+                    $expectedInstance,
+                    $object::class
+                )
             );
         }
     }
 
-    /** @param callable() $method */
-    public static function throws(callable $method, ?string $exceptionType = null)
+    /** @param callable():void $method */
+    public static function throws(callable $method, ?string $exceptionType = null): void
     {
         try {
             $method();
-            throw new TestFailedException(
-                "Expected Method to throw exception of type: $exceptionType." . PHP_EOL .
-                    'Actually threw: ' . 'No Excpetion'
-            );
         } catch (\Throwable $e) {
-            if ($e instanceof TestFailedException) {
-                throw $e;
+            if ($exceptionType === null || $e instanceof $exceptionType) {
+                return;
             }
-            if (isset($exceptionType) && !($e instanceof $exceptionType)) {
-                throw new TestFailedException(
-                    "Expected Method to throw exception of type: $exceptionType." . PHP_EOL .
-                        'Actually threw: ' . $e::class
-                );
-            }
+
+            $actualExceptionType = $e::class;
+            throw new TestFailedException(
+                new AssertionFailure(
+                    "Method threw Exception of wrong type",
+                    $exceptionType,
+                    $e::class,
+                    null,
+                    ['reason' => 'wrong_type']
+                )
+            );
         }
+
+        throw new TestFailedException(
+            new AssertionFailure(
+                "Expected method to throw $exceptionType but no exception was thrown",
+                $exceptionType,
+                null,
+                null,
+                ['reason' => 'no_exception']
+            )
+        );
     }
 }

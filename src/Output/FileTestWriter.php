@@ -2,35 +2,42 @@
 
 namespace MicroUnit\Output;
 
+use MicroUnit\Assertion\AssertionFailure;
 use MicroUnit\Core\TestResult;
+use MicroUnit\Helpers\DiffFormatter;
+use MicroUnit\Helpers\StringFormatter;
+use MicroUnit\Helpers\ValueExporter;
 
 class FileTestWriter implements ITestWriter
 {
     private string $filePath;
 
-    public function __construct(string $filePath = __DIR__ . '/../../test-results.log')
+    public function __construct(string $filePath = __DIR__ . '/../../test-results.log', bool $clearFileBeforeRun = false)
     {
+        if ($clearFileBeforeRun) {
+            file_put_contents($filePath, '');
+        }
         $this->filePath = $filePath;
     }
 
     public function writeResult(TestResult $testResult): void
     {
-        $output = $this->getHeader($testResult);
+        $status = $testResult->isSuccess ? '✔' : '✖';
+        $name = $testResult->testName;
+        $time = isset($testResult->time) ? number_format($testResult->time * 1000, 2) . 'ms' : 'N/A';
 
-        if (isset($testResult->time)) {
-            $output .= 'Time: ' . number_format($testResult->time * 1000, 4) . "ms\n";
-        } else {
-            $output .= "Time: N/A\n";
+        $content = "[{$status}] {$name} ({$time})" . PHP_EOL;
+
+        if (!$testResult->isSuccess) {
+            if ($testResult->assertionFailure) {
+                $content .= $this->writeFailure($testResult->assertionFailure);
+            } else {
+                $content .= StringFormatter::formatLabelledBlock('Error: ' . $testResult->errorMsg ?? 'Unknown Error');
+            }
         }
 
-        if ($testResult->isError) {
-            $output .= $this->getStacktrace($testResult->exception ?? null);
-        } else {
-            $output .= "Stack trace: N/A\n";
-        }
-
-        $output .= str_repeat('-', 80) . "\n";
-        file_put_contents($this->filePath, $output, FILE_APPEND);
+        $content .= str_repeat(PHP_EOL, 2);
+        file_put_contents($this->filePath, $content, FILE_APPEND);
     }
 
     public function writeResults(array $results): void
@@ -42,38 +49,29 @@ class FileTestWriter implements ITestWriter
 
     public function writeSummary(int $totalTests, int $successes, int $failures): void
     {
-        $summary = "\n" . str_repeat('=', 33) . " Test Summary " . str_repeat('=', 34) . "\n";
-        $summary .= "Total: {$totalTests}\n";
-        $summary .= "Succeeded: {$successes}\n";
-        $summary .= "Failed: {$failures}\n";
-        $summary .= str_repeat('=', 80) . "\n";
-        file_put_contents($this->filePath, $summary, FILE_APPEND);
+        file_put_contents($this->filePath, PHP_EOL . "Summary: {$successes}/{$totalTests} passed, {$failures} failed" . PHP_EOL, FILE_APPEND);
     }
 
     public function writeSuite(string $suite): void
     {
-        $header = str_repeat('=', 80) . "\n";
-        $header .= str_repeat(' ', 18) . "Test Suite: $suite \n";
-        $header .= str_repeat('=', 80) . "\n";
-        file_put_contents($this->filePath, $header, FILE_APPEND);
+        file_put_contents($this->filePath, "-- {$suite} --" . PHP_EOL, FILE_APPEND);
     }
 
-    private function getHeader(TestResult $testResult): string
+    private function writeFailure(AssertionFailure $failure): string
     {
-        return sprintf(
-            "Test: %s\nSuccess: %s\nResult: %s\nError: %s\n",
-            $testResult->testName,
-            $testResult->isSuccess ? 'Yes' : 'No',
-            var_export($testResult->result, true),
-            $testResult->errorMsg ?? 'None'
-        );
-    }
+        $result = $failure->message . PHP_EOL;
 
-    private function getStacktrace(?\Throwable $exception): string
-    {
-        if ($exception) {
-            return 'Stack trace: ' . $exception::class . "\n" . $exception->getTraceAsString() . "\n";
+        if ($failure->diff) {
+            $result .= DiffFormatter::toString($failure->diff);
+        } else {
+            if ($failure->expected !== null) {
+                $result .= 'Expected: ' . ValueExporter::export($failure->expected) . PHP_EOL;
+            }
+            if ($failure->actual !== null) {
+                $result .= 'Actual: ' . ValueExporter::export($failure->actual) . PHP_EOL;
+            }
         }
-        return "Stack trace: N/A\n";
+
+        return $result;
     }
 }

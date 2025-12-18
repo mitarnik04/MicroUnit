@@ -59,7 +59,7 @@ class Tester
         foreach ($this->tests as $test) {
             $result = $this->runSingleTest($test);
             $results[] = $result;
-            if ($this->stopOnFailure && $result->isError) {
+            if ($this->stopOnFailure && !$result->isSuccess) {
                 return $results;
             }
         }
@@ -90,7 +90,7 @@ class Tester
             return TestResult::success($test->name, $result, $endTime - $startTime);
         } catch (\Exception $e) {
             $endTime = microtime(true);
-            return TestResult::failiureFromException($test->name, $e, $endTime - $startTime);
+            return TestResult::failureFromException($test->name, $e, $endTime - $startTime);
         }
     }
 }

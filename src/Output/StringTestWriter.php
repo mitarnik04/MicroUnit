@@ -3,6 +3,8 @@
 namespace MicroUnit\Output;
 
 use MicroUnit\Core\TestResult;
+use MicroUnit\Assertion\AssertionFailure;
+use MicroUnit\Helpers\DiffFormatter;
 use MicroUnit\Helpers\StringFormatter;
 use MicroUnit\Helpers\ValueExporter;
 
@@ -12,11 +14,16 @@ class StringTestWriter implements ITestWriter
     {
         $this->writeHeader($testResult);
 
+        if ($testResult->assertionFailure) {
+            $this->writeFailure($testResult->assertionFailure);
+        }
+
         echo 'Time: '
             . (isset($testResult->time) ? number_format($testResult->time * 1000, 2) . 'ms' : 'N/A')
             . PHP_EOL;
 
-        if ($testResult->isError) {
+
+        if (!$testResult->isSuccess) {
             $this->writeStacktrace($testResult->exception ?? null);
         } else {
             echo 'Stack trace: N/A', PHP_EOL;
@@ -53,7 +60,9 @@ class StringTestWriter implements ITestWriter
         echo StringFormatter::formatLabelledBlock('Test: ' . $testResult->testName), PHP_EOL;
         echo StringFormatter::formatLabelledBlock('Success: ' . ($testResult->isSuccess ? 'Yes' : 'No')), PHP_EOL;
         echo StringFormatter::formatLabelledBlock('Result: ' . ValueExporter::export($testResult->result)), PHP_EOL;
-        echo StringFormatter::formatLabelledBlock('Error: ' . ($testResult->errorMsg ?? 'None')), PHP_EOL;
+        if (!$testResult->assertionFailure) {
+            echo StringFormatter::formatLabelledBlock('Error: ' . ($testResult->errorMsg ?? 'None')), PHP_EOL;
+        }
     }
 
     private function writeStacktrace(?\Throwable $exception): void
@@ -62,6 +71,26 @@ class StringTestWriter implements ITestWriter
             echo 'Stack trace: ', $exception::class, PHP_EOL, $exception->getTraceAsString(), PHP_EOL;
         } else {
             echo 'Stack trace: N/A', PHP_EOL;
+        }
+    }
+
+    private function writeFailure(AssertionFailure $failure): void
+    {
+        echo 'Error: ', $failure->message, PHP_EOL;
+
+        if ($failure->diff) {
+            echo DiffFormatter::toString($failure->diff);
+        } else {
+            if ($failure->expected !== null) {
+                echo 'Expected: ', ValueExporter::export($failure->expected), PHP_EOL;
+            }
+            if ($failure->actual !== null) {
+                echo 'Actual: ', ValueExporter::export($failure->actual), PHP_EOL;
+            }
+        }
+
+        if (!empty($failure->metadata)) {
+            echo 'Metadata: ', ValueExporter::export($failure->metadata), PHP_EOL;
         }
     }
 }

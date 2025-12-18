@@ -4,7 +4,6 @@ namespace MicroUnit\Assertion;
 
 use MicroUnit\Exceptions\TestFailedException;
 use MicroUnit\Helpers\Diff;
-use MicroUnit\Helpers\ValueExporter;
 use MicroUnit\Mock\CallLog;
 use MicroUnit\Mock\MicroMock;
 
@@ -29,7 +28,7 @@ class AssertMock
             $method,
             $expectedCallCount,
             [0],
-            "Expected Mock method $method to be called $expectedCallCount time(s)"
+            "Expected Mock method '$method' to be called $expectedCallCount time(s)"
         );
     }
 
@@ -37,7 +36,6 @@ class AssertMock
     {
         return $this->isCalledTimes($method, 1);
     }
-
 
     public function isNotCalled(string $method): self
     {
@@ -85,9 +83,10 @@ class AssertMock
     }
 
     /** @param array<mixed> $expectedArgs */
-    public function isCalledWith(string $method, array $expectedArgs, bool $showActualMethodCallsOnError = true): self
+    public function isCalledWith(string $method, array $expectedArgs): self
     {
         $allCallArgs = $this->callLog->getAllCallArgs($method);
+        $matched = false;
         foreach ($allCallArgs as $callArgs) {
             if ($callArgs === $expectedArgs) {
                 $matched = true;
@@ -95,12 +94,13 @@ class AssertMock
             }
         }
         if (!$matched) {
-            $message = "Expected method '$method' to be called with: " . ValueExporter::export($expectedArgs);
-            if ($showActualMethodCallsOnError) {
-                $message .= PHP_EOL .
-                    'Actually called with: ' . ValueExporter::export($allCallArgs);
-            }
-            throw new TestFailedException($message);
+            throw new TestFailedException(
+                new AssertionFailure(
+                    "Expected method to be called with specified arguments",
+                    $expectedArgs,
+                    $allCallArgs
+                )
+            );
         }
 
         return $this;
@@ -109,57 +109,53 @@ class AssertMock
     /** @param array<mixed> $expectedArgs */
     public function isCalledWithOnSpecificCall(string $method, array $expectedArgs, int $onCall): self
     {
-        $callArgs = $this->callLog->getAllCallArgs($method)[$onCall - 1];
+        $callArgs = $this->callLog->getAllCallArgs($method)[$onCall - 1] ?? null;
         if ($callArgs !== $expectedArgs) {
-            $diff = Diff::generate(ValueExporter::export($expectedArgs), ValueExporter::export($callArgs));
-
-            throw new TestFailedException("Method '$method' on call $onCall was not called with specified arguments" . PHP_EOL
-                . ValueExporter::export($diff));
+            throw new TestFailedException(
+                new AssertionFailure(
+                    "Method call $onCall did not match expected arguments",
+                    $expectedArgs,
+                    $callArgs,
+                    Diff::generate($expectedArgs, $callArgs)
+                )
+            );
         }
 
         return $this;
     }
 
-    public function isOnlyCalledWith(string $method, array $expectedArgs, bool $showActualMethodCallsOnError = true): self
+    public function isOnlyCalledWith(string $method, array $expectedArgs): self
     {
         $allCallArgs = $this->callLog->getAllCallArgs($method);
-        $matched = true;
         foreach ($allCallArgs as $callArgs) {
             if ($callArgs !== $expectedArgs) {
-                $matched = false;
-                break;
+                throw new TestFailedException(
+                    new AssertionFailure(
+                        "Expected method to only be called with specified arguments",
+                        $expectedArgs,
+                        $allCallArgs
+                    )
+                );
             }
-        }
-        if (!$matched) {
-            $message = "Expected method '$method' to only be called with: " . ValueExporter::export($expectedArgs);
-            if ($showActualMethodCallsOnError) {
-                $message .= PHP_EOL .
-                    'Actually called with: ' . ValueExporter::export($allCallArgs);
-            }
-            throw new TestFailedException($message);
         }
 
         return $this;
     }
 
     /** @param callable(array $callArgs): bool $matcher */
-    public function isOnlyCalledWithMatchingArgs(string $method, callable $matcher, bool $showActualMethodCallsOnError = true): self
+    public function isOnlyCalledWithMatchingArgs(string $method, callable $matcher): self
     {
         $allCallArgs = $this->callLog->getAllCallArgs($method);
-        $matched = true;
         foreach ($allCallArgs as $callArgs) {
             if (!$matcher($callArgs)) {
-                $matched = false;
-                break;
+                throw new TestFailedException(
+                    new AssertionFailure(
+                        "Expected method to only be called with matching arguments",
+                        null,
+                        $allCallArgs
+                    )
+                );
             }
-        }
-        if (!$matched) {
-            $message = "Expected '$method' to only be called with arguments matching the callable conditions";
-            if ($showActualMethodCallsOnError) {
-                $message .= PHP_EOL .
-                    'Actually called with: ' . ValueExporter::export($allCallArgs);
-            }
-            throw new TestFailedException($message);
         }
 
         return $this;
@@ -168,23 +164,31 @@ class AssertMock
     /** @param callable(array $callArgs): bool $matcher */
     public function isCalledWithMatchingOnSpecificCall(string $method, callable $matcher, int $onCall): self
     {
-        $callArgs = $this->callLog->getAllCallArgs($method)[$onCall - 1];
+        $callArgs = $this->callLog->getAllCallArgs($method)[$onCall - 1] ?? null;
         if (!$matcher($callArgs)) {
-            throw new TestFailedException("Arguments passed to method '$method' on call $onCall did not match callable conditions" . PHP_EOL
-                . 'Actual args: ' . ValueExporter::export($callArgs));
+            throw new TestFailedException(
+                new AssertionFailure(
+                    "Method call $onCall did not match callable conditions",
+                    actual: $callArgs
+                )
+            );
         }
 
         return $this;
     }
 
-
     public function isCalledOn(string $method, int $callNumber): self
     {
         $callSequence = $this->callLog->getCallSequence();
-        $actualCalledMethod = $callSequence[$callNumber - 1];
+        $actualCalledMethod = $callSequence[$callNumber - 1] ?? null;
         if ($actualCalledMethod !== $method) {
-            throw new TestFailedException("Method '$method' was not called on call $callNumber.
-Actual called method: '$actualCalledMethod'");
+            throw new TestFailedException(
+                new AssertionFailure(
+                    "Expected method to be called at specific sequence",
+                    $method,
+                    $actualCalledMethod
+                )
+            );
         }
 
         return $this;
@@ -197,14 +201,19 @@ Actual called method: '$actualCalledMethod'");
         return $this;
     }
 
-    private function compareToActualCallCount(string $method, int $callCount, array $allowedSpaceShipResults, string $expectedMessage): self
+    private function compareToActualCallCount(string $method, int $callCount, array $allowedSpaceShipResults, string $message): self
     {
         $actualCallCount = $this->callLog->getCallCount($method);
         $comparisonResult = $actualCallCount <=> $callCount;
 
         if (!in_array($comparisonResult, $allowedSpaceShipResults)) {
-            throw new TestFailedException($expectedMessage . PHP_EOL .
-                "Actually called: $actualCallCount time(s)");
+            throw new TestFailedException(
+                new AssertionFailure(
+                    $message,
+                    $callCount,
+                    $actualCallCount
+                )
+            );
         }
 
         return $this;

@@ -4,6 +4,9 @@ namespace MicroUnit\Output;
 
 use MicroUnit\Helpers\StringFormatter;
 use MicroUnit\Core\TestResult;
+use MicroUnit\Assertion\AssertionFailure;
+use MicroUnit\Helpers\DiffFormatter;
+use MicroUnit\Helpers\ValueExporter;
 
 class MinimalStringTestWriter implements ITestWriter
 {
@@ -16,7 +19,11 @@ class MinimalStringTestWriter implements ITestWriter
         echo "[{$status}] {$name} ({$time})", PHP_EOL;
 
         if (!$testResult->isSuccess) {
-            echo StringFormatter::formatLabelledBlock('Error: ' . $testResult->errorMsg ?? 'Unknown Error');
+            if ($testResult->assertionFailure) {
+                $this->writeFailure($testResult->assertionFailure);
+            } else {
+                echo StringFormatter::formatLabelledBlock('Error: ' . $testResult->errorMsg ?? 'Unknown Error');
+            }
         }
 
         echo str_repeat(PHP_EOL, 2);
@@ -37,5 +44,21 @@ class MinimalStringTestWriter implements ITestWriter
     public function writeSuite(string $suite): void
     {
         echo "-- {$suite} --", PHP_EOL;
+    }
+
+    private function writeFailure(AssertionFailure $failure): void
+    {
+        echo $failure->message, PHP_EOL;
+
+        if ($failure->diff) {
+            echo DiffFormatter::toString($failure->diff);
+        } else {
+            if ($failure->expected !== null) {
+                echo 'Expected: ', ValueExporter::export($failure->expected), PHP_EOL;
+            }
+            if ($failure->actual !== null) {
+                echo 'Actual: ', ValueExporter::export($failure->actual), PHP_EOL;
+            }
+        }
     }
 }

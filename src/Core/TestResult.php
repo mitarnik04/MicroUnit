@@ -2,10 +2,11 @@
 
 namespace MicroUnit\Core;
 
+use MicroUnit\Assertion\AssertionFailure;
+use MicroUnit\Exceptions\TestFailedException;
+
 class TestResult
 {
-    public readonly bool $isError;
-
     private function __construct(
         public readonly string $testName,
         public readonly bool $isSuccess,
@@ -13,22 +14,23 @@ class TestResult
         public readonly mixed $result = null,
         public readonly ?float $time = null,
         public readonly ?\Exception $exception = null,
-    ) {
-        $this->isError = isset($errorMsg);
-    }
+        public readonly ?AssertionFailure $assertionFailure = null,
+    ) {}
 
     public static function success(string $testName, $result = null, ?float $time = null): TestResult
     {
         return new TestResult($testName, true, time: $time, result: $result);
     }
 
-    public static function failiure(string $testName, string $errorMsg, ?float $time = null): TestResult
+    public static function failure(string $testName, string $errorMsg, ?float $time = null): TestResult
     {
         return new TestResult($testName, false, $errorMsg, time: $time);
     }
 
-    public static function failiureFromException(string $testName, \Exception $exception, ?float $time = null): TestResult
+    public static function failureFromException(string $testName, \Exception $exception, ?float $time = null): TestResult
     {
-        return new TestResult($testName, false, $exception->getMessage(), time: $time, exception: $exception);
+        return $exception instanceof TestFailedException
+            ? new TestResult($testName, false, time: $time, assertionFailure: $exception->failure)
+            :  new TestResult($testName, false, $exception->getMessage(), time: $time, exception: $exception);
     }
 }
