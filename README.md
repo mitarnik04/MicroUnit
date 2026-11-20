@@ -195,8 +195,8 @@ tests. [More](https://mitarnik04.github.io/MicroUnit/ai-agents/)
 
 ## The story
 
-I started MicroUnit before AI coding assistants existed, because I wanted PHP tests that were quick
-to write and quick to read. It got to a public beta, and then it stalled: building coverage, parallel
+I started MicroUnit as a side project in May 2025, because I wanted PHP tests that were quick to
+write and quick to read. It got to a public beta that summer, and then it stalled: building coverage, parallel
 runs, framework integrations and a proper explorer next to a day job was more than one person could
 do. AI changed that. With it as my tool, I finally had the capacity to bring MicroUnit to its first
 official release: to test every part of it properly, all the way down to running the real test suites

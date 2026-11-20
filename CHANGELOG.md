@@ -5,8 +5,8 @@ and MicroUnit uses [semantic versioning](https://semver.org/).
 
 ## [1.0.0] - 2026-11-19
 
-The first stable release. MicroUnit started before AI coding assistants existed and got as far as a
-public beta; building the rest next to a day job was more than one person could do. With AI as my
+The first stable release. MicroUnit started as a side project in May 2025 and got as far as a public
+beta that summer; building the rest next to a day job was more than one person could do. With AI as my
 tool I finally had the capacity to bring it to this release: to test every part of it properly,
 down to running the real test suites of well-known PHP projects through it, and to build every
 feature I had imagined for it.
