@@ -1,7 +1,14 @@
 #!/usr/bin/env php
 <?php
-/**
- * Will be used by composer to provide the ability to run all tests using vendor/bin/microunit
- */
 
-require_once __DIR__ . '/run-tests.php';
+// Keep this file parseable by old PHP versions so users get a clear message instead of a parse error.
+if (PHP_VERSION_ID < 80500) {
+    fwrite(STDERR, 'MicroUnit requires PHP 8.5 or newer. You are running PHP ' . PHP_VERSION . '.' . PHP_EOL);
+    exit(2);
+}
+
+require __DIR__ . '/../src/Bootstrap/Autoloader.php';
+\MicroUnit\Bootstrap\Autoloader::register();
+
+$application = new \MicroUnit\Cli\Application(__FILE__, (string) getcwd());
+exit($application->run(array_slice($argv, 1)));
