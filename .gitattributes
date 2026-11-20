@@ -1,4 +1,24 @@
-/.github/        export-ignore
-/.gitignore      export-ignore
-/.gitattributes  export-ignore
-/composer.lock   export-ignore
+# Normalise line endings to LF in the repository (matches .editorconfig).
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.woff2 binary
+
+# Not shipped with the Composer package.
+/.github/                 export-ignore
+/.gitignore               export-ignore
+/.gitattributes           export-ignore
+/.editorconfig            export-ignore
+/.php-cs-fixer.dist.php   export-ignore
+/composer.lock            export-ignore
+/assets/                  export-ignore
+/benchmarks/              export-ignore
+/docs/                    export-ignore
+/images/                  export-ignore
+/tests/                   export-ignore
+/bin/lint.php             export-ignore
+/microunit.config.php     export-ignore
+/ARCHITECTURE.md          export-ignore
+/CLAUDE.md                export-ignore
+/CONTRIBUTING.md          export-ignore
