@@ -1,0 +1,134 @@
+/* MicroUnit design tokens, shared by every HTML page MicroUnit renders. */
+:root {
+    --ultra: #0A17A8;
+    --navy: #0A1D86;
+    --cyan: #3FC6F3;
+    --cobalt: #114EA9;
+    --deep: #050B3A;
+    --run: #2440F0;
+
+    --pass: #1A8F4E;
+    --reject: #D3343C;
+    --busy: #C77F00;
+    --skip: #7A6A1E;
+
+    --bg: #F4F6F9;
+    --surface: #FFFFFF;
+    --panel: #E3E6E9;
+    --raised: #F1F3F5;
+    --ink: #10131A;
+    --ink-2: #4A5361;
+    --ink-3: #5A626D;
+    --hair: #D3D9E1;
+    --well: #0E1A2B;
+    --well-ink: #E6ECFF;
+    --well-dim: #8E9BCF;
+    --lit-pass: #3DDC84;
+    --lit-reject: #FF6A6F;
+    --lit-busy: #FFBE3D;
+    --covered: #E2F5E9;
+    --uncovered: #FCE6E7;
+    --code-bg: #F6F8FA;
+
+    --mark-block: var(--ultra);
+    --mark-unit: var(--cyan);
+
+    --font-ui: "Archivo", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --font-label: "Archivo Condensed", "Arial Narrow", sans-serif;
+    --font-display: "Archivo Wide", "Archivo", system-ui, sans-serif;
+    --font-code: ui-monospace, "Cascadia Mono", "SF Mono", Menlo, Consolas, "Liberation Mono", monospace; /* ligature-free cuts: code must show => and != as typed */
+
+    color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+        --pass: #3DCB7B;
+        --reject: #FF6A6F;
+        --busy: #FFBE3D;
+        --skip: #D6C15A;
+        --bg: #0A0D16;
+        --surface: #121417;
+        --panel: #16191D;
+        --raised: #1E2227;
+        --ink: #E8ECF4;
+        --ink-2: #A9B2C3;
+        --ink-3: #7F889A;
+        --hair: #262D3D;
+        --well: #0B1522;
+        --covered: rgba(61, 203, 123, .13);
+        --uncovered: rgba(255, 106, 111, .14);
+        --code-bg: #0D111A;
+        --mark-block: #FFFFFF;
+        color-scheme: dark;
+    }
+}
+
+:root[data-theme="dark"] {
+    --pass: #3DCB7B;
+    --reject: #FF6A6F;
+    --busy: #FFBE3D;
+    --skip: #D6C15A;
+    --bg: #0A0D16;
+    --surface: #121417;
+    --panel: #16191D;
+    --raised: #1E2227;
+    --ink: #E8ECF4;
+    --ink-2: #A9B2C3;
+    --ink-3: #7F889A;
+    --hair: #262D3D;
+    --well: #0B1522;
+    --covered: rgba(61, 203, 123, .13);
+    --uncovered: rgba(255, 106, 111, .14);
+    --code-bg: #0D111A;
+    --mark-block: #FFFFFF;
+    color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { background: var(--bg); }
+
+body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font: 400 15px/1.5 var(--font-ui);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+}
+
+::selection { background: color-mix(in srgb, var(--cyan) 38%, transparent); color: inherit; }
+
+:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; border-radius: 3px; }
+
+a { color: var(--cobalt); text-underline-offset: 3px; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) a { color: var(--cyan); } }
+:root[data-theme="dark"] a { color: var(--cyan); }
+
+* { scrollbar-width: thin; scrollbar-color: color-mix(in srgb, var(--ink-3) 55%, transparent) transparent; }
+
+code, pre, kbd { font-family: var(--font-code); font-size: .9em; font-variant-ligatures: none; }
+
+.mark { display: block; flex: none; }
+
+.label {
+    font: 600 11px/1 var(--font-label);
+    text-transform: uppercase;
+    letter-spacing: .14em;
+    color: var(--ink-3);
+}
+
+.wordmark {
+    font: 800 22px/1 var(--font-display);
+    letter-spacing: -.045em;
+    color: var(--navy);
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .wordmark { color: #FFFFFF; } }
+:root[data-theme="dark"] .wordmark { color: #FFFFFF; }
+
+.num { font-variant-numeric: tabular-nums; }
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}

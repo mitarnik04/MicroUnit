@@ -1,0 +1,74 @@
+/* Static test report: the test station's printed certificate (tokens from resources/brand.css). */
+body { background: var(--bg); }
+.sheet { max-width: 980px; margin: 32px auto 64px; background: var(--surface); border: 1px solid var(--hair); border-radius: 12px; overflow: hidden; }
+.sheet-head { display: flex; justify-content: space-between; align-items: center; gap: 20px; flex-wrap: wrap; padding: 22px 32px; border-bottom: 1px solid var(--hair); }
+.brand { display: flex; align-items: center; gap: 12px; }
+.brand .mark { width: 32px; height: 32px; }
+.brand .label { margin-top: 4px; }
+.meta { text-align: right; color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+
+.verdict-row { display: grid; grid-template-columns: auto 1fr; gap: 28px; align-items: center; padding: 28px 32px; border-bottom: 1px solid var(--hair); }
+.verdict { font: 800 44px/1 var(--font-display); letter-spacing: -.035em; padding: 16px 22px; border-radius: 10px; border: 3px solid currentColor; }
+.verdict.pass { color: var(--pass); }
+.verdict.reject { color: var(--reject); }
+.readout { display: flex; flex-wrap: wrap; gap: 14px 34px; padding: 16px 22px; border-radius: 10px; background: var(--well); color: var(--well-ink); box-shadow: inset 0 2px 10px rgba(0, 0, 0, .5); }
+.readout .value { font: 700 36px/1 var(--font-label); font-variant-numeric: tabular-nums; }
+.readout .value small { font-size: .45em; margin-left: .06em; }
+.readout .label { color: var(--well-dim); display: block; margin-top: 6px; }
+.readout .pass { color: var(--lit-pass); }
+.readout .reject { color: var(--lit-reject); }
+.readout .skip { color: var(--lit-busy); }
+
+section.block { padding: 26px 32px; border-bottom: 1px solid var(--hair); }
+section.block:last-child { border-bottom: 0; }
+h2 { font: 800 22px/1.2 var(--font-display); letter-spacing: -.025em; margin: 0 0 16px; color: var(--ink); }
+h2 .count { font: 700 15px/1 var(--font-label); letter-spacing: .08em; color: var(--ink-3); margin-left: 8px; }
+
+.reject-card { padding: 16px 0; border-top: 1px solid var(--hair); }
+.reject-card:first-of-type { border-top: 0; padding-top: 0; }
+.reject-card .title { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.reject-card .ch { font: 700 13px/1 var(--font-label); letter-spacing: .08em; color: var(--reject); }
+.reject-card h3 { margin: 0; font: 700 17px/1.35 var(--font-ui); overflow-wrap: anywhere; }
+.reject-card .where { color: var(--ink-2); font-size: 13px; margin: 4px 0 10px; font-family: var(--font-code); overflow-wrap: anywhere; }
+.message { color: var(--reject); font-weight: 600; white-space: pre-wrap; overflow-wrap: anywhere; margin-bottom: 8px; }
+.custom { font-weight: 700; white-space: pre-wrap; margin-bottom: 2px; }
+pre.block { margin: 6px 0 0; padding: 10px 14px; border-radius: 7px; background: var(--code-bg); border: 1px solid var(--hair); font: 12.5px/1.55 var(--font-code); white-space: pre-wrap; overflow-wrap: anywhere; font-variant-ligatures: none; }
+.diff span { display: block; padding: 0 2px; }
+.diff .expected { background: var(--uncovered); color: var(--reject); }
+.diff .actual { background: var(--covered); color: var(--pass); }
+.diff .fold { color: var(--ink-3); }
+.values { display: grid; grid-template-columns: max-content 1fr; gap: 6px 12px; align-items: start; }
+.values .label { padding-top: 10px; }
+
+table.tests { width: 100%; border-collapse: collapse; }
+table.tests caption { text-align: left; font: 700 15px/1.3 var(--font-ui); padding: 14px 0 8px; color: var(--ink); }
+table.tests td { padding: 7px 8px; border-top: 1px solid var(--hair); vertical-align: middle; font-size: 14px; }
+table.tests td.ch { width: 64px; font: 600 11px/1 var(--font-label); letter-spacing: .08em; color: var(--ink-3); }
+table.tests td.time { width: 90px; text-align: right; color: var(--ink-2); font-variant-numeric: tabular-nums; white-space: nowrap; }
+table.tests td.state { width: 92px; font: 700 11px/1 var(--font-label); letter-spacing: .12em; text-transform: uppercase; white-space: nowrap; }
+table.tests td.name { overflow-wrap: anywhere; }
+.state.passed { color: var(--pass); }
+.state.failed { color: var(--reject); }
+.state.skipped { color: var(--skip); }
+.lamp { display: inline-block; width: 9px; height: 9px; margin-right: 8px; border-radius: 50%; border: 2px solid currentColor; vertical-align: -1px; }
+.state.passed .lamp { background: currentColor; }
+.state.failed .lamp { background: currentColor; border-radius: 1px; transform: rotate(45deg) scale(.9); }
+.state.skipped .lamp { border-radius: 1px; }
+
+footer { padding: 18px 32px 26px; color: var(--ink-3); font-size: 13px; }
+
+@media (max-width: 720px) {
+    .sheet { margin: 0; border-radius: 0; border-left: 0; border-right: 0; }
+    .sheet-head, .verdict-row, section.block, footer { padding-left: 16px; padding-right: 16px; }
+    .verdict-row { grid-template-columns: 1fr; }
+    .meta { text-align: left; }
+    .verdict { font-size: 34px; justify-self: start; }
+    table.tests td.time { display: none; }
+}
+
+@media print {
+    body { background: #FFFFFF; }
+    .sheet { margin: 0; border: 0; max-width: none; }
+    .readout { box-shadow: none; }
+    a { color: inherit; text-decoration: none; }
+}

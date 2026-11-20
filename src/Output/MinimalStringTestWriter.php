@@ -2,63 +2,21 @@
 
 namespace MicroUnit\Output;
 
-use MicroUnit\Helpers\StringFormatter;
-use MicroUnit\Core\TestResult;
-use MicroUnit\Assertion\AssertionFailure;
-use MicroUnit\Helpers\DiffFormatter;
-use MicroUnit\Helpers\ValueExporter;
+use MicroUnit\Output\Format\MinimalResultFormatter;
+use MicroUnit\Output\Format\TextStyle;
 
-class MinimalStringTestWriter implements ITestWriter
+/** Compact console output: one line per test, details only for failures. The default writer. */
+final class MinimalStringTestWriter extends TextTestWriter
 {
-    public function writeResult(TestResult $testResult): void
+    /** @param bool|null $colors null = auto-detect (off in CI logs without TTY, honours NO_COLOR/FORCE_COLOR) */
+    public function __construct(?bool $colors = null)
     {
-        $status = $testResult->isSuccess ? '✔' : '✖';
-        $name = $testResult->testName;
-        $time = isset($testResult->time) ? number_format($testResult->time * 1000, 2) . 'ms' : 'N/A';
-
-        echo "[{$status}] {$name} ({$time})", PHP_EOL;
-
-        if (!$testResult->isSuccess) {
-            if ($testResult->assertionFailure) {
-                $this->writeFailure($testResult->assertionFailure);
-            } else {
-                echo StringFormatter::formatLabelledBlock('Error: ' . $testResult->errorMsg ?? 'Unknown Error');
-            }
-        }
-
-        echo str_repeat(PHP_EOL, 2);
+        parent::__construct(new MinimalResultFormatter(TextStyle::forStream(STDOUT, $colors)));
     }
 
-    public function writeResults(array $results): void
+    #[\Override]
+    protected function write(string $text): void
     {
-        foreach ($results as $result) {
-            $this->writeResult($result);
-        }
-    }
-
-    public function writeSummary(int $totalTests, int $successes, int $failures): void
-    {
-        echo PHP_EOL, "Summary: {$successes}/{$totalTests} passed, {$failures} failed", PHP_EOL;
-    }
-
-    public function writeSuite(string $suite): void
-    {
-        echo "-- {$suite} --", PHP_EOL;
-    }
-
-    private function writeFailure(AssertionFailure $failure): void
-    {
-        echo $failure->message, PHP_EOL;
-
-        if ($failure->diff) {
-            echo DiffFormatter::toString($failure->diff);
-        } else {
-            if ($failure->expected !== null) {
-                echo 'Expected: ', ValueExporter::export($failure->expected), PHP_EOL;
-            }
-            if ($failure->actual !== null) {
-                echo 'Actual: ', ValueExporter::export($failure->actual), PHP_EOL;
-            }
-        }
+        echo $text;
     }
 }
