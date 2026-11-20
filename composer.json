@@ -1,8 +1,10 @@
 {
   "name": "microunit/microunit",
-  "description": "Minimal. Modern. Mighty. The next-generation PHP unit testing framework for developers who want speed, clarity, and power.",
+  "description": "Minimal. Modern. Mighty. The dependency-free PHP unit testing framework with built-in mocking, pure-PHP code coverage, parallel execution and a test explorer.",
   "type": "library",
   "license": "Apache-2.0",
+  "keywords": ["testing", "unit-testing", "tdd", "mocking", "code-coverage", "test-runner"],
+  "homepage": "https://mitarnik04.github.io/MicroUnit/",
   "authors": [
     {
       "name": "Mitar Nikolic",
@@ -12,7 +14,10 @@
     }
   ],
   "require": {
-    "php": "^8.0"
+    "php": "^8.5"
+  },
+  "suggest": {
+    "ext-tokenizer": "Required for code coverage (enabled in standard PHP builds)"
   },
   "autoload": {
     "psr-4": {
@@ -21,5 +26,9 @@
   },
   "bin": [
     "bin/microunit"
-  ]
+  ],
+  "scripts": {
+    "test": "@php bin/microunit",
+    "lint": "@php bin/lint.php"
+  }
 }
