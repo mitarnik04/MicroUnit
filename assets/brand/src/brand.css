@@ -1,0 +1,169 @@
+/* Shared tokens and components for every rendered MicroUnit brand asset. */
+/* Static Archivo cuts at the identity's exact widths (no variable-font interpolation artifacts). */
+@font-face { font-family: "Archivo Wide"; src: url("../fonts/archivo-w112-800.woff2") format("woff2"); font-weight: 800; font-display: block; }
+@font-face { font-family: "Archivo Condensed"; src: url("../fonts/archivo-w75-600.woff2") format("woff2"); font-weight: 600; font-display: block; }
+@font-face { font-family: "Archivo Condensed"; src: url("../fonts/archivo-w75-400.woff2") format("woff2"); font-weight: 400; font-display: block; }
+@font-face { font-family: "Archivo Condensed"; src: url("../fonts/archivo-w75-700.woff2") format("woff2"); font-weight: 700; font-display: block; }
+@font-face { font-family: "Archivo"; src: url("../fonts/archivo-w100-400.woff2") format("woff2"); font-weight: 400; font-display: block; }
+
+:root {
+  --ultra: #0A17A8;
+  --navy: #0A1D86;
+  --cyan: #3FC6F3;
+  --cobalt: #114EA9;
+  --deep: #050B3A;
+  --white: #FFFFFF;
+  --ink-2: #4A5361;
+  --hair: #D3D9E1;
+  --block: var(--ultra);
+  --unit: var(--cyan);
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  width: var(--w);
+  height: var(--h);
+  overflow: hidden;
+  font: 400 16px/1.5 "Archivo", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: geometricPrecision;
+}
+
+.canvas { position: relative; width: var(--w); height: var(--h); overflow: hidden; container-type: inline-size; }
+
+/* Typographic voices: one family, three widths. */
+.word { font-family: "Archivo Wide"; font-weight: 800; letter-spacing: -0.045em; line-height: 1; }
+.display { font-family: "Archivo Wide"; font-weight: 800; letter-spacing: -0.03em; line-height: .95; }
+.label { font-family: "Archivo Condensed"; font-weight: 600; text-transform: uppercase; letter-spacing: .13em; line-height: 1; }
+
+.mk { display: block; flex: none; }
+
+/* Horizontal lockup */
+.h-lock { display: flex; align-items: center; gap: .34em; }
+.h-lock .mk { width: 1.06em; height: 1.06em; }
+.h-lock .word { color: var(--navy); }
+.inverse { --block: #FFFFFF; }
+.inverse .word { color: #FFFFFF; }
+
+/* README banner (1280 x 400) */
+.banner .copy { position: absolute; left: 6.2cqw; top: 50%; transform: translateY(-50%); }
+.banner .h-lock { font-size: 7.4cqw; }
+.banner .tag { margin-top: 2.2cqw; display: flex; gap: 1.6cqw; font-size: 1.45cqw; color: var(--cobalt); }
+.banner .tag span + span::before { content: ""; display: inline-block; width: .55em; height: .55em; background: currentColor; margin-right: 1.6cqw; vertical-align: .12em; }
+.banner .sub { margin-top: 1.4cqw; font-size: 1.35cqw; color: var(--ink-2); }
+.banner .giant { position: absolute; right: 5cqw; top: 6cqw; width: 34cqw; height: 34cqw; }
+.banner.light { background: var(--white); }
+.banner.dark { background: var(--deep); }
+.banner.dark .tag { color: var(--cyan); }
+.banner.dark .sub { color: #A5B1DF; }
+
+/* Social preview (1280 x 640) */
+.social { background: var(--ultra); color: #FFFFFF; }
+.social .head { position: absolute; left: 6.5cqw; top: 6.5cqw; display: flex; align-items: center; gap: 1.6cqw; }
+.social .head .mk { width: 4.6cqw; height: 4.6cqw; }
+.social .head .word { font-size: 4cqw; color: #FFFFFF; }
+.social h1 { position: absolute; left: 6.5cqw; top: 17.5cqw; margin: 0; font-size: 6.8cqw; max-width: 58cqw; z-index: 1; color: #FFFFFF; }
+.social h1 em { font-style: normal; color: var(--cyan); }
+.social .row { position: absolute; z-index: 1; left: 6.5cqw; bottom: 6cqw; display: flex; gap: 2.8cqw; font-size: 1.5cqw; color: #C7CEFA; }
+.social .row span::before { content: ""; display: inline-block; width: .6em; height: .6em; background: var(--cyan); margin-right: .9em; vertical-align: .1em; }
+.social .giant { position: absolute; right: -5cqw; top: -5cqw; width: 34cqw; height: 34cqw; }
+
+/* Release cards (1080 x 1080) */
+.release { background: var(--deep); color: #FFFFFF; }
+.release .top { position: absolute; left: 8cqw; top: 8cqw; right: 8cqw; display: flex; justify-content: space-between; align-items: center; }
+.release .top .mk { width: 9cqw; height: 9cqw; }
+.release .top .label { font-size: 2.4cqw; color: var(--cyan); }
+.release .ver { position: absolute; left: 8cqw; top: 22cqw; font-size: 44cqw; letter-spacing: -.06em; line-height: .8; }
+.release .ver i { display: inline-block; width: .17em; height: .17em; margin: 0 .015em 0 .08em; background: var(--cyan); vertical-align: baseline; }
+.release .meta { position: absolute; left: 8cqw; bottom: 8cqw; right: 8cqw; display: flex; justify-content: space-between; align-items: flex-end; }
+.release .meta .word { font-size: 6cqw; color: #FFFFFF; }
+.release .meta .label { font-size: 2.4cqw; color: #9AA6D6; text-align: right; line-height: 1.5; }
+.release.paper { background: var(--white); color: var(--navy); }
+.release.paper .top .label { color: var(--cobalt); }
+.release.paper .meta .word { color: var(--navy); }
+.release.paper .meta .label { color: var(--ink-2); }
+.release .list { position: absolute; left: 8cqw; top: 19cqw; right: 8cqw; display: grid; gap: 1.6cqw; }
+.release .list div { display: grid; grid-template-columns: 6cqw 1fr; align-items: start; border-top: 1px solid var(--hair); padding-top: 2.4cqw; }
+.release .list i { display: block; width: 3.2cqw; height: 3.2cqw; background: var(--cyan); margin-top: 1.2cqw; }
+.release .list b { display: block; font-family: "Archivo Wide"; font-weight: 800; font-size: 5.2cqw; letter-spacing: -.03em; line-height: 1; color: var(--navy); }
+.release .list span { font-size: 2.6cqw; color: var(--ink-2); font-family: "Archivo Condensed"; font-weight: 400; }
+
+/* Transparent lockups */
+.lockup { display: grid; place-items: center; background: transparent; }
+.lockup .h-lock { font-size: calc(var(--h) * .5); }
+
+
+/* Benchmark assets (benchmark.html): 1280 wide, as tall as their content */
+.bench-page {
+  --w: 1280px; --h: auto;
+  --bg: var(--white); --ink: var(--navy); --muted: var(--ink-2); --accent: var(--cobalt);
+  --bar: var(--ultra); --rival: #858E9C; --line: var(--hair); --axis: #9AA3B2; --grid: #E6E9EF; --tint: #EEF0FB;
+}
+.bench-page.dark {
+  --bg: var(--deep); --ink: #FFFFFF; --muted: #A5B1DF; --accent: var(--cyan);
+  --bar: var(--cyan); --rival: #5B6694; --line: rgba(255, 255, 255, .14); --axis: rgba(255, 255, 255, .34); --grid: rgba(255, 255, 255, .07); --tint: rgba(63, 198, 243, .09);
+  --block: #FFFFFF;
+}
+.bench-page, .bench-page body { background: var(--bg); }
+.bench { padding: 56px 64px 48px; color: var(--ink); }
+.bench header { display: flex; justify-content: space-between; align-items: center; }
+.bench header .h-lock { font-size: 26px; }
+.dark .bench header .h-lock .word { color: #FFFFFF; }
+.bench .kicker { font-size: 15px; color: var(--accent); }
+.bench h1 { margin: 48px 0 0; font-size: 58px; color: var(--ink); }
+.bench .lede { margin: 16px 0 0; max-width: 1080px; min-height: 3em; text-wrap: pretty; font-size: 19px; line-height: 1.5; color: var(--muted); }
+.bench #content { margin-top: 44px; }
+.bench footer { margin-top: 48px; padding-top: 18px; border-top: 1px solid var(--line); display: flex; flex-direction: column; gap: 6px; font-family: "Archivo Condensed"; font-size: 14.5px; color: var(--muted); }
+.bench footer strong { font-weight: 600; color: var(--ink); }
+
+/* Speedup chart: one bar per project, how many times faster MicroUnit is, on a shared 0x-max axis. */
+.speedup { --name: 220px; --room: 76px; --row: 58px; --thickness: 24px; }
+.speedup .row { display: grid; grid-template-columns: var(--name) 1fr; align-items: center; height: var(--row); }
+.speedup .name { font-family: "Archivo Condensed"; font-weight: 600; font-size: 18px; color: var(--ink); }
+.speedup .track { position: relative; height: var(--thickness); }
+/* The baseline at 0x, continuous through all rows. */
+.speedup .track::before { content: ""; position: absolute; left: 0; top: calc((var(--thickness) - var(--row)) / 2); height: var(--row); width: 1px; background: var(--axis); }
+/* Gridlines at every whole factor; 1x (the same speed) is the one that matters. */
+.speedup .track s { position: absolute; left: calc(var(--step) / var(--max) * (100% - var(--room))); top: calc((var(--thickness) - var(--row)) / 2); height: var(--row); width: 1px; background: var(--grid); }
+.speedup .track s.same { background: var(--axis); }
+.speedup .track i { position: absolute; z-index: 1; left: 0; top: 0; bottom: 0; width: calc(var(--r) / var(--max) * (100% - var(--room))); background: var(--bar); border-radius: 0 4px 4px 0; }
+.speedup .track b { position: absolute; z-index: 1; top: 50%; left: calc(var(--r) / var(--max) * (100% - var(--room)) + 12px); transform: translateY(-50%); font-family: "Archivo Condensed"; font-weight: 700; font-size: 19px; color: var(--ink); font-variant-numeric: tabular-nums; }
+.speedup .axis { display: grid; grid-template-columns: var(--name) 1fr; height: 66px; }
+.speedup .scale { position: relative; }
+.speedup .scale u { position: absolute; left: 0; top: 0; height: 1px; width: calc(100% - var(--room)); background: var(--axis); }
+.speedup .scale em { position: absolute; top: 10px; left: calc(var(--step) / var(--max) * (100% - var(--room))); transform: translateX(-50%); font-style: normal; font-family: "Archivo Condensed"; font-size: 14px; color: var(--muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.speedup .scale em:first-of-type { transform: none; }
+.speedup .scale em.same { color: var(--ink); font-weight: 700; }
+.speedup .scale .title { position: absolute; left: 0; width: calc(100% - var(--room)); top: 38px; text-align: center; font-family: "Archivo Condensed"; font-size: 14px; color: var(--muted); }
+.speedup.compact .scale .title { font-size: 12.5px; top: 34px; }
+
+/* Overview: four compact charts in a 2 x 2 grid, then the score band. */
+.overview { display: grid; grid-template-columns: 1fr 1fr; column-gap: 64px; row-gap: 44px; }
+.speedup.compact { --name: 150px; --room: 62px; --row: 46px; --thickness: 18px; }
+.speedup.compact .panel-title { margin: 0 0 12px; padding-bottom: 12px; border-bottom: 1px solid var(--line); font-size: 15px; color: var(--accent); }
+.speedup.compact .panel-title em { font-style: normal; color: var(--muted); margin-left: .6em; }
+.speedup.compact .name { font-size: 15px; }
+.speedup.compact .track b { font-size: 16px; left: calc(var(--r) / var(--max) * (100% - var(--room)) + 9px); }
+.speedup.compact .scale em { font-size: 12.5px; }
+.score { grid-column: 1 / -1; display: flex; align-items: center; gap: 48px; margin-top: 8px; padding-top: 36px; border-top: 1px solid var(--line); }
+.score::before { content: ""; flex: none; width: 26px; height: 26px; border-radius: 4px; background: var(--cyan); align-self: flex-start; margin-top: 14px; }
+.score .figure { font-size: 112px; line-height: .9; color: var(--ink); }
+.score .words p { margin: 0; max-width: 520px; font-size: 19px; line-height: 1.45; color: var(--muted); }
+.score .words p.second { margin-top: 10px; color: var(--ink); font-family: "Archivo Condensed"; font-weight: 600; }
+
+/* Results table, BenchmarkDotNet style: the comparison tool is the 1.00 baseline. */
+.results { width: 100%; border-collapse: collapse; font-family: "Archivo Condensed"; font-size: 18px; color: var(--ink); }
+.results th { font-size: 13.5px; color: var(--accent); text-align: left; padding: 0 16px 14px; border-bottom: 1px solid var(--line); }
+.results th:nth-child(n+3) { text-align: right; }
+.results td { padding: 12px 16px; font-variant-numeric: tabular-nums; }
+.results td.num { text-align: right; }
+.results td.dim { color: var(--muted); }
+.results td.project { font-weight: 600; vertical-align: middle; border-bottom: 1px solid var(--line); }
+.results tr.mine td { background: var(--tint); font-weight: 600; border-bottom: 1px solid var(--line); }
+.results tr.mine td.ratio { font-weight: 700; }
+.results tr.baseline td { color: var(--muted); }
+.results tr.baseline td.project { color: var(--ink); }
+.results tr.mine td.tool::before { content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 2px; background: var(--bar); margin-right: 10px; }
+.results tr.baseline td.tool::before { content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 2px; background: var(--rival); margin-right: 10px; }
+.bench footer .run { color: var(--ink); font-weight: 600; }
