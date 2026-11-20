@@ -1,163 +1,338 @@
 ---
 layout: default
+title: Configuration
+description: Every option of microunit.config.php and MicroUnitConfigBuilder, grouped by what it controls.
 ---
-
-**[← Back to Home](index.md)**
 
 # Configuration
 
-MicroUnit can be configured via a builder pattern using a php config file.
-Each configuration method is listed below with its signature and a concise explanation.
+MicroUnit is configured in PHP, in a file called `microunit.config.php` that returns a `MicroUnitConfig`. You build that object with `MicroUnitConfigBuilder`. No XML, no YAML, no schema to look up: your editor autocompletes the options, and because it is code, you can read environment variables or branch on them. Command line flags exist only to change a single run; anything you want every time belongs here. This page lists every builder method, grouped by what it controls.
 
----
-
-## Creating the Config file
-
-Create a file called `microunit.config.php` in the current working directory or any parent directories.
-
-MicroUnit will discover that file and cache it's path for optimal performance. If you happen to move the file the cache will automatically be invalidated and the new file path will be cached.
-
-The config file can contain any PHP logic you want as long as it ends up returning an instance of `MicroUnit\Config\MicroUnitConfig`.
-
-While you can use create an instance manually through calling
-`new MicroUnit\Config\MicroUnitConfig(...)` and passing the desired constructor arguments using the `MicroUnitConfigBuilder` is recommended (FQN: MicroUnit\Config\MicroUnitConfigBulder).
-
-## MicroUnitConfigBuilder Methods
-
-### `withTestDir(string $dir)`
-
-Sets the directory where test files are located.
-
-> **🚨 WARNING: DO NOT USE `__DIR__`**  
-> Using `__DIR__` to construct a test directory path breaks test discovery and will throw an exception.  
-> Use a relative path from the location of `microunit.config.php` instead.
+## A complete example
 
 ```php
-MicroUnitConfigBuilder()::create()
-    ->withTestDir(__DIR__ . '/tests')
+<?php
+
+use MicroUnit\Config\MicroUnitConfigBuilder;
+use MicroUnit\Output\JUnitTestWriter;
+use MicroUnit\Output\MinimalStringTestWriter;
+
+$config = MicroUnitConfigBuilder::create()
+    ->withTestGroup('unit', 'tests/Unit')
+    ->withTestGroup('integration', 'tests/Integration')
+    ->withTestFilePatterns('*Test.php')
+    ->withBootstrapFile('tests/bootstrap.php')
+    ->runInParallel()
+    ->withTestExplorer(editor: 'phpstorm')
+    ->failOnRiskyTests();
+
+// Coverage, a JUnit report and the integrity check only in CI, where nobody is waiting.
+if (getenv('CI') !== false) {
+    $config
+        ->withTestWriters(
+            new MinimalStringTestWriter(),
+            new JUnitTestWriter(__DIR__ . '/build/junit.xml'),
+        )
+        ->withCoverage(
+            include: 'src',
+            exclude: 'src/Legacy',
+            html: 'build/coverage',
+            clover: 'build/clover.xml',
+            minimum: 80.0,
+        )
+        ->withIntegrityCheck('origin/main', failOnFindings: true);
+}
+
+return $config->build();
 ```
 
-### `withTestWriters(ITestWriter ...$writers)`
+Builder methods change the builder and return it, so you can chain them, or call them conditionally on a variable like above. Do not forget `return` and `->build()` at the end; without them MicroUnit stops with exit code `2` and asks whether you forgot one of the two.
 
-Sets one or more output writers for test results.
+## The config file
 
-> **Note:** Calling this method multiple times will override the output writers each time
+MicroUnit looks for `microunit.config.php` in the current directory and then in each parent directory, and uses the first one it finds. So you can run `vendor/bin/microunit` from anywhere inside the project. `--config=path/to/file.php` (or `-c=...`) picks a file explicitly.
+
+Without any config file, MicroUnit runs with the defaults: tests in `tests/` (or the current directory if there is no `tests/`), files named `*-tests.php`, compact console output, sequential.
+
+**Paths in the config are relative to the config file**, never to the directory you run from. Absolute paths work too, so `__DIR__ . '/tests'` is fine. This applies to `withTestDir()`, `withTestGroup()`, `withBootstrapFile()`, `withCoverage()` and `withRuntimeDirectory()`.
+
+The one exception is writer file paths, like `new JUnitTestWriter('build/junit.xml')`. Writers resolve relative paths against the current working directory. If you sometimes run the tests from a subdirectory, pass an absolute path with `__DIR__` to keep the report in one place.
+
+## Defaults at a glance
+
+| Setting | Default | Change it with |
+| --- | --- | --- |
+| Test directory | `tests/` next to the config file | `withTestDir()`, `withTestGroup()` |
+| File patterns | `*-tests.php` | `withTestFilePatterns()`, `addTestFilePattern()` |
+| Writers | `MinimalStringTestWriter` | `withTestWriters()`, `addTestWriter()` |
+| Parallel workers | 1 (sequential) | `runInParallel()` |
+| Coverage | off | `withCoverage()` |
+| Test Explorer | off (opt-in), port 7357, links open VS Code | `withTestExplorer()` |
+| GitHub Actions annotations | on when running on GitHub Actions | `withoutCiAnnotations()` |
+| Agent output | automatic in agent sessions | `withAgentOutput()` |
+| Integrity check | off | `withIntegrityCheck()` |
+| Runtime directory | `.microunit` | `withRuntimeDirectory()` |
+
+## Tests and discovery
+
+### `withTestDir(string $testDirectory)`
+
+The directory searched recursively for test files.
 
 ```php
-MicroUnitConfigBuilder()::create()
-    ->withTestWriters(
-        new MinimalStringTestWriter(),
-        new FileTestWriter('/tmp/results.log')
-    )
+->withTestDir('tests')
 ```
 
-### `addTestWriter(ITestWriter $writer)`
-
-Adds an output writer for test results.
-
-> **Note:** Unlike `withTestWriters` this method will **NOT** override the previously defined output writers it just adds a new output writer to the list with each call.
-
-Calling this method two times and calling `withTestWriters(ITestWriter ...$writers)` with two (or more) arguments behaves the same it just comes down to preference.
-
-> Note: The TestWriters are it's own thing and the logic internally works different so you **should** be using `__DIR__` here.
-
-```php
-MicroUnitConfigBuilder()::create()
-    ->addTestWriter(new MinimalStringTestWriter())
-    ->addTestWriter(, new FileTestWriter(__DIR__ . '/tmp/results.log'))
-```
+If you also define test groups, this directory belongs to no group: it runs when no `--group` is given.
 
 ### `withTestFilePatterns(string ...$patterns)`
 
-Sets the glob patterns for test file names. These are going to be used in test discovery to find the test files to run.
-
-> **Note:** Calling this method multiple times will override the previous patterns each time.
+Replaces the file name globs that mark a file as a test file. The default is `*-tests.php`.
 
 ```php
-MicroUnitConfigBuilder()::create()
-    ->withTestFilePatterns('*-tests.php', 'Test[A-Z]*.php')
+->withTestFilePatterns('*Test.php')
 ```
+
+Globs are matched against the file name only, case-insensitively. Supported: `*`, `?`, `[abc]` and `[!abc]`.
 
 ### `addTestFilePattern(string $pattern)`
 
-Adds a glob pattern for test file names. These are going to be used in test discovery to find the test files to run.
-
-> **Note:** Unlike `withTestFilePatterns` this method will **NOT** override the previously defined patterns when called multiple times. It just adds a new pattern to the list with each call.
-
-Calling this method two times and calling `withTestFilePatterns(string ...$patterns)` with two (or more) arguments behaves the same it just comes down to preference.
+Adds one glob to the configured patterns, which start as the default `*-tests.php`.
 
 ```php
-MicroUnitConfigBuilder()::create()
-    ->addTestFilePattern('*-tests.php')
-    ->addTestFilePattern('Test[A-Z]*.php')
+->addTestFilePattern('*Test.php') // finds *-tests.php and *Test.php
 ```
+
+To replace the default, use `withTestFilePatterns()`.
+
+### `withTestGroup(string $name, string $directory, string ...$filePatterns)`
+
+Adds a named group of test files that you can run on its own with `--group=NAME`. Without `--group`, every group runs.
+
+```php
+->withTestGroup('unit', 'tests/Unit')
+->withTestGroup('integration', 'tests/Integration', '*IntegrationTest.php')
+```
+
+Without file patterns, the group uses the configured test file patterns. Call it once per group. See [test groups](writing-tests.md#test-groups) for how groups combine with `withTestDir()`.
+
+### `withBootstrapFile(string $bootstrapFile)`
+
+A PHP file included once before any test file.
+
+```php
+->withBootstrapFile('tests/bootstrap.php')
+```
+
+You do not need it for autoloading; MicroUnit finds and loads your project's `vendor/autoload.php` on its own. Use it for environment variables, global helpers or framework setup that is not covered by an [integration](frameworks.md). A missing file is a configuration error (exit code `2`).
+
+## Output
+
+### `withTestWriters(ITestWriter ...$writers)`
+
+Replaces the writers that report the results.
+
+```php
+use MicroUnit\Output\HtmlTestWriter;
+use MicroUnit\Output\JUnitTestWriter;
+use MicroUnit\Output\MinimalStringTestWriter;
+
+->withTestWriters(
+    new MinimalStringTestWriter(),
+    new JUnitTestWriter(__DIR__ . '/build/junit.xml'),
+    new HtmlTestWriter(__DIR__ . '/build/test-report.html'),
+)
+```
+
+The writers that ship with MicroUnit:
+
+| Writer | What it produces |
+| --- | --- |
+| `MinimalStringTestWriter` | One line per test, details only for failures. The default. |
+| `StringTestWriter` | A detailed block per test with location, return value, captured output and stack traces. |
+| `FileTestWriter` | The console output, without colours, written to a file. |
+| `JUnitTestWriter` | JUnit XML for CI systems. |
+| `HtmlTestWriter` | A self-contained HTML report, handy as a CI artifact. |
+| `LogTestWriter` | A structured log with a configurable line format, or JSON lines. |
+| `AgentTestWriter` | Compact JSON with the failures only, for AI agents. |
+| `GitHubActionsTestWriter` | Annotations on the failing lines of a pull request. Added automatically on GitHub Actions. |
+
+Their constructor options are on the [output and reports](output.md) page.
+
+### `addTestWriter(ITestWriter $writer)`
+
+Adds one writer to the configured ones, which start as the default console output.
+
+```php
+->addTestWriter(new JUnitTestWriter(__DIR__ . '/build/junit.xml')) // console output and a JUnit file
+```
+
+To replace the console output, use `withTestWriters()`.
+
+### `withoutCiAnnotations()`
+
+Turns off the GitHub Actions annotations that MicroUnit adds by itself when `GITHUB_ACTIONS=true`.
+
+```php
+->withoutCiAnnotations()
+```
+
+See [CI/CD](ci-cd.md) for what they look like.
+
+## Running
+
+### `runInParallel(?int $workers = null)`
+
+Runs the tests in several worker processes. Without an argument, one worker per CPU core.
+
+```php
+->runInParallel()   // one worker per core
+->runInParallel(4)  // exactly four workers
+```
+
+Whole suites are distributed, so a suite's `setUpOnce()` and shared fixtures stay in one process. With fewer than two suites, when `proc_open()` is disabled, or (one worker per core only) when the previous run suggests the tests finish in under a second, MicroUnit runs sequentially. Override per run with `--parallel[=N]` or `--no-parallel`. Details on the [parallel runs](parallel.md) page.
 
 ### `stopOnFailure()`
 
-Stops test execution after the first failure.
+Stops the run after the first failing test.
 
 ```php
-MicroUnitConfigBuilder()::create()
-    ->stopOnFailure()
+->stopOnFailure()
 ```
 
-### `withBootstrapFile(string $file)`
+Usually more useful as a one-off: `vendor/bin/microunit --failed --stop-on-failure`.
 
-Specifies a PHP file to execute before running tests.
+## Coverage
 
-> **🚨 WARNING: DO NOT USE `__DIR__`**  
-> Using `__DIR__` to construct the path to the bootstrap file will throw an exception.  
-> Use a relative path from the location of `microunit.config.php` instead.
+### `withCoverage(...)`
+
+Measures code coverage on every run. MicroUnit instruments the code itself, so you need neither Xdebug nor PCOV.
 
 ```php
-MicroUnitConfigBuilder()::create()
-    ->withBootstrapFile('/bootstrap.php') // DONT USE __DIR__
+->withCoverage(
+    include: ['src', 'app'],
+    exclude: 'src/Generated',
+    html: 'build/coverage',
+    clover: 'build/clover.xml',
+    cobertura: 'build/cobertura.xml',
+    text: true,
+    minimum: 80.0,
+)
 ```
+
+| Parameter | Default | Purpose |
+| --- | --- | --- |
+| `string\|array $include` | `'src'` | Directories or files whose code is measured. |
+| `string\|array $exclude` | `[]` | Directories or files inside `$include` to skip. |
+| `?string $html` | `null` | Directory for the HTML report. |
+| `?string $clover` | `null` | File for the Clover XML report (Codecov, Coveralls, Jenkins). |
+| `?string $cobertura` | `null` | File for the Cobertura XML report (GitLab, Azure DevOps). |
+| `bool $text` | `true` | Print a coverage table to the console after the run. |
+| `?float $minimum` | `null` | Fail the run (exit code `1`) when line coverage is below this percentage. |
+
+All paths are relative to the config file. Skip coverage for one run with `--no-coverage`; without `withCoverage()`, `--coverage` turns it on for one run with the defaults above. Coverage costs time, which is why the example at the top only enables it in CI. More on the [code coverage](coverage.md) page.
+
+## Test Explorer
+
+### `withTestExplorer(bool $openAfterRun = true, int $port = 7357, string $editor = 'vscode')`
+
+Everything about the Test Explorer in one call. It is off by default: without this, `microunit explorer` and `--explorer` still open it, with the defaults.
+
+```php
+->withTestExplorer()                                        // open it after every interactive run
+->withTestExplorer(port: 7400, editor: 'phpstorm')          // the same, on another port, with PhpStorm links
+->withTestExplorer(openAfterRun: false, editor: 'cursor')   // only on demand, with Cursor links
+```
+
+- **`openAfterRun`**: open the explorer (or update the open one) after every local, interactive run. It never opens in CI or when the output is piped; `--no-explorer` keeps it closed for one run.
+- **`port`**: the local port it listens on.
+- **`editor`**: what its file links open. Known names: `vscode`, `cursor`, `windsurf`, `zed`, `phpstorm`, `idea`, `sublime`. Anything else must be a URL template containing `{file}` (and usually `{line}`), such as `myeditor://open?file={file}&line={line}`; an unknown name without `{file}` falls back to VS Code.
+
+See [Test Explorer](test-explorer.md).
+
+## Frameworks
+
+### `withFramework(IFrameworkIntegration $framework)`
+
+Boots a framework around every test, so tests run inside the framework's own test case with its database handling, fakes and helpers.
+
+```php
+use MicroUnit\Integration\Laravel\LaravelIntegration;
+
+->withFramework(new LaravelIntegration(
+    traits: [RefreshDatabase::class],
+    environment: ['DB_CONNECTION' => 'sqlite', 'DB_DATABASE' => ':memory:'],
+))
+```
+
+MicroUnit ships `LaravelIntegration`, `SymfonyIntegration` and `CodeIgniterIntegration`. All three take `testCase` (the base test case, default: the framework's own), `traits` (applied to every test) and `environment` (like `<env>` in `phpunit.xml`). `microunit init` adds the right one when it finds the framework in `composer.json`. The [frameworks](frameworks.md) page has the details.
+
+## AI agents and strictness
+
+### `withAgentOutput(bool $enabled = true)`
+
+Output for AI coding agents: one compact JSON object with only the failures, instead of the console writers.
+
+```php
+->withAgentOutput()        // always
+->withAgentOutput(false)   // never, even in agent sessions
+```
+
+Without this setting it switches on by itself when an agent runs the tests: Claude Code sets `CLAUDECODE=1`, and any other agent can set `MICROUNIT_AGENT=1`. In agent mode the console writers step aside, while file writers such as JUnit keep working. Passing tests cost no tokens. Override per run with `--agent` or `--no-agent`. See [AI coding agents](ai-agents.md).
+
+### `withIntegrityCheck(string $revision = 'HEAD', bool $failOnFindings = false)`
+
+After every run, list tests that were weakened compared to a git revision: removed tests, removed assertions, new skips, changed expected values.
+
+```php
+->withIntegrityCheck()                                    // against HEAD, report only
+->withIntegrityCheck('origin/main', failOnFindings: true) // e.g. in CI for pull requests
+```
+
+The check is opt-in: without this setting it never runs. With `failOnFindings: true`, findings make the run exit with `1`. When the check cannot compare (no git repository, or a revision missing from a shallow clone), MicroUnit says so on standard error, and with `failOnFindings: true` the run fails, so in CI make sure the revision is fetched. `microunit integrity [revision]` runs the same check on demand (see the [CLI](cli.md#integrity)).
+
+### `failOnRiskyTests()`
+
+Fails the run when a test passes without making a single assertion.
+
+```php
+->failOnRiskyTests()
+```
+
+Such tests are always marked `no assertions` in the output. With this setting they also make the run exit with `1`. Recommended when AI agents write tests, because a test that asserts nothing is the easiest way to look green.
+
+## Runtime directory and logs
+
+### `withRuntimeDirectory(string $directory)`
+
+Where MicroUnit keeps its working files. The default is `.microunit` next to the config file.
+
+```php
+->withRuntimeDirectory('var/microunit')
+```
+
+It holds the run logs (`logs/`), the explorer's state (`explorer/`), caches for coverage instrumentation and parallel workers (`cache/`) and temporary files (`tmp/`). MicroUnit writes a `.gitignore` into it, so it never ends up in a commit and you do not need to add it to your own `.gitignore`.
 
 ### `persistRunLogs()`
 
-Enables persistent logging of test runs.
-
-When this method is called in configuration the run logs of your previous test runs are not going to be deleted.
-
-> Note: When removed from the configuration all previously persisted run logs contained in the folder `microunit/bin/run_logs` are going to be deleted. So make sure you safe them somewhere else if you are looking to keep them.
+Keeps the log of every run instead of only the latest one.
 
 ```php
-MicroUnitConfigBuilder()::create()
-    ->persistRunLogs()
+->persistRunLogs()
 ```
 
-### `build()`
+PHP warnings, notices and deprecations during a run go to a log file in `logs/` inside the runtime directory instead of cluttering the console. By default each run deletes the previous logs; with this setting they pile up until you delete them.
 
-Finalizes and returns the configuration object.
+## Building
 
-```php
-MicroUnitConfigBuilder()::create()
-    ->build()
-```
+### `MicroUnitConfigBuilder::create()` and `build()`
 
----
+`create()` starts a builder with every setting at its default; `build()` returns the immutable `MicroUnitConfig`. Anything you did not set keeps its default.
 
-## Example: Full Configuration
+You can also construct `MicroUnit\Config\MicroUnitConfig` directly with named arguments, but the builder is the documented interface, and its method names are what this page, the CLI help and the error messages refer to.
 
-```php
-use MicroUnit\Config\MicroUnitConfigBuilder;
-use MicroUnit\Output\MinimalStringTestWriter;
-use MicroUnit\Output\FileTestWriter;
+## Related
 
-return MicroUnitConfigBuilder::create()
-    ->withTestDir(__DIR__ . '/tests')
-    ->withTestWriters(
-        new MinimalStringTestWriter(),
-        new FileTestWriter('/tmp/results.log')
-    )
-    ->withTestFilePatterns('*-tests.php')
-    ->stopOnFailure()
-    ->withBootstrapFile(__DIR__ . '/bootstrap.php')
-    ->persistRunLogs()
-    ->build();
-```
-
----
-
-**[⬆ Back to Top](#)** • **[📘 Home](index.md)**
+- [Command line](cli.md): flags that override these settings for one run.
+- [Writing tests](writing-tests.md): where tests live, groups and patterns.
+- [Output and reports](output.md), [code coverage](coverage.md), [parallel runs](parallel.md), [CI/CD](ci-cd.md).

@@ -1,104 +1,81 @@
-# Welcome to MicroUnits official documentation page
-
-MicroUnit is a lightweight, expressive, and flexible unit testing framework for PHP.  
-It is designed to help you write clear, maintainable, and robust tests for your PHP projects with minimal setup and maximum power.
-
-> ⚠️ **MicroUnit is currently in public beta!**  
-> Features may change and bugs may exist. Feedback is welcome as we prepare for the first stable release.
-
+---
+layout: default
+title: MicroUnit
+description: The PHP testing framework with zero dependencies. Readable closures, real assertions, a Test Explorer, coverage without extensions, parallel runs and output made for AI agents.
 ---
 
-## Documentation Overview
+# Tests you can read at a glance
 
-- **[Assertions](assertions.md)**  
-  Learn about all assertion methods, including static and chainable usage.
+MicroUnit is a PHP testing framework with zero dependencies. A test is a closure with a name that
+says what it checks, the assertions read like sentences, and runs are fast enough that you never
+wait for them. Everything else you need is in the box.
 
-- **[Configuration](configuration.md)**  
-  Discover all configuration options and how to customize your test environment.
+```php
+<?php
 
-- **[Mocking](mocking.md)**  
-  Explore the mocking engine for creating and verifying test doubles.
+use MicroUnit\Assertion\Assert;
+use MicroUnit\Setup\TestSetup;
 
-- **[Output](output.md)**  
-  See how to configure and extend test output writers.
+$tester = TestSetup::getTester('Cart');
 
-- **[Usage](usage.md)**  
-  Get started with defining, grouping, and running tests.
+$tester->fixture('cart', fn() => new Cart());
 
-- **[Logging](logging.md)**  
-  Learn more about the logging system in microunit, how it works, where your logs are, etc.
+$tester->define('adds_items_and_totals_them', function (Cart $cart): void {
+    $cart->add(new Item('Keyboard', 4900));
+    $cart->add(new Item('Mouse', 1900));
 
-- **[Toolkit](toolkit.md)**  
-  Explore helpful tools designed to simplify common testing tasks and enhance code readability.
+    Assert::countEquals(2, $cart->items());
+    Assert::exact(6800, $cart->total());
+});
+```
 
-- **[Troubleshooting](troubleshooting.md)**  
-  Are you having trouble with running your tests? Check out this section where the usual pitfalls and errors are documented and how to overcome them.
+```bash
+composer require --dev microunit/microunit
+vendor/bin/microunit init
+vendor/bin/microunit
+```
 
----
+[Get started in five minutes](getting-started.md), or bring your PHPUnit suite along with
+[one command](migrating-from-phpunit.md).
 
-## Quick Start
+## What you get
 
-1. **Install MicroUnit**  
-   Add MicroUnit to your project using Composer:
+<div class="feature-grid">
+  <a href="{{ '/assertions/' | relative_url }}"><strong>Assertions</strong><span>Sixty of them, including the ones you keep writing by hand: partial matches, any-order comparisons, soft assertions, eventually.</span></a>
+  <a href="{{ '/snapshots/' | relative_url }}"><strong>Snapshots</strong><span>Compare output with a reviewed file. Never created by accident in CI.</span></a>
+  <a href="{{ '/mocking/' | relative_url }}"><strong>Mocking</strong><span>Mocks, stubs and spies without a second library, with per-instance call logs.</span></a>
+  <a href="{{ '/integration-testing/' | relative_url }}"><strong>Integration testing</strong><span>Fixtures with cleanup, a database helper, an HTTP server and client.</span></a>
+  <a href="{{ '/frameworks/' | relative_url }}"><strong>Laravel, Symfony, CodeIgniter</strong><span>Your framework's own testing helpers, inside readable tests.</span></a>
+  <a href="{{ '/test-explorer/' | relative_url }}"><strong>Test Explorer</strong><span>A live view of your suite in the browser. Run one test, a suite or the failures.</span></a>
+  <a href="{{ '/parallel/' | relative_url }}"><strong>Parallel runs</strong><span>Built in, with no extra package. Suites stay together in one worker.</span></a>
+  <a href="{{ '/coverage/' | relative_url }}"><strong>Code coverage</strong><span>In pure PHP: no Xdebug, no PCOV. Text, HTML, Clover and Cobertura.</span></a>
+  <a href="{{ '/ai-agents/' | relative_url }}"><strong>AI coding agents</strong><span>Token-cheap output, and a check that catches tests weakened to pass.</span></a>
+  <a href="{{ '/migrating-from-phpunit/' | relative_url }}"><strong>Migrating from PHPUnit</strong><span>One command translates your suite, mocks and data providers included.</span></a>
+  <a href="{{ '/output/' | relative_url }}"><strong>Reports</strong><span>JUnit, HTML, GitHub Actions annotations, logs, JSON. Several at once.</span></a>
+  <a href="{{ '/benchmarks/' | relative_url }}"><strong>Benchmarks</strong><span>Real suites of popular projects, every number reproducible.</span></a>
+</div>
 
-   ```sh
-   composer require your-vendor/microunit --dev
-   ```
+## The ideas behind it
 
-2. **Create your microunit.config.php**  
-   Create `microunit.config.php` in your current working directory or any parent directories:
+**Easy to write, easy to scan.** Tests are read far more often than they are written, by you, by
+your colleagues and by AI agents. MicroUnit keeps them plain: a name, a closure, assertions with the
+expected value first. No base classes to inherit, no annotations to remember, no XML.
 
-   > Note: All paths are going to be resolved relative to the location of your config file.
+**Zero dependencies.** MicroUnit does not install a single Composer package, not even for its own
+development. Nothing to conflict with your project, nothing to audit, nothing that breaks when you
+upgrade something else.
 
-   ```php
-   <?php
-   use MicroUnit\Config\MicroUnitConfigBuilder;
-   use MicroUnit\Output\MinimalStringTestWriter;
+**Fast, because you run tests all the time.** Developers and agents re-run a file after every small
+change. MicroUnit keeps the cost of each run small, and the [benchmarks](benchmarks.md) show it on
+real projects.
 
-   return MicroUnitConfigBuilder::create()
-       ->withTestDir('./tests')
-       ->addTestFilePattern('*Test.php') // If not configured '*-tests.php' will be used
-       ->addTestWriter(new MinimalStringTestWriter()) //If not configured MinimalStringTestWriter will be used
-       ->build();
-   ```
+**Configured in PHP.** One `microunit.config.php`, with autocompletion and comments. Command-line
+flags only change a single run. See [configuration](configuration.md).
 
-3. **Write your first test**  
-   Create a test file in your specified test directory (or any child directory) and start testing.
+## Sponsors
 
-   ```php
-   use MicroUnit\Assertion\Assert;
-   use MicroUnit\Setup\TestSetup;
+MicroUnit is free and independent. If it saves you time, consider
+[sponsoring it on GitHub](https://github.com/sponsors/mitarnik04) or
+[buying the maintainer a coffee](https://coff.ee/mitarnikolic). Sponsors are listed here.
 
-   $tester = TestSetup::getTester("YOUR_TEST_SUITE_NAME");
-   $tester->define('my_first_test', function(){
-        Assert::equals(2, 1 + 1);
-   })
-   ```
-
-4. **Run Your Tests**  
-    Use your preferred test runner or CLI integration.
-
-   ```bash
-   vendor/bin/microunit
-   ```
-
----
-
-## Why MicroUnit?
-
-- **Simple, expressive assertions**
-- **Powerful mocking and call tracking**
-- **Flexible configuration**
-- **Customizable output**
-- **Fast and easy to integrate**
-
----
-
-## More Resources
-
-- [GitHub Repository](https://github.com/mitarnik04/MicroUnit)
-- [X (aka Twitter)](https://x.com/MicroUnitPHP)
-
----
-
-**[⬆ Back to Top](#)**
+*Your name could be the first one.*

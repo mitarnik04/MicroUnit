@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {%- assign page_title = page.title | default: site.title -%}
+    <title>{% if page.url == "/" %}{{ site.title }}: {{ site.tagline }}{% else %}{{ page_title }} · {{ site.title }}{% endif %}</title>
+    <meta name="description" content="{{ page.description | default: site.description | escape }}">
+    <meta property="og:title" content="{{ page_title | escape }}">
+    <meta property="og:description" content="{{ page.description | default: site.description | escape }}">
+    <meta property="og:image" content="{{ '/assets/img/social-preview.png' | absolute_url }}">
+    <meta property="og:url" content="{{ page.url | absolute_url }}">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="canonical" href="{{ page.url | absolute_url }}">
+    <link rel="icon" href="{{ '/assets/img/favicon.svg' | relative_url }}" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="{{ '/assets/img/apple-touch-icon.png' | relative_url }}">
+    <link rel="stylesheet" href="{{ '/assets/css/brand.css' | relative_url }}">
+    <link rel="stylesheet" href="{{ '/assets/css/docs.css' | relative_url }}">
+</head>
+<body>
+<header class="site-header">
+    <button class="menu-button" type="button" aria-controls="sidebar" aria-expanded="false">Menu</button>
+    <a class="brand" href="{{ '/' | relative_url }}" aria-label="MicroUnit documentation home">
+        <svg class="mark" viewBox="0 0 64 64" aria-hidden="true"><path fill="var(--mark-block)" d="M7 12H33a3 3 0 0 1 3 3V28H49a3 3 0 0 1 3 3V57a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3V15a3 3 0 0 1 3-3z"/><rect fill="var(--mark-unit)" x="44" y="4" width="16" height="16" rx="3"/></svg>
+        <span class="wordmark">microunit</span>
+        <span class="version">{{ site.version }}</span>
+    </a>
+    <nav class="header-links" aria-label="Site">
+        <a href="{{ '/getting-started/' | relative_url }}"{% if page.url == "/getting-started/" %} aria-current="page"{% endif %}>Docs</a>
+        <a class="secondary" href="{{ '/benchmarks/' | relative_url }}"{% if page.url == "/benchmarks/" %} aria-current="page"{% endif %}>Benchmarks</a>
+        <a href="{{ site.repository_url }}">GitHub</a>
+    </nav>
+</header>
+
+<div class="page">
+    <nav class="sidebar" id="sidebar" aria-label="Documentation">
+        {%- for group in site.data.navigation %}
+        <h2>{{ group.title }}</h2>
+        <ul>
+            {%- for item in group.pages %}
+            <li><a href="{{ item.url | relative_url }}"{% if page.url == item.url %} aria-current="page"{% endif %}>{{ item.title }}</a></li>
+            {%- endfor %}
+        </ul>
+        {%- endfor %}
+    </nav>
+
+    <main id="main">
+        <article class="content">
+            {{ content }}
+        </article>
+
+        {%- comment -%} Previous / next from the navigation order. {%- endcomment -%}
+        {%- assign flat = "" -%}
+        {%- for group in site.data.navigation -%}{%- for item in group.pages -%}{%- assign flat = flat | append: item.url | append: "::" | append: item.title | append: "||" -%}{%- endfor -%}{%- endfor -%}
+        {%- assign entries = flat | split: "||" -%}
+        {%- assign previous = nil -%}{%- assign next = nil -%}
+        {%- for entry in entries -%}
+            {%- assign parts = entry | split: "::" -%}
+            {%- if parts[0] == page.url -%}
+                {%- assign previous_index = forloop.index0 | minus: 1 -%}
+                {%- assign next_index = forloop.index0 | plus: 1 -%}
+                {%- if previous_index >= 0 -%}{%- assign previous = entries[previous_index] | split: "::" -%}{%- endif -%}
+                {%- if entries[next_index] -%}{%- assign next = entries[next_index] | split: "::" -%}{%- endif -%}
+            {%- endif -%}
+        {%- endfor %}
+        <nav class="pager" aria-label="Previous and next page">
+            {%- if previous %}<a class="previous" href="{{ previous[0] | relative_url }}"><span class="label">Previous</span><span class="title">{{ previous[1] }}</span></a>{% endif %}
+            {%- if next %}<a class="next" href="{{ next[0] | relative_url }}"><span class="label">Next</span><span class="title">{{ next[1] }}</span></a>{% endif %}
+        </nav>
+        <div class="page-meta">
+            <a href="{{ site.repository_url }}/edit/main/docs/{{ page.path }}">Edit this page on GitHub</a>
+            <span>MicroUnit {{ site.version }}</span>
+        </div>
+    </main>
+
+    <aside class="toc" aria-label="On this page" hidden>
+        <span class="label">On this page</span>
+        <ul></ul>
+    </aside>
+</div>
+
+<script>
+(() => {
+    // Mobile menu
+    const button = document.querySelector('.menu-button');
+    button.addEventListener('click', () => {
+        const isOpen = document.body.classList.toggle('menu-open');
+        button.setAttribute('aria-expanded', String(isOpen));
+        button.textContent = isOpen ? 'Close' : 'Menu';
+    });
+
+    // "On this page": every h2/h3 gets an anchor link and an entry; the visible one is highlighted.
+    const headings = [...document.querySelectorAll('.content h2[id], .content h3[id]')];
+    const toc = document.querySelector('.toc');
+    if (headings.length > 1) {
+        toc.hidden = false;
+        toc.querySelector('ul').innerHTML = headings.map((heading) =>
+            `<li class="level-${heading.tagName[1]}"><a href="#${heading.id}">${heading.textContent}</a></li>`).join('');
+    }
+    headings.forEach((heading) => {
+        const anchor = document.createElement('a');
+        anchor.className = 'heading-anchor';
+        anchor.href = '#' + heading.id;
+        anchor.setAttribute('aria-label', 'Link to this section');
+        anchor.textContent = '#';
+        heading.append(anchor);
+    });
+    const links = new Map([...toc.querySelectorAll('a')].map((link) => [link.hash.slice(1), link]));
+    const observer = new IntersectionObserver((entries) => {
+        for (const entry of entries) {
+            if (entry.isIntersecting) {
+                links.forEach((link) => link.classList.remove('active'));
+                links.get(entry.target.id)?.classList.add('active');
+            }
+        }
+    }, { rootMargin: '-70px 0px -70% 0px' });
+    headings.forEach((heading) => observer.observe(heading));
+})();
+</script>
+</body>
+</html>

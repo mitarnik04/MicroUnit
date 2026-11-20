@@ -1,651 +1,852 @@
 ---
 layout: default
+title: Assertions
+description: The complete Assert reference, plus the fluent assertion classes, HTTP response assertions and how to write your own.
 ---
-
-**[← Back to Home](index.md)**
 
 # Assertions
 
-MicroUnit provides several assertion classes.  
-Each assertion method is listed below with its signature, a concise explanation, and usage examples.  
-Most assertion methods can be called either via an assertion chain (e.g., `AssertSingle::begin($value)->equals(...)`) or statically (e.g., `Assert::equals($value, $expected)`).  
-**Note:** Static calls are not available for `AssertMock` methods due to additional setup required for mock tracking.
+Everything you check in a MicroUnit test goes through `MicroUnit\Assertion\Assert`. It is one class with static methods, grouped here by topic: values, numbers and dates, collections, strings and JSON, files, behaviour and snapshots. The names are plain English, the argument order is the one you already know from PHPUnit, and a failure tells you what was expected, what arrived and, where it helps, shows a diff. This page lists every method with its signature, what it checks and a small example. If you have not written a test yet, start with [writing tests](writing-tests.md).
 
----
+## Two rules that cover every method
 
-## Table of Contents
-
-- **[Static Assert Methods](#static-assert-methods)**
-- **[Fluent Assertions](#fluent-assertions)**
-  - **[AssertSingle](#assertsingle)**
-  - **[AssertNumeric](#assertnumeric)**
-  - **[AssertArray](#assertarray)**
-- **[AssertMock](#assertmock)**
-- **[AssertMockMethod](#assertmockmethod)**
-
----
-
-## Static Assert Methods
-
-Most assertion methods can be called statically via the `Assert` class.
-These static methods get used under the hood by AssertSingle, AssertArray and AssertNumeric (Fluent API).
-
-### List of Available Static Methods
-
-- `Assert::equals(mixed $expected, mixed $actual): void`  
-  Asserts that `$expected == $actual`.
-
-- `Assert::notEquals(mixed $unexpected, mixed $actual): void`  
-  Asserts that `$unexpected != $actual`.
-
-- `Assert::exact(mixed $expected, mixed $actual): void`  
-  Asserts that `$expected === $actual`.
-
-- `Assert::notExact(mixed $unexpected, mixed $actual): void`  
-  Asserts that `$unexpected !== $actual`.
-
-- `Assert::isTrue(mixed $value): void`  
-  Asserts that `$value === true`.
-
-- `Assert::isFalse(mixed $value): void`  
-  Asserts that `$value === false`.
-
-- `Assert::isNull(mixed $value): void`  
-  Asserts that `$value === null`.
-
-- `Assert::notNull(mixed $value): void`  
-  Asserts that `$value !== null`.
-
-- `Assert::isGreaterThan(int|float $value, int|float $min): void`  
-  Asserts that `$value > $min`.
-
-- `Assert::isLessThan(int|float  $value, int|float  $max): void`  
-  Asserts that `$value < $max`.
-
-- `Assert::isBetween(int | float  $min, int|float  $max, int|float  $value, bool $inclusive = true): void`  
-  Asserts that `$value` is between `$min` and `$max`. Inclusive by default.
-
-- `Assert::empty(array $array): void`  
-  Asserts that the array is empty.
-
-- `Assert::notEmpty(array $array): void`  
-  Asserts that the array is not empty.
-
-- `Assert::contains(mixed $element, array $source, bool $shouldUseStrict = true): void`  
-  Asserts that `$element` exists in `$source`. If `shouldUseStrict` is true it will also make sure the type of `$element` matches the given element in `$source`.
-
-- `Assert::countEquals(int $expected, array|\Countable $source): void`  
-  Asserts that the array contains exactly `$count` elements.
-
-- `Assert::hasKey(mixed $key, array $array): void`  
-  Asserts that the array has the specified key.
-
-- `Assert::notHasKey(mixed $key, array $array): void`  
-  Asserts that the array does not have the specified key.
-
-- `Assert::keysEqual(array $expectedKeys, array $array): void`  
-  Asserts that the keys of `$array` match `$expectedKeys` in order and value.
-
-- `Assert::containsOnly(array $allowedValues, array $array): void`  
-  Asserts that all elements in `$array` are among `$allowedValues`.
-
-- `Assert::instanceOf(string $expectedInstance, object $object): void`  
-   Asserts that `$value` is an instance of the given class or interface.
-
-- `Assert::throws(callable $method, ?string $exceptionType): void`  
-  Asserts that executing `$fn` throws an exception of type `$exceptionClass`.
-
-> **Note:**  
-> Static assert methods are **not available** for `AssertMock` because mock assertions require additional context and tracking.
-
-## Fluent Assertions
-
-No matter which fluent assertion class you are using to start the fluent assertion process you call `AssertClass::begin($value)` (e.g `AssertSingle::begin('something')`).
-
-### AssertSingle
-
-Defines different assertion methods for single values (bool, string, int, float, etc.).
-
-### `equals(mixed $expected): self`
-
-Asserts that the value is equal to `$expected` (==).
-
-**Example:**
+**Expected first, actual last, message at the very end.** It is PHPUnit's order, so muscle memory carries over:
 
 ```php
-AssertSingle::begin($value)->equals(42);
+Assert::exact(42, $answer);
+Assert::countEquals(3, $cart->items());
+Assert::stringStartsWith('INV-', $invoice->number, 'Invoice numbers need the INV- prefix');
 ```
 
-### `notEquals(mixed $unexpected): self`
+The optional `$message` is printed above the assertion's own description when it fails. It is always the last parameter, so for methods with optional parameters in between, use a named argument: `Assert::contains('2', $ids, message: 'id missing')`.
 
-Asserts that the value is not equal to `$unexpected` (==).
-
-**Example:**
+**Behaviour assertions take the callable first.** When the thing under test is "what happens when this code runs", the code comes first and the expectation follows:
 
 ```php
-AssertSingle::begin($value)->notEquals(0);
+Assert::throws(fn () => $cart->checkout(), EmptyCartException::class);
+Assert::prints(fn () => $report->render(), "Total: 3\n");
 ```
 
-### `exact(mixed $expected): self`
+## Loose or strict: `equals` versus `exact`
 
-Asserts that the value is exactly equal to `$expected` (===).
+`Assert::exact()` is `===`. Same type, same value, and for objects the same instance. It is the one to reach for by default, because it catches the `'42'` that should have been `42`.
 
-**Example:**
+`Assert::equals()` is loose, and smarter than PHP's `==` in one important way: objects of the same class are compared property by property, recursively, like PHPUnit's `assertEquals`. Two `Money(5, 'EUR')` objects are equal even though they are different instances. Dates compare as moments in time, so `12:00 UTC` equals `13:00 +01:00`. Objects of different classes are never equal. Scalars inside still compare with `==`, so `1` equals `'1'`.
 
 ```php
-AssertSingle::begin($value)->exact('foo');
+Assert::equals(new Money(5, 'EUR'), $wallet->balance()); // passes for an equal copy
+Assert::exact(new Money(5, 'EUR'), $wallet->balance());  // fails: different instance
+Assert::equals(1, '1');                                  // passes
+Assert::exact(1, '1');                                   // fails
 ```
 
-### `notExact(mixed $unexpected): self`
+My rule of thumb: `exact` for scalars and anything where the type matters, `equals` for value objects and arrays of them.
 
-Asserts that the value is not exactly equal to `$unexpected` (===).
+## What a failure looks like
 
-**Example:**
+Every failed assertion throws a `TestFailedException` carrying an `AssertionFailure`: a description, the expected and actual values, an optional diff and your custom message. Value comparisons (`equals`, `exact`, `equivalent`, `containsSubset`, `keysEqual`, the string equality checks, `matchesFormat`, `jsonEquals`, `fileContentEquals`, `prints` and snapshots) render a diff, so a two-hundred-line array points straight at the line that changed:
 
-```php
-AssertSingle::begin($value)->notExact(false);
+```text
+[✖] stores_roles (0.07ms)
+    roles changed
+    Failed asserting that two values are equal.
+    --- Expected
+    +++ Actual
+    @@ @@
+          'name' => 'Ada' (string),
+          'roles' => [
+              0 => 'admin' (string),
+    -         1 => 'dev' (string),
+    +         1 => 'ops' (string),
+          ],
+      ]
 ```
 
-### `instanceOf(string $expectedInstance): self`
+The rest print `Expected:` and `Actual:` lines. Values always carry their type (`'42' (string)` versus `42 (int)`), because "expected 42, got 42" is the most useless failure message in testing. How results are rendered for terminals, CI and AI agents is covered in [output](output.md).
 
-Asserts that the value is an instance of the given class/interface.
+## Every assertion counts
 
-**Example:**
+Each assertion that runs, passing or failing, is counted for the current test: every `Assert` check once (`throws()`, `fileContains()` and a passing `eventually()` included, plus whatever the blocks of `each()`, `multiple()` and `eventually()` assert inside) and every `AssertMock` or `AssertResponse` check once, so `AssertMock::begin($mock)->isCalledOnce('send')->isCalledWith('send', [$mail])` counts two. A test that passes without making a single assertion is flagged as risky: the console prints `no assertions` next to it, and agent output lists it as a warning. A test that cannot fail is not a test, and this is the cheapest way to catch the one where the assertion sits behind an `if` that never runs.
+
+To make such tests fail the run, enable `failOnRiskyTests()` on the [configuration](configuration.md) builder.
+
+## Values
+
+### `equals` / `notEquals`
 
 ```php
-AssertSingle::begin($object)->instanceOf(DateTime::class);
+Assert::equals(mixed $expected, mixed $actual, string $message = ''): void
+Assert::notEquals(mixed $unexpected, mixed $actual, string $message = ''): void
 ```
 
-### `isTrue(): self`
-
-Asserts that the value is `true`.
-
-**Example:**
+Loose comparison, objects of the same class property by property (see above).
 
 ```php
-AssertSingle::begin($flag)->isTrue();
+Assert::equals(['id' => 1, 'name' => 'Ada'], $user->toArray());
+Assert::notEquals($before, $after);
 ```
 
-### `isFalse(): self`
-
-Asserts that the value is `false`.
-
-**Example:**
+### `exact` / `notExact`
 
 ```php
-AssertSingle::begin($flag)->isFalse();
+Assert::exact(mixed $expected, mixed $actual, string $message = ''): void
+Assert::notExact(mixed $unexpected, mixed $actual, string $message = ''): void
 ```
 
-### `isNull(): self`
-
-Asserts that the value is `null`.
-
-**Example:**
+Strict comparison (`===`).
 
 ```php
-AssertSingle::begin($value)->isNull();
+Assert::exact(3, $cart->count());
+Assert::notExact($original, $clone); // a different instance
 ```
 
-### `notNull(): self`
-
-Asserts that the value is not `null`.
-
-**Example:**
+### `isTrue` / `isFalse` / `isNull` / `notNull`
 
 ```php
-AssertSingle::begin($value)->notNull();
+Assert::isTrue(mixed $actual, string $message = ''): void
+Assert::isFalse(mixed $actual, string $message = ''): void
+Assert::isNull(mixed $actual, string $message = ''): void
+Assert::notNull(mixed $actual, string $message = ''): void
 ```
 
-### AssertNumeric
-
-Defines assertion methods for numeric values.
-
-### `exact(int|float $expected): self`
-
-Asserts that the value is exactly equal to `$expected` (===).
-
-**Example:**
+Strict checks: `isTrue(1)` fails, only `true` passes.
 
 ```php
-AssertNumeric::begin($value)->exact(42);
+Assert::isTrue($user->isActive());
+Assert::notNull($repository->find(42));
 ```
 
-### `notExact(int|float $unexpected): self`
-
-Asserts that the value is not exactly equal to `$unexpected` (===).
-
-**Example:**
+### `instanceOf`
 
 ```php
-AssertNumeric::begin($value)->notExact(36);
+Assert::instanceOf(string $expectedClass, mixed $actual, string $message = ''): void
 ```
 
-### `isGreaterThan(int|float $min): self`
-
-Asserts that the value is greater than `$min`.
-
-**Example:**
+The value is an instance of the class or interface. The failure shows the actual type.
 
 ```php
-AssertNumeric::begin($number)->isGreaterThan(10);
+Assert::instanceOf(OrderPlaced::class, $events[0]);
 ```
 
-### `isLessThan(int|float $max): self`
-
-Asserts that the value is less than `$max`.
-
-**Example:**
+### `isType`
 
 ```php
-AssertNumeric::begin($number)->isLessThan(100);
+Assert::isType(string $expectedType, mixed $actual, string $message = ''): void
 ```
 
-### `isBetween(int|float $min, int|float $max, bool $inclusive = true)`
-
-Asserts that the value is between `$min` and `$max`.
-
-**Example:**
+Checks a type written the way PHP writes types: `int`, `?string`, `int|float`, a class, interface or enum name, plus a few extras: `list`, `numeric`, `scalar`, `callable`, `iterable`, `resource`, `mixed`. An unknown type name throws an `InvalidArgumentException` instead of silently passing.
 
 ```php
-AssertNumeric::begin($number)->isBetween(1, 10);
+Assert::isType('?string', $user->nickname);
+Assert::isType('int|float', $metrics['latency']);
+Assert::isType('list', $response['items']);
 ```
 
-### AssertArray
+PHPUnit has one method per type (`assertIsInt`, `assertIsString`, ...) and no way to say "nullable" or "int or float" in one call.
 
-Defines assertion methods for arrays.
-
-### `equals(array $expected): self`
-
-Asserts that the array is equal to `$expected` (==).
-
-**Example:**
+### `equivalent`
 
 ```php
-AssertArray::begin($array)->equals(['a', 'b']);
+Assert::equivalent(mixed $expected, mixed $actual, string $message = ''): void
 ```
 
-### `notEquals(array $unexpected): self`
-
-Asserts that the array is not equal to `$unexpected` (==).
-
-**Example:**
+Same contents, order ignored, recursively: lists are compared as multisets, maps by key. Values inside compare like `equals()`. Use it for "the same items in any order", which is what most query results and set-like collections promise.
 
 ```php
-AssertArray::begin($array)->notEquals([]);
+Assert::equivalent(['admin', 'dev'], $user->roles());
+Assert::equivalent(['b' => [2, 1], 'a' => 1], ['a' => 1, 'b' => [1, 2]]); // passes
 ```
 
-### `exact(array $expected): self`
-
-Asserts that the array is exactly equal to `$expected` (===).
-
-**Example:**
+### `containsSubset`
 
 ```php
-AssertArray::begin($array)->exact(['a' => 1, 'b' => 2]);
+Assert::containsSubset(array|object $subset, mixed $actual, string $message = ''): void
 ```
 
-### `notExact(array $unexpected): self`
-
-Asserts that the array is not exactly equal to `$unexpected` (===).
-
-**Example:**
+`$actual` contains at least the keys of `$subset` with equal values, recursively. Everything else in `$actual` is ignored. Works on arrays, `stdClass` objects (decoded JSON), `ArrayAccess` objects and public properties. The failure names the missing paths and diffs only the part you asked about.
 
 ```php
-AssertArray::begin($array)->notExact(['a' => 2]);
+Assert::containsSubset(['user' => ['name' => 'Ada']], $payload);
+Assert::containsSubset(['status' => 'paid'], json_decode($body));
 ```
 
-### `empty(): self`
-
-Asserts that the array is empty.
-
-**Example:**
-
-```php
-AssertArray::begin($array)->empty();
+```text
+Failed asserting that the value contains the expected subset; missing: user.email.
 ```
 
-### `notEmpty(): self`
+PHPUnit removed `assertArraySubset()` in version 9. This is the replacement people kept asking for, and it is the right tool for API responses that carry timestamps and ids you do not care about.
 
-Asserts that the array is not empty.
-
-**Example:**
+### `hasProperty`
 
 ```php
-AssertArray::begin($array)->notEmpty();
+Assert::hasProperty(string $property, object $actual, string $message = ''): void
 ```
 
-### `contains(mixed $element, bool $shouldUseStrict = true): self`
-
-Asserts that the array contains the given element. If `$shouldUseStrict` is `true` the type is checked as well.
-
-**Example:**
+The object has the property (declared or dynamic, any visibility).
 
 ```php
-AssertArray::begin($array)->contains('foo');
+Assert::hasProperty('email', $dto);
 ```
 
-### `countEquals(int $count): self`
+## Numbers and dates
 
-Asserts that the array has exactly `$count` elements.
-
-**Example:**
+### Comparisons
 
 ```php
-AssertArray::begin($array)->countEquals(3);
+Assert::isGreaterThan(int|float $minimum, int|float $actual, string $message = ''): void
+Assert::isGreaterThanOrEqual(int|float $minimum, int|float $actual, string $message = ''): void
+Assert::isLessThan(int|float $maximum, int|float $actual, string $message = ''): void
+Assert::isLessThanOrEqual(int|float $maximum, int|float $actual, string $message = ''): void
 ```
 
-### `hasKey(mixed $key): self`
-
-Asserts that the array has the specified key.
-
-**Example:**
+The bound comes first, like an expected value.
 
 ```php
-AssertArray::begin($array)->hasKey('id');
+Assert::isGreaterThan(0, $order->total());
+Assert::isLessThanOrEqual(100, $progress);
 ```
 
-### `notHasKey(mixed $key): self`
-
-Asserts that the array does not have the specified key.
-
-**Example:**
+### `isBetween`
 
 ```php
-AssertArray::begin($array)->notHasKey('password');
+Assert::isBetween(int|float $minimum, int|float $maximum, int|float $actual, bool $inclusive = true, string $message = ''): void
 ```
 
-### `keysEqual(array $expectedKeys): self`
-
-Asserts that the array's keys are equal to `$expectedKeys`.
-
-**Example:**
+Inside the range, bounds included unless `inclusive: false`.
 
 ```php
-AssertArray::begin($array)->keysEqual(['id', 'name']);
+Assert::isBetween(1, 10, $roll);
+Assert::isBetween(0, 1, $probability, inclusive: false);
 ```
 
-### `containsOnly(array $allowedValues): self`
-
-Asserts that the array contains only the specified values.
-
-**Example:**
+### `equalsWithDelta`
 
 ```php
-AssertArray::begin($array)->containsOnly([1, 2, 3]);
+Assert::equalsWithDelta(int|float $expected, int|float $actual, int|float $delta, string $message = ''): void
 ```
 
-## AssertMock
-
-Defines assertion methods for mock objects.
-
-> **Note:** Static calls are not available for `AssertMock` methods. Use `AssertMock::begin($mock)` to initiate the assertion via fluent api.
-
----
-
-### `isCalledTimes(string $method, int $count): self`
-
-Asserts that the specified method was called **exactly** `$count` times.
-
-**Example:**
+Absolute tolerance. The answer to `0.1 + 0.2 !== 0.3`.
 
 ```php
-AssertMock::begin($mock)->isCalledTimes('foo', 2);
+Assert::equalsWithDelta(0.3, 0.1 + 0.2, 0.0001);
 ```
 
----
-
-### `isCalledOnce(string $method): self`
-
-Asserts that the specified method was called **exactly once**.
-
-**Example:**
+### `equalsWithinPercent`
 
 ```php
-AssertMock::begin($mock)->isCalledOnce('foo');
+Assert::equalsWithinPercent(int|float $expected, int|float $actual, int|float $percent, string $message = ''): void
 ```
 
----
-
-### `isNotCalled(string $method): self`
-
-Asserts that the specified method was **never called**.
-
-**Example:**
+Relative tolerance: `equalsWithinPercent(100, $measured, 5)` accepts 95 to 105. Better than a delta whenever the scale of the number varies, for timings, sizes and estimates.
 
 ```php
-AssertMock::begin($mock)->isNotCalled('foo');
+Assert::equalsWithinPercent(1_000_000, $estimatedRows, 10);
 ```
 
----
-
-### `isCalledAtLeast(string $method, int $minCallCount): self`
-
-Asserts that the specified method was called **at least** `$minCallCount` times.
-
-**Example:**
+### `isNan` / `isFinite`
 
 ```php
-AssertMock::begin($mock)->isCalledAtLeast('foo', 3);
+Assert::isNan(mixed $actual, string $message = ''): void
+Assert::isFinite(int|float $actual, string $message = ''): void
 ```
 
----
-
-### `isCalledMoreThan(string $method, int $minCallCount): self`
-
-Asserts that the specified method was called **more than** `$minCallCount` times.
-
-**Example:**
+`isNan` passes only for the float `NAN`. `isFinite` fails for `NAN`, `INF` and `-INF`.
 
 ```php
-AssertMock::begin($mock)->isCalledMoreThan('foo', 2);
+Assert::isFinite($calculator->ratio($a, $b));
 ```
 
----
-
-### `isCalledAtMost(string $method, int $maxCallCount): self`
-
-Asserts that the specified method was called **at most** `$maxCallCount` times.
-
-**Example:**
+### `dateEquals`
 
 ```php
-AssertMock::begin($mock)->isCalledAtMost('foo', 5);
+Assert::dateEquals(\DateTimeInterface|string $expected, \DateTimeInterface|string $actual, int|float $toleranceInSeconds = 0, string $message = ''): void
 ```
 
----
-
-### `isCalledLessThan(string $method, int $maxCallCount): self`
-
-Asserts that the specified method was called **less than** `$maxCallCount` times.
-
-**Example:**
+Same moment in time, give or take the tolerance. Strings are parsed like `new DateTimeImmutable()`, so `'now'`, `'+1 day'` and ISO dates all work, and time zones are taken into account. The failure says how far apart the two dates were.
 
 ```php
-AssertMock::begin($mock)->isCalledLessThan('foo', 3);
+Assert::dateEquals('now', $user->createdAt, toleranceInSeconds: 5);
+Assert::dateEquals('2026-01-01 12:00 UTC', '2026-01-01 13:00 +01:00'); // passes
 ```
 
----
-
-### `isCalledWith(string $method, array $args, bool $showActualMethodCallsOnError = true): self`
-
-Asserts that the method was called **at least once** with the given arguments.
-
-If `$showActualMethodCallsOnError` is set to `false` the actual method calls along with their arguments are not going to be printed in the erorr message. This saves a bit of time when executing the test.
-
-**Example:**
-
-```php
-AssertMock::begin($mock)->isCalledWith('bar', [1, 2]);
+```text
+Failed asserting that the dates are equal within 5 s (they differ by 9 s).
 ```
 
-### `isCalledWithOnSpecificCall(string $method, array $args, int $onCall): self`
+This is the assertion I wanted for years. "Created just now" is one of the most common checks there is, and doing it with timestamps and a delta is noise.
 
-Asserts that the method was called with the given arguments **on a specific call number** (1-based index).
+## Collections
 
-**Example:**
+These accept arrays, and where the signature says `iterable` also generators and other `Traversable` objects.
+
+### `empty` / `notEmpty`
 
 ```php
-AssertMock::begin($mock)->isCalledWithOnSpecificCall('foo', ['arg'], 2);
+Assert::empty(mixed $actual, string $message = ''): void
+Assert::notEmpty(mixed $actual, string $message = ''): void
 ```
 
-### `isOnlyCalledWith(string $method, array $expectedArgs, bool $showActualMethodCallsOnError = true): self`
-
-Asserts that the method was **only** called with the given arguments.
-
-If `$showActualMethodCallsOnError` is set to `false` the actual method calls along with their arguments are not going to be printed in the erorr message. This saves a bit of time when executing the test.
-
-**Example:**
+Empty means: an array or `Countable` without elements, `''`, `null`, `0` or `false`. Unlike PHP's `empty()`, the string `'0'` is **not** empty.
 
 ```php
-AssertMock::begin($mock)->isOnlyCalledWith('bar', [1, 2]);
+Assert::empty($validator->errors());
+Assert::notEmpty($search->results());
 ```
 
-### `isOnlyCalledWithMatchingArgs(string $method, callable $matcher, bool $showActualMethodCallsOnError = true): self`
-
-Asserts that the method was **only** called with arguments where `$matcher` returns `true`.
-
-If `$showActualMethodCallsOnError` is set to `false` the actual method calls along with their arguments are not going to be printed in the erorr message. This saves a bit of time when executing the test.
-
-**Example:**
+### `contains` / `notContains`
 
 ```php
-AssertMock::begin($mock)->isOnlyCalledWithMatchingArgs('bar', function (array $args): bool {
-                    $arg1 = $args[0];
-                    $arg2 = $args[1];
-
-                    if ($arg1 !== 'foo') {
-                        return false;
-                    }
-
-                    if ($arg2 !== 15 || $arg2 !== 7) {
-                        return false;
-                    }
-
-                    return true;
-                });
+Assert::contains(mixed $needle, iterable $haystack, bool $strict = true, string $message = ''): void
+Assert::notContains(mixed $needle, iterable $haystack, bool $strict = true, string $message = ''): void
 ```
 
-### `isCalledWithMatchingOnSpecificCall(string $method, callable $matcher, int $onCall): self`
-
-Asserts that the method was called with arguments where `$matcher` returns `true` **on a specifc call**.
-
-**Example:**
+The collection has (or lacks) the element. Strict by default; pass `strict: false` for `==`. For substrings, use [`stringContains`](#stringcontains--stringnotcontains).
 
 ```php
-AssertMock::begin($mock)->isOnlyCalledWithMatchingArgs('bar', function (array $args): bool {
-                    $arg1 = $args[0];
-                    $arg2 = $args[1];
-
-                    if ($arg1 !== 'foo') {
-                        return false;
-                    }
-
-                    return true;
-                }, 2) // -> Only relevant when method is called the second time !
+Assert::contains('admin', $user->roles());
+Assert::contains('2', [1, 2, 3], strict: false);
 ```
 
-### `isCalledOn(string $method, int $callNumber): self`
-
-Checks that the method was called at a **specific point** across all method calls made on the mock.
+### `containsAll`
 
 ```php
-AssertMock::begin($mock)->isCalledOn('bar', 2) // 'bar' has to be the second method that get's called on the mock
+Assert::containsAll(array $expected, iterable $actual, bool $strict = true, string $message = ''): void
 ```
 
-### `checkMethod(string $method, callable $assertMethod): self`
-
-Provides a fluent way to group method assertions using a callback that receives an `AssertMockMethod` instance. See [AssertMockMethod](#assertmockmethod) for details.
-
-**Example:**
+Every element of `$expected` is in `$actual`, in any order. Other elements are allowed.
 
 ```php
-AssertMock::begin($mock)->checkMethod('foo', function ($assert) {
-    $assert->isCalledOnce()->isCalledWith(['x']);
+Assert::containsAll(['admin', 'dev'], $user->roles());
+```
+
+### `containsOnly`
+
+```php
+Assert::containsOnly(array $allowedValues, array $actual, string $message = ''): void
+```
+
+Every element of `$actual` is one of the allowed values (strict). The failure lists the offenders.
+
+```php
+Assert::containsOnly(['draft', 'published'], array_column($posts, 'status'));
+```
+
+### `countEquals` / `sameSize`
+
+```php
+Assert::countEquals(int $expected, array|\Countable $actual, string $message = ''): void
+Assert::sameSize(array|\Countable $expected, array|\Countable $actual, string $message = ''): void
+```
+
+```php
+Assert::countEquals(3, $cart->items());
+Assert::sameSize($input, $output);
+```
+
+### `hasKey` / `notHasKey`
+
+```php
+Assert::hasKey(int|string $key, array $actual, string $message = ''): void
+Assert::notHasKey(int|string $key, array $actual, string $message = ''): void
+```
+
+```php
+Assert::hasKey('id', $row);
+Assert::notHasKey('password', $user->toArray());
+```
+
+### `keysEqual`
+
+```php
+Assert::keysEqual(array $expectedKeys, array $actual, string $message = ''): void
+```
+
+The array has exactly these keys, in any order. No more, no fewer.
+
+```php
+Assert::keysEqual(['id', 'name', 'email'], $user->toArray());
+```
+
+### `isList`
+
+```php
+Assert::isList(mixed $actual, string $message = ''): void
+```
+
+An array with keys `0, 1, 2, ...` in order. Catches the `array_filter()` result you forgot to `array_values()` before `json_encode()` turned it into an object.
+
+```php
+Assert::isList($response['items']);
+```
+
+### `each`
+
+```php
+Assert::each(iterable $items, callable $check, string $message = ''): void
+```
+
+Runs `$check($item, $key)` for every element. The check fails an element by making a failing assertion or by returning `false`. Every failing element is reported with its key, not only the first one (up to ten are listed in full).
+
+```php
+Assert::each($users, fn (User $user) => Assert::isTrue($user->isActive()));
+Assert::each($prices, fn (int $price) => $price > 0);
+```
+
+```text
+Failed asserting that every element passes; 2 of 4 failed:
+  [1] 3 is odd
+    Failed asserting that two values are identical (type and value).
+  [3] 5 is odd
+    Failed asserting that two values are identical (type and value).
+```
+
+PHPUnit has `assertContainsOnly()` for types and a `foreach` loop for everything else, which stops at the first bad element.
+
+### `isUnique`
+
+```php
+Assert::isUnique(iterable $actual, string $message = ''): void
+```
+
+No element appears twice. Strict, so `1` and `'1'` are different; objects are compared by identity. The failure lists the duplicates.
+
+```php
+Assert::isUnique(array_column($orders, 'number'));
+```
+
+### `isSorted`
+
+```php
+Assert::isSorted(iterable $actual, ?callable $by = null, bool $descending = false, string $message = ''): void
+```
+
+Elements are in ascending order (or descending), compared with `<=>`. Equal neighbours are fine. Pass `by:` to sort by a derived value. The failure names the first element that is out of order.
+
+```php
+Assert::isSorted($leaderboard->scores(), descending: true);
+Assert::isSorted($posts, by: fn (Post $post) => $post->publishedAt, descending: true);
+```
+
+## Strings and JSON
+
+### `stringContains` / `stringNotContains`
+
+```php
+Assert::stringContains(string $needle, string $haystack, string $message = ''): void
+Assert::stringNotContains(string $needle, string $haystack, string $message = ''): void
+```
+
+```php
+Assert::stringContains('Welcome, Ada', $html);
+Assert::stringNotContains('Exception', $log);
+```
+
+### `stringContainsIgnoringCase`
+
+```php
+Assert::stringContainsIgnoringCase(string $needle, string $haystack, string $message = ''): void
+```
+
+Case-insensitive, multibyte-aware when `mbstring` is available.
+
+```php
+Assert::stringContainsIgnoringCase('error', $output);
+```
+
+### `stringStartsWith` / `stringEndsWith`
+
+```php
+Assert::stringStartsWith(string $prefix, string $actual, string $message = ''): void
+Assert::stringEndsWith(string $suffix, string $actual, string $message = ''): void
+```
+
+```php
+Assert::stringStartsWith('INV-', $invoice->number);
+Assert::stringEndsWith('.pdf', $attachment->filename);
+```
+
+### `matchesRegex`
+
+```php
+Assert::matchesRegex(string $pattern, string $actual, string $message = ''): void
+```
+
+An invalid pattern throws an `InvalidArgumentException` instead of failing quietly.
+
+```php
+Assert::matchesRegex('/^\d{4}-\d{2}-\d{2}$/', $date);
+```
+
+### `matchesFormat`
+
+```php
+Assert::matchesFormat(string $format, string $actual, string $message = ''): void
+```
+
+Matches text with placeholders, the format PHP's own `.phpt` tests use (PHPUnit's `assertStringMatchesFormat()` speaks the same language). Much easier to read than a regex when output contains timestamps, paths or ids. Line endings are normalised, and a failure is shown as a line diff.
+
+| Placeholder | Matches |
+| --- | --- |
+| `%s` | one or more characters on one line |
+| `%S` | the same, or nothing |
+| `%a` | one or more characters, across lines |
+| `%A` | the same, or nothing |
+| `%d` | digits |
+| `%i` | a signed integer |
+| `%f` | a float |
+| `%x` | hexadecimal digits |
+| `%c` | a single character |
+| `%w` | optional whitespace |
+| `%e` | the directory separator |
+| `%%` | a literal `%` |
+
+```php
+Assert::matchesFormat("Saved order %d at %s\n", $output);
+Assert::matchesFormat("id: %x, took %fms%A", $log);
+```
+
+### `equalsIgnoringCase`
+
+```php
+Assert::equalsIgnoringCase(string $expected, string $actual, string $message = ''): void
+```
+
+```php
+Assert::equalsIgnoringCase('Ada Lovelace', $user->name);
+```
+
+### `equalsIgnoringWhitespace`
+
+```php
+Assert::equalsIgnoringWhitespace(string $expected, string $actual, string $message = ''): void
+```
+
+Equal after trimming both strings and collapsing every run of whitespace (spaces, tabs, newlines) into one space. Made for SQL, HTML and generated code where the indentation is not what you are testing. Note that whitespace is collapsed, not removed: `<ul><li>` and `<ul> <li>` are still different.
+
+```php
+Assert::equalsIgnoringWhitespace('SELECT * FROM users WHERE id = 1', $query->toSql());
+```
+
+PHPUnit has no equivalent; you end up writing the `preg_replace` yourself.
+
+### `isJson`
+
+```php
+Assert::isJson(string $actual, string $message = ''): void
+```
+
+The string is valid JSON. The failure includes the parser's error.
+
+```php
+Assert::isJson($response->body);
+```
+
+### `jsonEquals`
+
+```php
+Assert::jsonEquals(mixed $expected, string $actualJson, string $message = ''): void
+```
+
+Same JSON document. Object key order and formatting are ignored; list order and types are not, so `1`, `1.0` and `"1"` are three different values. `$expected` can be a JSON string or the PHP value it should decode to, which saves you from writing JSON inside PHP strings. The failure is a diff of both documents, pretty-printed with sorted keys.
+
+```php
+Assert::jsonEquals(['id' => 7, 'tags' => ['a', 'b']], $response->body);
+Assert::jsonEquals('{"b": 2, "a": 1}', '{"a":1,"b":2}'); // passes
+```
+
+## Files
+
+```php
+Assert::fileExists(string $path, string $message = ''): void
+Assert::fileNotExists(string $path, string $message = ''): void
+Assert::directoryExists(string $path, string $message = ''): void
+Assert::fileContains(string $needle, string $path, string $message = ''): void
+Assert::fileContentEquals(string $expected, string $path, string $message = ''): void
+```
+
+`fileExists` wants a regular file, `directoryExists` a directory; `fileNotExists` fails if anything exists at the path. `fileContains` and `fileContentEquals` first check that the file exists and is readable. `fileContentEquals` normalises line endings on both sides, so a test written on Linux passes against a file generated on Windows, and shows a line diff on failure.
+
+```php
+$exporter->export($dir);
+
+Assert::fileExists("$dir/report.csv");
+Assert::fileContains('Total;3', "$dir/report.csv");
+Assert::fileContentEquals("Total: 3\nDone\n", "$dir/summary.txt");
+```
+
+Pair them with `TemporaryDirectory` from the [integration testing](integration-testing.md) toolkit, so every test gets a clean directory that is deleted afterwards.
+
+## Behaviour
+
+### `throws`
+
+```php
+Assert::throws(callable $callable, ?string $expectedType = null, ?string $expectedMessage = null, string $message = ''): \Throwable
+```
+
+The callable throws. Optionally of a type (subclasses count) and with a message that contains `$expectedMessage`. It returns the caught exception, so you can assert on its details right after. No `expectException()` that has to come before the code and silently swallows the rest of the test.
+
+```php
+$exception = Assert::throws(fn () => $stock->reserve('A1', 5), OutOfStock::class, 'out of stock');
+Assert::exact('A1', $exception->sku);
+```
+
+```text
+Failed asserting that the thrown exception is of type OutOfStock.
+Expected: 'OutOfStock' (string)
+Actual  : 'LogicException: nope' (string)
+```
+
+### `doesNotThrow`
+
+```php
+Assert::doesNotThrow(callable $callable, string $message = ''): mixed
+```
+
+Runs the callable and returns its result. If it throws, the test fails with a clear "no exception expected" message that includes the exception's class, message, file and line, instead of ending as an error. It also counts as an assertion, so "this does not blow up" is a legitimate, non-risky test.
+
+```php
+$order = Assert::doesNotThrow(fn () => $importer->import($legacyCsv));
+Assert::exact(120, $order->lineCount());
+```
+
+### `triggersError`
+
+```php
+Assert::triggersError(callable $callable, int $level = E_ALL, ?string $expectedMessage = null, string $message = ''): string
+```
+
+The callable triggers a PHP warning, notice or deprecation of `$level`, optionally with a message containing `$expectedMessage`. It returns the message. The error is captured, so it neither prints nor reaches other error handlers.
+
+```php
+Assert::triggersError(fn () => $legacy->run(), E_USER_DEPRECATED, 'use runNew() instead');
+```
+
+PHPUnit 10 removed `expectWarning()`, `expectDeprecation()` and friends. Deprecations are exactly what you want to test when you maintain a library, so this one stays.
+
+### `prints`
+
+```php
+Assert::prints(callable $callable, string $expected, string $message = ''): void
+```
+
+The callable prints exactly `$expected` (via `echo`, `print`, `printf` and so on). Scoped to the callable, unlike PHPUnit's `expectOutputString()`, which applies to the whole test.
+
+```php
+Assert::prints(fn () => $command->run(['--dry-run']), "Would delete 3 files\n");
+```
+
+### `eventually`
+
+```php
+Assert::eventually(callable $check, float $timeoutInSeconds = 5.0, float $intervalInSeconds = 0.1, string $message = ''): mixed
+```
+
+Retries `$check` until it passes (no failed assertion, no exception, not `false`) or the timeout runs out, then reports the last failure and how many attempts were made. It returns whatever the check returned. For queues, background workers, servers, file watchers and anything else that becomes true a moment later. Much better than a `sleep(2)` that is too long on your machine and too short on CI.
+
+```php
+Assert::eventually(fn () => Assert::notNull($mailbox->latest()), timeoutInSeconds: 3);
+
+$job = Assert::eventually(function () use ($queue, $id) {
+    $job = $queue->find($id);
+    Assert::isTrue($job?->isDone());
+
+    return $job;
 });
 ```
 
----
+Assertions return nothing, so when you need the value afterwards, return it from the closure yourself, as in the second example.
 
-## AssertMockMethod
+```text
+Failed asserting that the check passes within 0.3 s (4 attempts). Last failure:
+  Failed asserting that two values are identical (type and value).
+```
 
-Helper class for scoped assertions on a **specific mock method**, used via `$assertMock->checkMethod()`. See [checkMethod description](#checkmethodstring-method-callable-assertmethod-self) for details.
+### `multiple`: soft assertions
 
----
+```php
+Assert::multiple(callable $assertions, string $message = ''): void
+```
 
-### `isCalledTimes(int $expectedCallCount): self`
+Runs every `Assert` call in the block even when some fail, then reports all failures together. One run shows everything that is wrong with a result, instead of fix, rerun, fix, rerun.
 
-Asserts that the method was called exactly `$expectedCallCount` times.
+```php
+Assert::multiple(function () use ($user) {
+    Assert::exact('Ada', $user->name);
+    Assert::exact('ada@example.com', $user->email);
+    Assert::isTrue($user->active);
+});
+```
 
----
+```text
+2 assertions failed:
+1) Failed asserting that two values are identical (type and value).
+   Expected: 'Ada' (string)
+   Actual  : 'Grace' (string)
+2) Failed asserting that value is true.
+   Expected: true (bool)
+   Actual  : false (bool)
+```
 
-### `isCalledOnce(): self`
+Blocks nest, and `each()` and `eventually()` work inside them. `Assert`, `AssertMock` and `AssertResponse` checks are all collected softly. A few things end the block at their failure (which is still reported, together with the failures before it): `fail()`, `throws()` when nothing is thrown and `triggersError()` when nothing is triggered, because they cannot carry on without a result, and [custom assertions](#custom-assertions) that throw `TestFailedException` themselves.
 
-Asserts that the method was called exactly once.
+### `skip` / `skipIf` / `fail`
 
----
+```php
+Assert::skip(string $reason = 'Skipped.'): never
+Assert::skipIf(bool $condition, string $reason): void
+Assert::fail(string $message = 'Test failed.'): never
+```
 
-### `isNotCalled(): self`
+Not assertions in the strict sense, but they live here. Skipped tests show up as skipped with their reason, never as passed.
 
-Asserts that the method was never called.
+```php
+Assert::skipIf(!extension_loaded('pdo_pgsql'), 'pdo_pgsql missing');
+Assert::fail('Not implemented yet');
+```
 
----
+## Snapshots
 
-### `isCalledAtLeast(int $minCallCount): self`
+```php
+Assert::matchesSnapshot(mixed $actual, ?string $name = null, string $message = ''): void
+```
 
-Asserts that the method was called at least `$minCallCount` times.
+Compares a value with a stored copy next to the test file. The first run writes it, later runs fail on any difference, and `--update-snapshots` accepts intended changes. Built in, no plugin needed (PHPUnit needs a separate package for this).
 
----
+```php
+Assert::matchesSnapshot($invoice->renderHtml());
+```
 
-### `isCalledMoreThan(int $minCallCount): self`
+Where snapshots live, how CI treats them and when they are a bad idea: [snapshots](snapshots.md).
 
-Asserts that the method was called more than `$minCallCount` times.
+## Fluent assertions
 
----
+If you prefer chaining several checks on one value, there are four small fluent classes. Each starts with `begin($actual)` and returns itself from every method. They call the same `Assert` methods underneath, so failures, messages and assertion counting are identical.
 
-### `isCalledAtMost(int $maxCallCount): self`
+```php
+AssertSingle::begin($user->id)->notNull()->exact(42);
+AssertNumeric::begin($total)->isGreaterThan(0)->isLessThanOrEqual(1000);
+AssertArray::begin($row)->hasKey('id')->notHasKey('password')->countEquals(3);
+AssertString::begin($slug)->startsWith('post-')->matchesRegex('/^[a-z0-9-]+$/');
+```
 
-Asserts that the method was called at most `$maxCallCount` times.
+| Class | Methods |
+| --- | --- |
+| `AssertSingle` (any value) | `equals`, `notEquals`, `exact`, `notExact`, `instanceOf`, `isTrue`, `isFalse`, `isNull`, `notNull` |
+| `AssertNumeric` (`int\|float`) | `equals`, `exact`, `notExact`, `equalsWithDelta($expected, $delta)`, `isGreaterThan`, `isGreaterThanOrEqual`, `isLessThan`, `isLessThanOrEqual`, `isBetween($min, $max, $inclusive = true)` |
+| `AssertArray` (`array`) | `equals`, `notEquals`, `exact`, `notExact`, `empty`, `notEmpty`, `contains($needle, $strict = true)`, `notContains`, `countEquals`, `hasKey`, `notHasKey`, `keysEqual`, `containsOnly` |
+| `AssertString` (`string`) | `equals`, `contains`, `notContains`, `startsWith`, `endsWith`, `matchesRegex`, `lengthEquals`, `isEmpty`, `notEmpty` |
 
----
+Every method takes the expected value (if any) and an optional `$message` last. Two details worth knowing: `AssertString::equals()` is strict (`===`), and `AssertString::lengthEquals()` counts UTF-8 characters, not bytes, even without `mbstring`.
 
-### `isCalledLessThan(int $maxCallCount): self`
+The fluent classes cover the common checks only. For everything else, use `Assert` directly. Both styles mix freely in one test.
 
-Asserts that the method was called less than `$maxCallCount` times.
+## HTTP responses: `AssertResponse`
 
----
+`AssertResponse` asserts on HTTP responses fluently, whichever library produced them:
 
-### `isCalledWith(array $expectedArgs, bool $showActualMethodCallsOnError = true): self`
+```php
+AssertResponse::begin($response)
+    ->statusIs(201)
+    ->headerIs('Location', '/products/A1')
+    ->jsonPathEquals('data.sku', 'A1');
+```
 
-Asserts that the method was called at least once with the given arguments.
+`begin()` accepts:
 
-if `$showActualMethodCallsOnError` is set to `false` the actual method calls and their arguments are not going to be printed in the error message. This saves a bit of time when executing the test.
+| Response | Recognised by |
+| --- | --- |
+| MicroUnit's `HttpResponse` (from `Http::get()`, `Http::post()`, ...) | its class |
+| PSR-7 responses (Guzzle, Nyholm, Laminas, ...) | `getStatusCode()` and `getHeaderLine()` |
+| Symfony `Response` (HttpFoundation) | `getStatusCode()` and `getContent()` |
+| Laravel `TestResponse` | its `baseResponse` (a Symfony response) |
+| CodeIgniter `TestResponse` | its class; the wrapped response is read |
 
----
+Anything else throws an `InvalidArgumentException` naming the class it got. No package is required: the types are detected by duck typing.
 
-### `isCalledWithOnSpecificCall(array $expectedArgs, int $onCall): self`
+| Method | Checks |
+| --- | --- |
+| `statusIs(int $expected)` | exact status code |
+| `isOk()` | any 2xx status |
+| `isNotFound()` | status 404 |
+| `isRedirect(?string $location = null)` | a 3xx status, and the exact `Location` header when given |
+| `headerIs(string $name, string $expected)` | the header's value equals `$expected` |
+| `headerContains(string $name, string $needle)` | the header exists and contains `$needle` |
+| `bodyContains(string $needle)` | the body contains the text |
+| `bodyEquals(string $expected)` | the body equals the text exactly |
+| `jsonEquals(mixed $expected)` | the decoded JSON body equals `$expected` (loose comparison, object key order irrelevant) |
+| `jsonPathEquals(string $path, mixed $expected)` | the value at a dot path equals `$expected` strictly: `'data.items.0.id'` |
+| `jsonHasPath(string $path)` | the dot path exists in the JSON body |
 
-Asserts that the method was called with the given arguments on a specific call number.
+Every method takes an optional `$message` as last argument. Header names are case-insensitive. A body that is not valid JSON fails the JSON methods with a clear message rather than a `JsonException`. Every failure includes the start of the response body, because "expected 200, got 500" is only half the story:
 
-### `isOnlyCalledWith(array $expectedArgs, bool $showActualMethodCallsOnError = true): self`
+```text
+Failed asserting that the response is successful (2xx).
+Response body: {"error":"boom"}
+Expected: '2xx' (string)
+Actual  : 500 (int)
+```
 
-Asserts that the method was **only** called with the given arguments.
+Mind the difference between the two JSON checks: `jsonEquals()` compares loosely, `jsonPathEquals()` strictly, so `jsonPathEquals('data.id', 42)` fails when the API returns `"42"`. For more on testing applications over HTTP, see [integration testing](integration-testing.md) and [frameworks](frameworks.md).
 
-If `$showActualMethodCallsOnError` is set to `false` the actual method calls along with their arguments are not going to be printed in the erorr message. This saves a bit of time when executing the test.
+## Custom assertions
 
-### `isOnlyCalledWithMatchingArgs(callable $matcher, bool $showActualMethodCallsOnError = true): self`
+A custom assertion is a function that throws `MicroUnit\Exceptions\TestFailedException` with a `MicroUnit\Assertion\AssertionFailure` when the check fails. Before you write one, see if it can be built from existing assertions; then you get the messages, diffs and counting for free:
 
-Asserts that the method was **only** called with arguments where `$matcher` returns `true`.
+```php
+function assertValidIban(string $iban, string $message = ''): void
+{
+    Assert::matchesRegex('/^[A-Z]{2}\d{2}[A-Z0-9]{11,30}$/', $iban, $message);
+}
+```
 
-If `$showActualMethodCallsOnError` is set to `false` the actual method calls along with their arguments are not going to be printed in the erorr message. This saves a bit of time when executing the test.
+When you need your own failure, build it yourself:
 
-### `isCalledWithMatchingOnSpecificCall(callable $matcher, int $onCall): self`
+```php
+use MicroUnit\Assertion\AssertionFailure;
+use MicroUnit\Core\TestContext;
+use MicroUnit\Exceptions\TestFailedException;
 
-Asserts that the method was called with arguments where `$matcher` returns `true` **on a specifc call**.
+function assertIsEven(int $actual, string $message = ''): void
+{
+    TestContext::countAssertions();
+    if ($actual % 2 !== 0) {
+        throw new TestFailedException(new AssertionFailure(
+            'Failed asserting that the number is even.',
+            expected: 'an even number',
+            actual: $actual,
+            customMessage: $message,
+        ));
+    }
+}
+```
 
-### `isCalledOn(string $method, int $callNumber): self`
+`AssertionFailure` takes the description, the expected and actual values (both optional: leave them out and no `Expected:` / `Actual:` lines are printed), an optional `MicroUnit\Helpers\Diff` (`Diff::generate($expected, $actual)` for values, `Diff::fromLines($expectedLines, $actualLines)` for text) and your custom message. `TestContext::countAssertions()` tells MicroUnit an assertion ran, so a test that only uses your assertion is not reported as risky.
 
-Checks that the method was called at a **specific point** across all method calls made on the mock.
+One limitation: a custom assertion that throws directly ends an [`Assert::multiple()`](#multiple-soft-assertions) block at its failure instead of being collected with the others.
 
----
+Failures from PHPUnit assertions (Laravel's and Symfony's test helpers assert through PHPUnit when it is installed) are translated into MicroUnit failures automatically, diff included. See [frameworks](frameworks.md).
 
-**[⬆ Back to Top](#)** • **[📘 Home](index.md)**
+## Coming from PHPUnit
+
+Most assertions map one to one; `microunit migrate` does the translation for you (see [migrating from PHPUnit](migrating-from-phpunit.md)). These are the ones PHPUnit does not have or makes awkward:
+
+| MicroUnit | In PHPUnit |
+| --- | --- |
+| `equivalent` | `assertEqualsCanonicalizing` comes closest |
+| `containsSubset` | `assertArraySubset` was removed in PHPUnit 9 |
+| `isType('?int')`, `isType('int\|float')` | one method per type, no nullable or union types |
+| `each` | a `foreach` that stops at the first failure |
+| `isUnique`, `isSorted` | write it yourself |
+| `equalsWithinPercent` | only absolute deltas |
+| `dateEquals` | compare timestamps with a delta |
+| `equalsIgnoringWhitespace` | normalise both strings yourself |
+| `jsonEquals` with a PHP array | expects two JSON strings |
+| `fileContentEquals` | compares raw bytes, line endings included |
+| `throws` returning the exception | `expectException()` before the code, no access to the exception |
+| `doesNotThrow` | call the code and `expectNotToPerformAssertions()` |
+| `triggersError` | `expectWarning()` and friends were removed in PHPUnit 10 |
+| `prints` | `expectOutputString()` applies to the whole test |
+| `eventually` | `sleep()` and hope |
+| `multiple` | no soft assertions |
+| `matchesSnapshot` | needs a third-party package |

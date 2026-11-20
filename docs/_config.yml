@@ -1,3 +1,27 @@
-# Currently using default theme and settings provided by GitHub Pages.
-# To customize the theme, uncomment the following line and replace 'THEME_NAME' with the desired theme.
-# theme: jekyll-theme-THEME_NAME
+# GitHub Pages builds these docs with Jekyll (no theme: docs/_layouts/default.html is the layout).
+title: MicroUnit
+tagline: the PHP testing framework with zero dependencies
+description: Fast, dependency-free PHP testing. Readable closures, real assertions, a Test Explorer, coverage without extensions, parallel runs, and output made for AI agents.
+version: "1.0"
+url: https://mitarnik04.github.io
+baseurl: /MicroUnit
+repository_url: https://github.com/mitarnik04/MicroUnit
+
+permalink: pretty
+markdown: kramdown
+highlighter: rouge
+kramdown:
+  input: GFM
+  hard_wrap: false
+  syntax_highlighter: rouge
+  auto_ids: true
+
+defaults:
+  - scope: { path: "" }
+    values: { layout: default }
+
+plugins:
+  - jekyll-relative-links
+relative_links:
+  enabled: true
+  collections: false

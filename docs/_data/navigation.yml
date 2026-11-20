@@ -1,0 +1,30 @@
+# The documentation's sidebar, in reading order (also used for the previous/next links).
+- title: Start
+  pages:
+    - { title: Overview, url: / }
+    - { title: Getting started, url: /getting-started/ }
+    - { title: Writing tests, url: /writing-tests/ }
+    - { title: Assertions, url: /assertions/ }
+- title: Writing tests
+  pages:
+    - { title: Snapshots, url: /snapshots/ }
+    - { title: Mocking, url: /mocking/ }
+    - { title: Integration testing, url: /integration-testing/ }
+    - { title: "Laravel, Symfony, CodeIgniter", url: /frameworks/ }
+- title: Tools
+  pages:
+    - { title: Test Explorer, url: /test-explorer/ }
+    - { title: Parallel runs, url: /parallel/ }
+    - { title: Code coverage, url: /coverage/ }
+    - { title: Output and reports, url: /output/ }
+- title: Workflow
+  pages:
+    - { title: AI coding agents, url: /ai-agents/ }
+    - { title: Migrating from PHPUnit, url: /migrating-from-phpunit/ }
+    - { title: CI/CD, url: /ci-cd/ }
+- title: Reference
+  pages:
+    - { title: Configuration, url: /configuration/ }
+    - { title: Command line, url: /cli/ }
+    - { title: Benchmarks, url: /benchmarks/ }
+    - { title: Troubleshooting, url: /troubleshooting/ }
