@@ -2,88 +2,101 @@
 
 namespace MicroUnit\Assertion;
 
-class AssertArray
+/** Fluent assertions for arrays. */
+final readonly class AssertArray
 {
+    /** @param array<mixed> $actual */
     private function __construct(
-        public readonly array $source
+        private array $actual,
     ) {}
 
-    public static function begin(array $source): self
+    /** @param array<mixed> $actual */
+    public static function begin(array $actual): self
     {
-        return new AssertArray($source);
+        return new self($actual);
     }
 
-    public function equals(array $expected): self
+    /** @param array<mixed> $expected */
+    public function equals(array $expected, string $message = ''): self
     {
-        Assert::equals($expected, $this->source);
+        Assert::equals($expected, $this->actual, $message);
         return $this;
     }
 
-    public function notEquals(array $unexpected): self
+    /** @param array<mixed> $unexpected */
+    public function notEquals(array $unexpected, string $message = ''): self
     {
-        Assert::notEquals($unexpected, $this->source);
+        Assert::notEquals($unexpected, $this->actual, $message);
         return $this;
     }
 
-    public function exact(array $expected): self
+    /** @param array<mixed> $expected */
+    public function exact(array $expected, string $message = ''): self
     {
-        Assert::exact($expected, $this->source);
+        Assert::exact($expected, $this->actual, $message);
         return $this;
     }
 
-    public function notExact(array $unexpected): self
+    /** @param array<mixed> $unexpected */
+    public function notExact(array $unexpected, string $message = ''): self
     {
-        Assert::notExact($unexpected, $this->source);
+        Assert::notExact($unexpected, $this->actual, $message);
         return $this;
     }
 
-
-    public function empty(): self
+    public function empty(string $message = ''): self
     {
-        Assert::empty($this->source);
+        Assert::empty($this->actual, $message);
         return $this;
     }
 
-    public function notEmpty(): self
+    public function notEmpty(string $message = ''): self
     {
-        Assert::notEmpty($this->source);
+        Assert::notEmpty($this->actual, $message);
         return $this;
     }
 
-    public function contains(mixed $element, bool $shouldUseStrict = true): self
+    public function contains(mixed $needle, bool $strict = true, string $message = ''): self
     {
-        Assert::contains($element, $this->source, $shouldUseStrict);
+        Assert::contains($needle, $this->actual, $strict, $message);
         return $this;
     }
 
-
-    public function countEquals(int $expected): self
+    public function notContains(mixed $needle, bool $strict = true, string $message = ''): self
     {
-        Assert::countEquals($expected, $this->source);
+        Assert::notContains($needle, $this->actual, $strict, $message);
         return $this;
     }
 
-    public function hasKey(mixed $key): self
+    public function countEquals(int $expected, string $message = ''): self
     {
-        Assert::hasKey($key, $this->source);
+        Assert::countEquals($expected, $this->actual, $message);
         return $this;
     }
 
-    public function notHasKey(mixed $key): self
+    public function hasKey(int|string $key, string $message = ''): self
     {
-        Assert::notHasKey($key, $this->source);
+        Assert::hasKey($key, $this->actual, $message);
         return $this;
     }
 
-    public function keysEqual(array $expectedKeys): self
+    public function notHasKey(int|string $key, string $message = ''): self
     {
-        Assert::keysEqual($expectedKeys, $this->source);
+        Assert::notHasKey($key, $this->actual, $message);
         return $this;
     }
 
-    public function containsOnly(array $allowedValues): self
+    /** @param list<int|string> $expectedKeys */
+    public function keysEqual(array $expectedKeys, string $message = ''): self
     {
-        Assert::containsOnly($allowedValues, $this->source);
+        Assert::keysEqual($expectedKeys, $this->actual, $message);
+        return $this;
+    }
+
+    /** @param array<mixed> $allowedValues */
+    public function containsOnly(array $allowedValues, string $message = ''): self
+    {
+        Assert::containsOnly($allowedValues, $this->actual, $message);
         return $this;
     }
 }

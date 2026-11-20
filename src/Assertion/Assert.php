@@ -2,319 +2,196 @@
 
 namespace MicroUnit\Assertion;
 
+use MicroUnit\Assertion\Assert\BehaviourAssertions;
+use MicroUnit\Assertion\Assert\CollectionAssertions;
+use MicroUnit\Assertion\Assert\FileAssertions;
+use MicroUnit\Assertion\Assert\NumberAssertions;
+use MicroUnit\Assertion\Assert\SnapshotAssertions;
+use MicroUnit\Assertion\Assert\StringAssertions;
+use MicroUnit\Assertion\Assert\ValueAssertions;
+use MicroUnit\Core\TestContext;
 use MicroUnit\Exceptions\TestFailedException;
-use MicroUnit\Assertion\AssertionFailure;
 use MicroUnit\Helpers\Diff;
 
+/**
+ * Static assertions. Argument order follows PHPUnit: the expected value comes first, the actual
+ * value last, and every assertion accepts an optional custom failure message as final argument.
+ * Assertions about behaviour take the callable first: Assert::throws(fn () => ..., Type::class).
+ *
+ * The methods live in topic traits (values, numbers, collections, strings, files, behaviour,
+ * snapshots); this class only holds what they share.
+ */
 final class Assert
 {
-    //Single-Value
-    public static function equals(mixed $expected, mixed $actual): void
-    {
-        if ($expected != $actual) {
-            throw new TestFailedException(
-                new AssertionFailure(
-                    'Expected values to be equal',
-                    $expected,
-                    $actual,
-                    Diff::generate($expected, $actual)
-                )
-            );
+    use ValueAssertions;
+    use NumberAssertions;
+    use CollectionAssertions;
+    use StringAssertions;
+    use FileAssertions;
+    use BehaviourAssertions;
+    use SnapshotAssertions;
+
+    /** @var list<AssertionFailure>|null failures collected inside Assert::multiple(), null outside of it */
+    private static ?array $softFailures = null;
+
+    private function __construct() {}
+
+    /**
+     * Counts the assertion and fails it unless $condition holds. Only for failure details that
+     * cost nothing to pass along; anything that has to be computed (interpolated numbers, array_keys(),
+     * diffs, ...) belongs after `if (!self::passes(...))`, so the passing path never pays for it.
+     */
+    private static function check(
+        bool $condition,
+        string $description,
+        mixed $expected = NotProvided::Value,
+        mixed $actual = NotProvided::Value,
+        bool $withDiff = false,
+        string $customMessage = '',
+    ): void {
+        if (!self::passes($condition)) {
+            self::reject($description, $expected, $actual, $withDiff, $customMessage);
         }
     }
 
-    public static function notEquals(mixed $unexpected, mixed $actual): void
+    /** Counts the assertion and returns $condition. */
+    private static function passes(bool $condition): bool
     {
-        if ($unexpected == $actual) {
-            throw new TestFailedException(
-                new AssertionFailure(
-                    'Expected values to not be equal',
-                    $unexpected,
-                    $actual
-                )
-            );
-        }
+        TestContext::countAssertions();
+
+        return $condition;
     }
 
-    public static function exact(mixed $expected, mixed $actual): void
-    {
-        if ($expected !== $actual) {
-            throw new TestFailedException(
-                new AssertionFailure(
-                    'Expected values to be exactly equal (type and value)',
-                    $expected,
-                    $actual,
-                    Diff::generate($expected, $actual)
-                )
-            );
-        }
+    /** Fails the running assertion; $withDiff diffs $expected against $actual, $diff is a ready-made one. */
+    private static function reject(
+        string $description,
+        mixed $expected = NotProvided::Value,
+        mixed $actual = NotProvided::Value,
+        bool $withDiff = false,
+        string $customMessage = '',
+        ?Diff $diff = null,
+    ): void {
+        self::failWith(new AssertionFailure(
+            $description,
+            $expected,
+            $actual,
+            $diff ?? ($withDiff ? Diff::generate($expected, $actual) : null),
+            $customMessage,
+        ));
     }
 
-    public static function notExact(mixed $unexpected, mixed $actual): void
+    /**
+     * Throws the failure, or records it while Assert::multiple() collects every failure of a block.
+     *
+     * @internal for MicroUnit's other assertion classes (AssertMock, AssertResponse)
+     */
+    public static function failWith(AssertionFailure $failure): void
     {
-        if ($unexpected === $actual) {
-            throw new TestFailedException(
-                new AssertionFailure(
-                    'Expected values to not be exactly equal (type and value)',
-                    $unexpected,
-                    $actual
-                )
-            );
+        if (self::$softFailures === null) {
+            throw new TestFailedException($failure);
         }
+        self::$softFailures[] = $failure;
     }
 
-    public static function isTrue(mixed $value): void
+    /**
+     * Runs $block and returns the assertion failures it produced instead of throwing them, plus
+     * its return value. Nests: an enclosing Assert::multiple() keeps its own collection.
+     *
+     * @return array{list<AssertionFailure>, mixed}
+     */
+    private static function collectFailures(callable $block, mixed ...$arguments): array
     {
-        if ($value !== true) {
-            throw new TestFailedException(
-                new AssertionFailure(
-                    'Expected value to be TRUE',
-                    true,
-                    $value
-                )
-            );
-        }
-    }
-
-    public static function isFalse(mixed $value): void
-    {
-        if ($value !== false) {
-            throw new TestFailedException(
-                new AssertionFailure(
-                    'Expected value to be FALSE',
-                    false,
-                    $value
-                )
-            );
-        }
-    }
-
-    public static function isNull(mixed $value): void
-    {
-        if ($value !== null) {
-            throw new TestFailedException(
-                new AssertionFailure(
-                    'Expected value to be NULL',
-                    null,
-                    $value
-                )
-            );
-        }
-    }
-
-    public static function notNull(mixed $value): void
-    {
-        if ($value === null) {
-            throw new TestFailedException(
-                new AssertionFailure(
-                    'Expected value to be NOT NULL',
-                    actual: $value
-                )
-            );
-        }
-    }
-
-    //Numeric 
-    public static function isGreaterThan(int|float $value, int|float $min): void
-    {
-        if ($value <= $min) {
-            throw new TestFailedException(
-                new AssertionFailure(
-                    "Expected value to be greater than $min",
-                    "> $min",
-                    $value
-                )
-            );
-        }
-    }
-
-    public static function isLessThan(int|float $value, int|float $max): void
-    {
-        if ($value >= $max) {
-            throw new TestFailedException(
-                new AssertionFailure(
-                    "Expected value to be less than $max",
-                    "< $max",
-                    $value
-                )
-            );
-        }
-    }
-
-    public static function isBetween(int|float $min, int|float $max, int|float $value, bool $inclusive = true): void
-    {
-        $ok = $inclusive
-            ? ($value >= $min && $value <= $max)
-            : ($value > $min && $value < $max);
-
-        if (!$ok) {
-            throw new TestFailedException(
-                new AssertionFailure(
-                    "Expected value to be between {$min} and {$max}" . ($inclusive ? ' (inclusive)' : ' (exclusive)'),
-                    actual: $value,
-                    metadata: ['inclusive' => $inclusive]
-                )
-            );
-        }
-    }
-
-    //Array
-    public static function empty(array $array): void
-    {
-        if (!empty($array)) {
-            throw new TestFailedException(
-                new AssertionFailure(
-                    'Expected array to be EMPTY',
-                    null,
-                    $array
-                )
-            );
-        }
-    }
-
-    public static function notEmpty(array $array): void
-    {
-        if (empty($array)) {
-            throw new TestFailedException(
-                new AssertionFailure(
-                    'Expected array to be NOT EMPTY',
-                    actual: $array
-                )
-            );
-        }
-    }
-
-    public static function contains(mixed $element, array $source, bool $shouldUseStrict = true): void
-    {
-        if (!in_array($element, $source, $shouldUseStrict)) {
-            throw new TestFailedException(
-                new AssertionFailure(
-                    'Array does not contain the given element',
-                    $element,
-                    $source,
-                    null,
-                    ['strict' => $shouldUseStrict]
-                )
-            );
-        }
-    }
-
-    public static function countEquals(int $expected, array|\Countable $source): void
-    {
-        $actual = count($source);
-
-        if ($expected !== $actual) {
-            throw new TestFailedException(
-                new AssertionFailure(
-                    'Array length mismatch',
-                    $expected,
-                    $actual
-                )
-            );
-        }
-    }
-
-    public static function hasKey(mixed $key, array $array): void
-    {
-        if (!array_key_exists($key, $array)) {
-            throw new TestFailedException(
-                new AssertionFailure(
-                    'Expected array to have key',
-                    $key,
-                    array_keys($array)
-                )
-            );
-        }
-    }
-
-    public static function notHasKey(mixed $key, array $array): void
-    {
-        if (array_key_exists($key, $array)) {
-            throw new TestFailedException(
-                new AssertionFailure(
-                    'Expected array NOT to have key',
-                    "not having $key",
-                    array_keys($array)
-                )
-            );
-        }
-    }
-
-    public static function keysEqual(array $expectedKeys, array $array): void
-    {
-        $actualKeys = array_keys($array);
-        sort($expectedKeys);
-        sort($actualKeys);
-
-        if ($expectedKeys !== $actualKeys) {
-            throw new TestFailedException(
-                new AssertionFailure(
-                    'Expected array keys to be exactly equal',
-                    $expectedKeys,
-                    $actualKeys
-                )
-            );
-        }
-    }
-
-    public static function containsOnly(array $allowedValues, array $array): void
-    {
-        foreach ($array as $item) {
-            if (!in_array($item, $allowedValues, true)) {
-                throw new TestFailedException(
-                    new AssertionFailure(
-                        'Array contains value(s) not allowed',
-                        $allowedValues,
-                        $array
-                    )
-                );
-            }
-        }
-    }
-
-    public static function instanceOf(string $expectedInstance, object $object): void
-    {
-        if (!($object instanceof $expectedInstance)) {
-            throw new TestFailedException(
-                new AssertionFailure(
-                    "Object is not an instance of $expectedInstance",
-                    $expectedInstance,
-                    $object::class
-                )
-            );
-        }
-    }
-
-    /** @param callable():void $method */
-    public static function throws(callable $method, ?string $exceptionType = null): void
-    {
+        $outer = self::$softFailures;
+        self::$softFailures = [];
+        $returned = null;
         try {
-            $method();
-        } catch (\Throwable $e) {
-            if ($exceptionType === null || $e instanceof $exceptionType) {
-                return;
-            }
-
-            $actualExceptionType = $e::class;
-            throw new TestFailedException(
-                new AssertionFailure(
-                    "Method threw Exception of wrong type",
-                    $exceptionType,
-                    $e::class,
-                    null,
-                    ['reason' => 'wrong_type']
-                )
-            );
+            $returned = $block(...$arguments);
+        } catch (TestFailedException $exception) {
+            self::$softFailures[] = $exception->failure;
+        } finally {
+            $failures = self::$softFailures;
+            self::$softFailures = $outer;
         }
 
-        throw new TestFailedException(
-            new AssertionFailure(
-                "Expected method to throw $exceptionType but no exception was thrown",
-                $exceptionType,
-                null,
-                null,
-                ['reason' => 'no_exception']
-            )
-        );
+        return [$failures, $returned];
+    }
+
+    /** @param list<AssertionFailure> $failures */
+    private static function describeFailures(array $failures, string $indent = '  '): string
+    {
+        return implode(PHP_EOL, array_map(
+            static fn(AssertionFailure $failure): string => $indent . str_replace(PHP_EOL, PHP_EOL . $indent, $failure->fullMessage()),
+            $failures,
+        ));
+    }
+
+    /**
+     * == for values, but objects of the same class compare property by property (like PHPUnit's
+     * assertEquals): PHP's own == refuses some objects, DateInterval for example. Dates compare as
+     * moments in time, closures by identity. Object graphs with cycles compare fine: a pair of
+     * objects met again while it is still being compared counts as equal, the rest decides.
+     *
+     * @param array<string, true> $pairsInProgress "id:id" of the object pairs being compared further up
+     */
+    private static function looselyEqual(mixed $expected, mixed $actual, array &$pairsInProgress = []): bool
+    {
+        if ($expected === $actual) {
+            return true; // identical implies equal; skips the recursion for the common passing case
+        }
+        if (is_object($expected) && is_object($actual)) {
+            if ($expected::class !== $actual::class) {
+                return false;
+            }
+            if ($expected instanceof \DateTimeInterface || $expected instanceof \Closure) {
+                return $expected == $actual;
+            }
+            $pair = spl_object_id($expected) . ':' . spl_object_id($actual);
+            if (isset($pairsInProgress[$pair])) {
+                return true;
+            }
+            $pairsInProgress[$pair] = true;
+            $isEqual = self::looselyEqual((array) $expected, (array) $actual, $pairsInProgress);
+            unset($pairsInProgress[$pair]);
+
+            return $isEqual;
+        }
+        if (is_array($expected) && is_array($actual)) {
+            if (count($expected) !== count($actual)) {
+                return false;
+            }
+            foreach ($expected as $key => $value) {
+                if (!array_key_exists($key, $actual) || !self::looselyEqual($value, $actual[$key], $pairsInProgress)) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        return $expected == $actual;
+    }
+
+    private static function isEmptyValue(mixed $value): bool
+    {
+        return match (true) {
+            is_countable($value) => count($value) === 0,
+            is_string($value) => $value === '',
+            default => empty($value),
+        };
+    }
+
+    /** @param iterable<mixed> $haystack */
+    private static function iterableContains(iterable $haystack, mixed $needle, bool $strict): bool
+    {
+        if (is_array($haystack)) {
+            return in_array($needle, $haystack, $strict);
+        }
+        foreach ($haystack as $element) {
+            if ($strict ? $element === $needle : $element == $needle) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

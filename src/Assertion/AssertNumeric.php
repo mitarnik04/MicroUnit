@@ -2,44 +2,69 @@
 
 namespace MicroUnit\Assertion;
 
-class AssertNumeric
+/** Fluent assertions for integers and floats. */
+final readonly class AssertNumeric
 {
     private function __construct(
-        public readonly int|float $source
+        private int|float $actual,
     ) {}
 
-    public static function begin(int|float $source): self
+    public static function begin(int|float $actual): self
     {
-        return new AssertNumeric($source);
+        return new self($actual);
     }
 
-    public function exact(int|float $expected): self
+    public function equals(int|float $expected, string $message = ''): self
     {
-        Assert::exact($expected, $this->source);
+        Assert::equals($expected, $this->actual, $message);
         return $this;
     }
 
-    public function notExact(int|float $unexpected): self
+    public function exact(int|float $expected, string $message = ''): self
     {
-        Assert::notExact($unexpected, $this->source);
+        Assert::exact($expected, $this->actual, $message);
         return $this;
     }
 
-    public function isGreaterThan(int|float $min): self
+    public function notExact(int|float $unexpected, string $message = ''): self
     {
-        Assert::isGreaterThan($this->source, $min);
+        Assert::notExact($unexpected, $this->actual, $message);
         return $this;
     }
 
-    public function isLessThan(int|float $max): self
+    public function equalsWithDelta(int|float $expected, int|float $delta, string $message = ''): self
     {
-        Assert::isLessThan($this->source, $max);
+        Assert::equalsWithDelta($expected, $this->actual, $delta, $message);
         return $this;
     }
 
-    public function isBetween(int|float $min, int|float $max, bool $inclusive = true): self
+    public function isGreaterThan(int|float $minimum, string $message = ''): self
     {
-        Assert::isBetween($min, $max, $this->source, $inclusive);
+        Assert::isGreaterThan($minimum, $this->actual, $message);
+        return $this;
+    }
+
+    public function isGreaterThanOrEqual(int|float $minimum, string $message = ''): self
+    {
+        Assert::isGreaterThanOrEqual($minimum, $this->actual, $message);
+        return $this;
+    }
+
+    public function isLessThan(int|float $maximum, string $message = ''): self
+    {
+        Assert::isLessThan($maximum, $this->actual, $message);
+        return $this;
+    }
+
+    public function isLessThanOrEqual(int|float $maximum, string $message = ''): self
+    {
+        Assert::isLessThanOrEqual($maximum, $this->actual, $message);
+        return $this;
+    }
+
+    public function isBetween(int|float $minimum, int|float $maximum, bool $inclusive = true, string $message = ''): self
+    {
+        Assert::isBetween($minimum, $maximum, $this->actual, $inclusive, $message);
         return $this;
     }
 }

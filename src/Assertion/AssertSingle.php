@@ -2,68 +2,70 @@
 
 namespace MicroUnit\Assertion;
 
-class AssertSingle
+/** Fluent assertions for a single value of any type. */
+final readonly class AssertSingle
 {
     private function __construct(
-        public readonly mixed $source
+        private mixed $actual,
     ) {}
 
-    public static function begin(mixed $source): self
+    public static function begin(mixed $actual): self
     {
-        return new AssertSingle($source);
+        return new self($actual);
     }
 
-    public function equals(mixed $expected): self
+    public function equals(mixed $expected, string $message = ''): self
     {
-        Assert::equals($expected, $this->source);
+        Assert::equals($expected, $this->actual, $message);
         return $this;
     }
 
-    public function notEquals(mixed $unexpected): self
+    public function notEquals(mixed $unexpected, string $message = ''): self
     {
-        Assert::notEquals($unexpected, $this->source);
+        Assert::notEquals($unexpected, $this->actual, $message);
         return $this;
     }
 
-    public function exact(mixed $expected): self
+    public function exact(mixed $expected, string $message = ''): self
     {
-        Assert::exact($expected, $this->source);
+        Assert::exact($expected, $this->actual, $message);
         return $this;
     }
 
-    public function notExact(mixed $unexpected): self
+    public function notExact(mixed $unexpected, string $message = ''): self
     {
-        Assert::notExact($unexpected, $this->source);
+        Assert::notExact($unexpected, $this->actual, $message);
         return $this;
     }
 
-    public function instanceOf(string $expectedInstance): self
+    /** @param class-string $expectedClass */
+    public function instanceOf(string $expectedClass, string $message = ''): self
     {
-        Assert::instanceOf($expectedInstance, $this->source);
+        Assert::instanceOf($expectedClass, $this->actual, $message);
         return $this;
     }
 
-    public function isTrue(): self
+    public function isTrue(string $message = ''): self
     {
-        Assert::isTrue($this->source);
+        Assert::isTrue($this->actual, $message);
         return $this;
     }
 
-    public function isFalse(): self
+    public function isFalse(string $message = ''): self
     {
-        Assert::isFalse($this->source);
+        Assert::isFalse($this->actual, $message);
         return $this;
     }
 
-    public function isNull(): self
+    public function isNull(string $message = ''): self
     {
-        Assert::isNull($this->source);
+        Assert::isNull($this->actual, $message);
         return $this;
     }
 
-    public function notNull(): self
+    public function notNull(string $message = ''): self
     {
-        Assert::notNull($this->source);
+        Assert::notNull($this->actual, $message);
         return $this;
     }
 }
