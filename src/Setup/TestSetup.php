@@ -3,28 +3,16 @@
 namespace MicroUnit\Setup;
 
 use MicroUnit\Core\Tester;
-use MicroUnit\Core\TesterHub;
-use MicroUnit\Config\ConfigProvider;
-use MicroUnit\Config\MicroUnitConfig;
-use MicroUnit\Output\WriteHelper;
+use MicroUnit\Core\TestRegistry;
 
-
-class TestSetup
+/** Entry point for test files. */
+final class TestSetup
 {
+    private function __construct() {}
+
+    /** Returns the Tester of $suite; every file that asks for the same suite name gets the same Tester. */
     public static function getTester(string $suite): Tester
     {
-        static $testerHub;
-
-        if (!isset($testerHub)) {
-            /** @var MicroUnitConfig */
-            static $config = ConfigProvider::get();
-            $testerHub = new TesterHub(new WriteHelper($config->testWriters), $config->stopOnFailure);
-
-            register_shutdown_function(function () use ($testerHub) {
-                $testerHub->runAll();
-            });
-        }
-
-        return $testerHub->getOrCreateTester($suite);
+        return TestRegistry::instance()->tester($suite);
     }
 }

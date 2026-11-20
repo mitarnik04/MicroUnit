@@ -2,12 +2,18 @@
 
 namespace MicroUnit\Core;
 
-class Test
+/** A registered test: what to run and where it was defined. */
+final readonly class Test
 {
-    /** @param callable(...$args): mixed $testCallable */
+    /** @param list<mixed> $args */
     public function __construct(
-        public readonly string $name,
-        public $testCallable,
-        public mixed $args,
+        public string $id,
+        public string $suite,
+        public string $name,
+        public \Closure $callable,
+        public array $args = [],
+        public ?string $file = null,
+        public ?int $line = null,
+        public ?string $group = null,
     ) {}
 }
