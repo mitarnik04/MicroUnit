@@ -1,503 +1,219 @@
-![MicroUnit Banner](images//microunit_banner_wide.png "MicroUnit")
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/brand/banner-dark.png">
+    <img alt="MicroUnit: minimal, modern, mighty PHP testing" src="assets/brand/banner-light.png" width="100%">
+  </picture>
+</p>
 
-# MicroUnit
+<p align="center">
+  <strong>The PHP testing framework with zero dependencies.</strong><br>
+  Tests you can read at a glance, and runs fast enough that you never wait for them.
+</p>
 
-**Minimal. Modern. Mighty.**  
-_The next-generation PHP unit testing framework for developers who want speed, clarity, and power._
+<p align="center">
+  <a href="https://github.com/mitarnik04/MicroUnit/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/mitarnik04/MicroUnit/actions/workflows/ci.yml/badge.svg"></a>
+  <a href="https://packagist.org/packages/microunit/microunit"><img alt="Packagist" src="https://img.shields.io/packagist/v/microunit/microunit?label=packagist&color=0A17A8"></a>
+  <img alt="PHP 8.5+" src="https://img.shields.io/badge/php-8.5%2B-0A17A8">
+  <img alt="Zero dependencies" src="https://img.shields.io/badge/dependencies-0-3FC6F3">
+  <a href="LICENSE"><img alt="License: Apache 2.0" src="https://img.shields.io/badge/license-Apache%202.0-0A17A8"></a>
+</p>
 
-See [Full Documentation](https://mitarnik04.github.io/MicroUnit/) for an in-depth explanation on all features provided by MicroUnit.
-
----
-
-[![License Apache2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![PHP Version](https://img.shields.io/badge/php-8.0%2B-blue.svg)](https://www.php.net/)
-[![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)](#)
-[![Beta](https://img.shields.io/badge/status-beta-yellow.svg)](#)
-[![Sponsor](https://img.shields.io/github/sponsors/mitarnik04?label=Sponsor&logo=GitHub)](https://github.com/sponsors/mitarnik04)
-
----
-
-> ⚠️ **MicroUnit is currently in public beta!**  
-> Features may change and bugs may exist. Feedback is welcome as we prepare for the first stable release.
-
-## What is MicroUnit?
-
-MicroUnit is a modern, high-performance unit testing framework for PHP 8+. It’s designed for developers who want expressive, maintainable tests, without the bloat, legacy baggage, or steep learning curve of traditional frameworks. MicroUnit is code-first, configuration-light, and built for modern PHP projects of any size.
-
----
-
-## Why Choose MicroUnit?
-
-**MicroUnit takes a different approach to unit testing**  
-It gives developers more freedom to decide how test output is presented and offers multiple ways to write tests, while still providing all the features expected from a modern unit testing framework.
-
-The focus is on simplicity, speed, and a zero-dependency philosophy, without sacrificing functionality.
+<p align="center">
+  <a href="https://mitarnik04.github.io/MicroUnit/">Documentation</a> ·
+  <a href="https://mitarnik04.github.io/MicroUnit/getting-started/">Getting started</a> ·
+  <a href="https://mitarnik04.github.io/MicroUnit/migrating-from-phpunit/">Migrating from PHPUnit</a> ·
+  <a href="https://mitarnik04.github.io/MicroUnit/benchmarks/">Benchmarks</a>
+</p>
 
 ---
-
-## Features
-
-### 🚀 Ultra-Fast Test Discovery & Execution
-
-MicroUnit recursively scans your test directories and runs your tests with minimal startup time. No slow autoloaders or heavy configuration.
-
-### 🧪 Expressive, Fluent Assertions
-
-The fluent assertion library is designed to be both powerful and readable. Write assertions that make your intent clear, with detailed error reporting and type safety. Whether you’re testing values, arrays, or objects, MicroUnit’s assertions have you covered.
-
-### 🧙‍♂️ Built-in Mocking
-
-No need for third-party libraries, plugins or complicated setup.  
-Create mocks, stubs, and spies with a simple, intuitive API. Define return values, throw exceptions, and verify interactions.
-
-### 📝 Flexible Output Writers
-
-Choose from minimal, detailed, or file-based reporters out of the box. **You can configure multiple test writers at once** for example, outputting results to the console and saving them to a file simultaneously. This makes it easy to tailor your reporting for both local development and CI/CD pipelines.
-
-**Want even more control?**  
-MicroUnit is fully extensible: **You can write your own custom test writers** to output results in any format you need (HTML, JSON, Slack notifications, dashboards, etc.).
-
-### 🔧 Simple, Code-First Configuration
-
-Forget about XML, JSON or YAML. Configure everything entirely in PHP, making your setup explicit, versionable, and easy to understand with no hidden magic.
-
-### 🛠️ Setup & Teardown
-
-Per-suite and per-test setup/teardown hooks. Pass setup results directly to your tests.
-
-### 📦 Zero-Dependency, Composer-Friendly
-
-Install with Composer and get started in seconds.
-
----
-
-## Requirements
-
-- **PHP 8.0 or higher**
-- Composer
-
----
-
-## Getting Started
-
-### 1. Install
-
-```sh
-composer require --dev microunit/microunit
-```
-
-### 2. Configure
-
-Create `microunit.config.php` in your current working directory or any parent directories.
-
-See [Configuration](https://mitarnik04.github.io/MicroUnit/configuration) for a full list of configuration options
-
-> Note: All paths are going to be resolved relative to the location of your config file.
-
-```php
-<?php
-use MicroUnit\Config\MicroUnitConfigBuilder;
-use MicroUnit\Output\MinimalStringTestWriter;
-
-return MicroUnitConfigBuilder::create()
-    ->withTestDir('./tests')
-    ->addTestFilePattern('*Test.php') // If not configured '*-tests.php' will be used
-    ->addTestWriter(new MinimalStringTestWriter()) //If not configured MinimalStringTestWriter will be used
-    ->build();
-```
-
----
-
-## Writing Tests
-
-See [Usage](https://mitarnik04.github.io/MicroUnit/usage) for a more detailed and in-depth explanation on how to start writing your first tests.
-
-### Setup
-
-After you have defined your target test-directory and your testFile patterns you can create your test files.  
-For the configuration above we would create a directory called `tests` and let's say we create a file `tests/ExampleTest.php` to match our defined test file pattern above.
-
-The First thing we have to do in our test file is get a Tester instance. Each tester is tied to a Testsuite so you have to specify that when calling `TestSetup::getTester($testSuite)`
 
 ```php
 <?php
 
+use MicroUnit\Assertion\Assert;
 use MicroUnit\Setup\TestSetup;
 
-$tester = TestSetup::getTester("YOUR_TEST_SUITE_NAME");
-```
+$tester = TestSetup::getTester('Cart');
 
-After that the `$tester` instance can be used to define tests inside that suite (see following sections).
+$tester->fixture('cart', fn() => new Cart());
 
-### Defining Individual Tests
+$tester->define('adds_items_and_totals_them', function (Cart $cart): void {
+    $cart->add(new Item('Keyboard', 4900));
+    $cart->add(new Item('Mouse', 1900));
 
-```php
-use MicroUnit\Assertion\Assert;
-
-$tester->define('test_addition', function($a, $b) {
-    Assert::equals($a + $b, 4);
-}, 2, 2);
-```
-
-- The first argument is the test name.
-- The second argument is a function containing your test logic.
-- Additional arguments are passed to the test function.
-
-### Defining Groups of Tests
-
-```php
-$cases = [
-    new TestCase('case1', [2, 2]),
-    new TestCase('case2', [3, 1]),
-];
-
-$tester->defineGroup('addition', function($a, $b) {
-    Assert::equals($a + $b, 4);
-}, $cases);
-```
-
-- The first argument is the base name for the group.
-- The second argument is the test function.
-- The third argument is an array of `TestCase` objects.
-
----
-
-## Assertions
-
-See [Assertions](https://mitarnik04.github.io/MicroUnit/assertions) for a complete list of the available assertion methods and a more detailed explanation.
-
-### Basic Assertions
-
-```php
-use MicroUnit\Assertion\Assert;
-
-Assert::equals(4, 2 + 2);
-Assert::notEquals(5, 2 + 2);
-Assert::isTrue(true);
-Assert::isNull(null);
-Assert::throws(fn() => 1 / 0, DivisionByZeroError::class);
-```
-
-### Fluent Assertions
-
-While the Assert class supports all below assertion methods by just calling them statically they are grouped into different kinds of assertions when using the fluent assertions api.
-
-#### Single Value Assertions
-
-```php
-use MicroUnit\Assertion\AssertSingle;
-
-AssertSingle::begin($result)
-    ->equals(42)
-    ->notNull()
-    ->instanceOf(int::class);
-```
-
-#### Array Assertions
-
-```php
-use MicroUnit\Assertion\AssertArray;
-
-AssertArray::begin([1, 2, 3])
-    ->contains(2)
-    ->countEquals(3)
-    ->notEmpty()
-    ->hasKey(0);
-```
-
-#### Numeric Assertions
-
-```php
-use MicroUnit\Assertion\AssertNumeric;
-
-AssertNumeric::begin(10)
-    ->isGreaterThan(5)
-    ->isLessThan(20)
-    ->isBetween(5, 15);
-```
-
----
-
-## Mocking
-
-See [Mocking](https://mitarnik04.github.io/MicroUnit/Mocking) for a full list of available builder methods and a more detailed explanation.
-
-### Basic Mocking
-
-```php
-use MicroUnit\Mock\MockBuilder;
-use MicroUnit\Assertion\AssertMock;
-
-$mock = MockBuilder::create(MyService::class)
-    ->returns('getValue', 123)
-    ->build();
-
-$instance = $mock->newInstance();
-$instance->getValue(); // returns 123
-
-```
-
-### Advanced Mocking
-
-```php
-$mock = MockBuilder::create(MyService::class)
-    ->returnsSequence('getValue', 1, 2, 3)
-    ->throws('failMethod', new Exception('fail!'))
-    ->build();
-
-$instance = $mock->newInstance();
-$instance->getValue(); // 1
-$instance->getValue(); // 2
-$instance->getValue(); // 3
-
-```
-
-### Asserting Mocks
-
-You can assert different things on Mocks using the dedicated [`MicroUnit\Assertion\AssertMock`](src/Assertion/AssertMock.php) class.
-
-> Note: Since mocks require some extra logic under the hood to assert you can not assert them through static methods via the [`MicroUnit\Assertion\Assert`](src/Assertion/Assert.php) class.
-
-Looking at the provided example above let's add some Assertion logic to it.
-
-```php
-$mock = MockBuilder::create(MyService::class)
-    ->returnsSequence('getValue', 1, 2, 3)
-    ->throws('failMethod', new Exception('fail!'))
-    ->build();
-
-$instance = $mock->newInstance();
-$instance->getValue(); // 1
-$instance->getValue(); // 2
-$instance->getValue(); // 3
-
-//Assertion
-AssertMock::begin($mock)
-    ->isCalledTimes('getValue', 3)
-    ->isNotCalled('failMethod');
-```
-
----
-
-## Output Writers
-
-MicroUnit lets you choose how your test results are displayed or stored. **You can configure multiple test writers at once** for example, outputting results to the console and saving them to a file simultaneously. This makes it easy to tailor your reporting for both local development and CI/CD pipelines.
-
-See [Output](https://mitarnik04.github.io/MicroUnit/output) for a more detailed explanation.
-
-```php
-use MicroUnit\Output\MinimalStringTestWriter;
-use MicroUnit\Output\FileTestWriter;
-
-return MicroUnitConfigBuilder::create()
-    ->withTestDir('./tests')
-    // Output results to the console
-    ->addTestWriter(new MinimalStringTestWriter())
-    // Also write results to a file
-    ->addTestWriter(new FileTestWriter('./test-results.log'))
-    ->build();
-```
-
-### Custom Output Writers
-
-To create a custom test writer, implement the [`MicroUnit\Output\ITestWriter`](src/Output/ITestWriter.php) interface.  
-You **must** implement the following methods:
-
-```php
-use MicroUnit\Output\ITestWriter;
-use MicroUnit\Core\TestResult;
-
-class MyCustomTestWriter implements ITestWriter
-{
-    public function writeResult(TestResult $result): void
-    {
-        // Output a single test result
-    }
-
-    public function writeResults(array $results): void
-    {
-        // Output all results for a suite
-    }
-
-    public function writeSummary(int $totalTests, int $successes, int $failures): void
-    {
-        // Output a summary at the end
-    }
-
-    public function writeSuite(string $suite): void
-    {
-        // Output when a suite starts
-    }
-}
-```
-
-See [src/Output/MinimalStringTestWriter.php](src/Output/MinimalStringTestWriter.php) or [src/Output/FileTestWriter.php](src/Output/FileTestWriter.php) for examples.
-
----
-
-## Setup & Teardown
-
-See [Usage &rarr; Lifecycle-Hooks](https://mitarnik04.github.io/MicroUnit/usage#lifecycle-hooks) for a more detailed explanation on Setup & Teardown
-
-Use `setUp` and `tearDown` hooks for per-test preparation and cleanup.
-
-```php
-$tester->setUp(function () {
-    // This runs before each test
-    // Return any value you want to share with your test
-    return new DatabaseConnection();
+    Assert::countEquals(2, $cart->items());
+    Assert::exact(6800, $cart->total());
 });
 
-$tester->tearDown(function ($testResult, $db) {
-    // This runs after each test
-    $db->close();
-});
-
-// Each test must accept the setup result as its first argument!
-$tester->define('fetch user', function ($db) {
-    $user = $db->fetchUser(1);
-    Assert::notNull($user);
-});
-```
-
-#### Limitations
-
-- **If you use `setUp`, every test function should accept the setup result as its first parameter.**  
-  If you forget, PHP will throw an argument count error.
-- **If your test function does not have any arguments at all and you use `setUp`, that's OK as well.**  
-  MicroUnit will simply not pass the setup value to that test.
-- **If you use grouped/parameterized tests, the setup result will be the first argument, followed by your test case parameters:**
-
-```php
-$tester->defineGroup('math', function ($setupResult, $a, $b, $expected) {
-    // $setupResult is from setUp()
-    Assert::equals($expected, $a + $b);
+$tester->defineGroup('applies_discounts', function (int $percent, int $total): void {
+    Assert::exact($total, new Cart(10000)->withDiscount($percent)->total());
 }, [
-    new TestCase('add1', [1, 2, 3]),
-    new TestCase('add2', [2, 2, 4]),
+    'none' => [0, 10000],
+    'a quarter' => [25, 7500],
 ]);
 ```
 
-- **If you don’t use `setUp`, your test functions can have any signature you want.**
+```text
+$ vendor/bin/microunit
 
----
+-- Cart --
+[✔] adds_items_and_totals_them (2.18ms)
+[✔] applies_discounts_none (0.00ms)
+[✔] applies_discounts_a quarter (0.00ms)
 
-**Summary:**  
-When using `setUp`, always remember:
-
-- The return value from `setUp` is injected as the first argument to every test in the suite (unless your test function has no parameters).
-- Adjust your test function signatures accordingly.
-
----
-
-## MicroUnit in Action
-
-See [Usage &rarr; Running Tests](https://mitarnik04.github.io/MicroUnit/usage#running-tests) for a more detailed explanation on how to run your MicroUnit tests.
-
-Run your tests with a single command:
-
-```sh
-.\vendor\bin\microunit
+Summary: 3/3 passed, 0 failed in 14.37ms
 ```
 
-- Fast, clear output.
-- Fails fast with detailed error messages and diffs.
-- CI/CD ready.
+No base classes, no annotations, no XML. A test is a closure with a name that says what it checks.
 
----
+## Why MicroUnit
 
-## Directory Structure
+- **Fast where it counts.** On the real test suites of six popular PHP projects, MicroUnit beat PHPUnit
+  in all 24 comparisons: up to 5× faster on a full suite, and typically 2.6× faster when you re-run
+  a single file, which is what you and your AI agent do all day. Method, raw data and every
+  exclusion are published: [benchmarks](https://mitarnik04.github.io/MicroUnit/benchmarks/).
+- **Zero dependencies.** Not one Composer package, not even for development. Nothing to conflict
+  with, nothing to audit, nothing that breaks when you upgrade something else.
+- **Built for AI-assisted development.** Agents get compact JSON with only the failures (a fraction
+  of the tokens), and MicroUnit warns when tests were weakened to make them pass.
+  [More](https://mitarnik04.github.io/MicroUnit/ai-agents/)
+- **Everything in the box.** Mocks, snapshots, data sets, fixtures, code coverage without Xdebug or
+  PCOV, parallel runs, a browser Test Explorer, JUnit/HTML/log reports, and Laravel, Symfony and
+  CodeIgniter integrations.
+- **Configured in PHP.** One `microunit.config.php` with autocompletion instead of XML.
+- **Switching takes one command.** `microunit migrate` translates your PHPUnit suite, mocks and data
+  providers included, and tells you exactly what it could not.
 
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/brand/benchmarks/suite-dark.png">
+    <img alt="Full test suite: MicroUnit is 1.03 to 5.14 times faster than PHPUnit on the test suites of six popular PHP projects" src="assets/brand/benchmarks/suite-light.png" width="100%">
+  </picture>
+</p>
+
+## Install
+
+```bash
+composer require --dev microunit/microunit
+vendor/bin/microunit init
 ```
-src/
-    Assertion/
-    Bootstrap/
-    Cache/
-    Config/
-    Core/           # contains the core logic that is needed to run unit tests
-    Exceptions/
-    Helpers/        # contains a set of internal helpers
-    Mock/
-    Output/
-    Setup/
-    Toolkit/        # contains a set of useful tools for writing unit tests
-bin/
-    run-tests.php
-    run_logs/
+
+`init` writes a config and a first test, set up for Laravel, Symfony or CodeIgniter if your project
+uses one. Then run `vendor/bin/microunit`. Requires PHP 8.5 or newer; tested on 8.5 and 8.6.
+
+Coming from PHPUnit? `vendor/bin/microunit migrate` converts your tests into `tests-microunit/` and
+leaves the originals alone, so both suites run side by side until you are happy.
+[Migration guide](https://mitarnik04.github.io/MicroUnit/migrating-from-phpunit/)
+
+## A quick tour
+
+**Assertions that read like sentences.** Expected value first, actual value second, as in PHPUnit.
+Plus the ones you keep writing by hand:
+
+```php
+Assert::containsSubset(['user' => ['name' => 'Ada']], $response->json());  // partial match
+Assert::equivalent([3, 1, 2], $ids);                                         // any order
+Assert::each($orders, fn(Order $order) => Assert::isTrue($order->isPaid()));
+Assert::eventually(fn() => Assert::notNull($mailbox->latest()), timeoutInSeconds: 3);
+Assert::multiple(function () use ($user) {                                   // report every failure
+    Assert::exact('Ada', $user->name);
+    Assert::exact('ada@example.com', $user->email);
+});
+Assert::matchesSnapshot($invoice->render());
 ```
 
----
+[All assertions](https://mitarnik04.github.io/MicroUnit/assertions/) ·
+[Snapshots](https://mitarnik04.github.io/MicroUnit/snapshots/)
 
-## Become a Sponsor
+**Mocks without a second library.**
 
-MicroUnit isn’t just another testing tool, it’s the foundation for serious, modern PHP testing. No matter if you are building a professional-grade software or just a small library with PHP 8+, MicroUnit is built for your stack, your speed, and your standards.
+```php
+$mailer = MockBuilder::create(Mailer::class)->returns('send', true)->build()->newInstance();
 
-By sponsoring MicroUnit, you're investing in the future of PHP development: faster test cycles, clearer code, and a cleaner ecosystem, without the legacy baggage.
+new Checkout($mailer)->complete($order);
 
-🙌 Keep MicroUnit free, open-source, and evolving at full speed.
+AssertMock::begin($mailer)->isCalledOnce('send')->isCalledWith('send', [$order->email]);
+```
 
-📢 Get recognized on our GitHub and website as a key supporter
+[Mocking](https://mitarnik04.github.io/MicroUnit/mocking/)
 
-🧑‍💻 Help shape the roadmap and gain direct influence on upcoming features
+**Your framework, unchanged.**
 
-❤️ Be part of a growing movement to modernize PHP for the next generation
+```php
+$tester->define('customers_can_place_orders', function (): void {
+    Laravel::actingAs(User::factory()->create())
+        ->postJson('/api/orders', ['sku' => 'KB-01'])
+        ->assertCreated();
 
-Ready to lead the charge?  
-I have finally managed to publish my **github sponsors** profile so donations can now be made through there!  
-[![Sponsor](https://img.shields.io/github/sponsors/mitarnik04?label=Sponsor&logo=GitHub)](https://github.com/sponsors/mitarnik04)
+    Laravel::assertDatabaseHas('orders', ['sku' => 'KB-01']);
+});
+```
 
-If you prefer a one-time contribution, you can also buy me a coffee &rarr; MicroUnit runs on PHP, but the maintainer runs on caffeine.  
-[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-orange?style=for-the-badge&logo=buy-me-a-coffee&logoColor=white)](https://coff.ee/mitarnikolic)
+[Laravel, Symfony, CodeIgniter](https://mitarnik04.github.io/MicroUnit/frameworks/)
 
-**Any donation is very much appreciated and will be listed on the [official documentation site](https://mitarnik04.github.io/MicroUnit)**.
+**A Test Explorer in your browser.** `microunit explorer` opens a live view of your suite: run one
+test, a suite, only the failures, jump to the line in your editor. Opt-in, so it costs nothing
+when you don't use it.
 
----
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/brand/explorer-dark.png">
+    <img alt="The MicroUnit Test Explorer showing a failed assertion with its diff" src="assets/brand/explorer.png" width="100%">
+  </picture>
+</p>
 
-## Upcoming Features
+[Test Explorer](https://mitarnik04.github.io/MicroUnit/test-explorer/)
 
-Listed below are the features for MicroUnit that are on the roadmap for being released in the upcoming versions.
+**And the rest:** [parallel runs](https://mitarnik04.github.io/MicroUnit/parallel/) with
+`--parallel`, [code coverage](https://mitarnik04.github.io/MicroUnit/coverage/) in pure PHP,
+[integration testing](https://mitarnik04.github.io/MicroUnit/integration-testing/) with a database,
+HTTP server and HTTP client in the toolkit, [reports](https://mitarnik04.github.io/MicroUnit/output/)
+for JUnit, HTML, GitHub Actions and logs, and a [CLI](https://mitarnik04.github.io/MicroUnit/cli/)
+where `microunit help <command>` explains everything.
 
-### Support for parallel unit testing
+## Built for AI coding agents
 
-Currently MicroUnit only supports sequential testing. While this is still very fast we are aiming to provide support for parallel unit testing to make test execution even faster in places where you might need it.
+AI agents run tests constantly, often after every small change. Three things make MicroUnit a better
+partner for that loop:
 
-### Code Coverage
+- **Speed.** Less waiting per run adds up across hundreds of runs a day.
+- **Token-cheap output.** In an agent session (Claude Code is detected automatically, others set
+  `MICROUNIT_AGENT=1`) the output is one compact JSON object with only the failures: where, expected,
+  actual, the code around it.
+- **Protection against test cheating.** Agents sometimes "fix" a red test by deleting an assertion or
+  changing the expected value. Turn on the integrity check and MicroUnit compares the tests with the last
+  commit after every run, and tells the agent, and you, when a test got weaker. `microunit integrity origin/main` does the same in code review.
 
-A very useful feature in other popular unit testing frameworks is the ability to generate code coverage reports so you always know how much of your code you have covered with your tests.  
-That's why we are aiming to bring that feature to MicroUnit as well.
+`vendor/bin/microunit init --skill` installs a skill that teaches your agent how to write MicroUnit
+tests. [More](https://mitarnik04.github.io/MicroUnit/ai-agents/)
+
+## The story
+
+I started MicroUnit before AI coding assistants existed, because I wanted PHP tests that were quick
+to write and quick to read. It got to a public beta, and then it stalled: building coverage, parallel
+runs, framework integrations and a proper explorer next to a day job was more than one person could
+do. AI changed that. With it as my tool, I finally had the capacity to bring MicroUnit to its first
+official release: to test every part of it properly, all the way down to running the real test suites
+of the projects in the benchmark, and to build every feature I had imagined for it. MicroUnit is
+made for the way software gets written now, so it is fitting that it was made that way too.
 
 ## Contributing
 
-We welcome issues, pull requests, and feature suggestions!  
-Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+Issues, ideas and pull requests are very welcome. [CONTRIBUTING.md](CONTRIBUTING.md) explains the
+setup (five minutes), the code standards and what makes a pull request easy to merge.
+Security issues: please follow [SECURITY.md](SECURITY.md).
 
----
+## Support the project
+
+If MicroUnit saves you time, consider sponsoring it. It keeps the project independent and moving.
+
+[![Sponsor](https://img.shields.io/github/sponsors/mitarnik04?label=Sponsor&logo=GitHub)](https://github.com/sponsors/mitarnik04)
+[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-orange?logo=buy-me-a-coffee&logoColor=white)](https://coff.ee/mitarnikolic)
+
+Every sponsor is listed on the [documentation site](https://mitarnik04.github.io/MicroUnit/).
 
 ## License
 
-See [LICENSE](LICENSE).
+Apache 2.0, see [LICENSE](LICENSE).
 
----
-
-## Security
-
-If you discover a security vulnerability, please report it privately.
-
----
-
-## Contact
-
-For questions or support, open an issue or contact the maintainers.
-
----
-
-## Do you enjoy this take on Unit Tests?
-
-**MicroUnit** is for developers who want to test smarter, not harder.  
-No legacy, no plugins, no config files &rarr; just pure, modern PHP testing.
-
-**Try MicroUnit today and experience the difference!**
-
----
-
-**Minimal. Modern. Mighty &rarr; MicroUnit**
+<p align="center"><strong>Minimal. Modern. Mighty.</strong></p>

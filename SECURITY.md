@@ -1,17 +1,16 @@
 # Security Policy
 
-## Supported Versions
+## Supported versions
 
-Since MicroUnit is currently in it's beta phase we don't have to worry about suppling older versions with security updates.  
-Therefore this section is a thing for the future...  
-Be sure to check back in once MicroUnit get's officially released. 
+| Version | Supported |
+| --- | --- |
+| 1.x | Yes |
+| 1.0.0 betas | No, please upgrade to 1.x |
 
-> **Note:** Once available we will show a table of the supported versions here !!
+## Reporting a vulnerability
 
-## Reporting a Vulnerability
+Please don't report security problems in public issues or pull requests.
 
-Since this is a very private matter please **DO NOT** share vulnerabilites publicly.  
+Send an email to **mitar.mn5@gmail.com** instead, with a description of the problem and, if you can, the steps to reproduce it. I'll confirm that I received it and work on a fix as fast as I can. Once a fix is released, I'm happy to credit you in the changelog if you want to be named.
 
-Any vulnerabilities should be directly reported via email to mitar.mn5@gmail.com.  
-
-Be sure that we will do our best to fix that vulnerability **as fast as possible**.
+Things worth reporting include anything that lets a test run or the Test Explorer execute code or read files it shouldn't. The explorer only listens on `127.0.0.1` and protects its API with a per-session token, so a way around either of those definitely counts.
