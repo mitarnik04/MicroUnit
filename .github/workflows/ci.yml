@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    name: Tests (PHP ${{ matrix.php }}, ${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        php: ["8.5", "8.6"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: none
+          ini-values: opcache.enable_cli=0, error_reporting=-1
+      - name: Run MicroUnit's own test suite
+        run: php bin/microunit
+      - name: Run it again in parallel
+        run: php bin/microunit --parallel=4
+
+  quality:
+    name: Lint and formatting
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.5"
+          coverage: none
+      - name: Lint (syntax and structure)
+        run: php bin/lint.php
+      - name: Formatting (PHP-CS-Fixer, used as a PHAR, never a dependency)
+        run: |
+          curl -sSL -o php-cs-fixer.phar https://cs.symfony.com/download/php-cs-fixer-v3.phar
+          php php-cs-fixer.phar fix --dry-run --diff --config=.php-cs-fixer.dist.php
