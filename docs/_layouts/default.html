@@ -45,6 +45,11 @@
     </nav>
 
     <main id="main">
+        {%- if site.prerelease %}
+        <aside class="prerelease" role="note">
+            <p><strong>MicroUnit 1.0 is not released yet.</strong> This documentation already describes 1.0, a substantial rewrite. Until it is out, Packagist only has the 1.0 betas, which lack much of what you read here. <a href="{{ site.repository_url }}">Watch the repository</a> to hear when 1.0 lands.</p>
+        </aside>
+        {%- endif %}
         <article class="content">
             {{ content }}
         </article>

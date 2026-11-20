@@ -1,3 +1,9 @@
+> [!IMPORTANT]
+> **MicroUnit 1.0 is not released yet.** This README and the
+> [documentation](https://mitarnik04.github.io/MicroUnit/) already describe 1.0, a substantial
+> rewrite. Until it is out, Packagist only has the 1.0 betas, which lack much of what you read here,
+> so the install command below does not work yet. Watch the repository to hear when 1.0 lands.
+
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="assets/brand/banner-dark.png">

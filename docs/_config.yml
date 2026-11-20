@@ -3,6 +3,8 @@ title: MicroUnit
 tagline: the PHP testing framework with zero dependencies
 description: Fast, dependency-free PHP testing. Readable closures, real assertions, a Test Explorer, coverage without extensions, parallel runs, and output made for AI agents.
 version: "1.0"
+# Shows the "not released yet" notice on every page. Set to false when 1.0.0 is on Packagist.
+prerelease: true
 url: https://mitarnik04.github.io
 baseurl: /MicroUnit
 repository_url: https://github.com/mitarnik04/MicroUnit
