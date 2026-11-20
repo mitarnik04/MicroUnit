@@ -1,0 +1,72 @@
+name: Bug report
+description: MicroUnit does something wrong or crashes.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time. The fastest way to a fix is a test that shows the problem.
+        Security problems don't belong here: see the [security policy](https://github.com/mitarnik04/MicroUnit/security/policy).
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: What you did, what you expected, and what MicroUnit did instead.
+    validations:
+      required: true
+  - type: textarea
+    id: test
+    attributes:
+      label: A test that shows it
+      description: The smallest test file that reproduces the problem.
+      render: php
+      placeholder: |
+        $tester = TestSetup::getTester('Cart');
+
+        $tester->define('adds_items', function (): void {
+            Assert::exact(2, (new Cart())->add('book')->add('pen')->count());
+        });
+  - type: input
+    id: command
+    attributes:
+      label: Command
+      description: How you ran MicroUnit.
+      placeholder: vendor/bin/microunit tests/cart-tests.php --parallel
+  - type: textarea
+    id: output
+    attributes:
+      label: Output
+      description: What MicroUnit printed. For agent sessions, add --no-agent for the readable output.
+      render: text
+  - type: input
+    id: microunit-version
+    attributes:
+      label: MicroUnit version
+      placeholder: "1.0.0 (vendor/bin/microunit --version)"
+    validations:
+      required: true
+  - type: input
+    id: php-version
+    attributes:
+      label: PHP version
+      placeholder: "8.5.1 (php -v)"
+    validations:
+      required: true
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating system
+      options: [Linux, macOS, Windows, Other]
+    validations:
+      required: true
+  - type: dropdown
+    id: framework
+    attributes:
+      label: Framework integration
+      options: [None, Laravel, Symfony, CodeIgniter]
+  - type: textarea
+    id: config
+    attributes:
+      label: microunit.config.php
+      description: If the problem might depend on your configuration.
+      render: php

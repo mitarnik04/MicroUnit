@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Question or idea
+    url: https://github.com/mitarnik04/MicroUnit/discussions
+    about: Ask, share and discuss in GitHub Discussions.
+  - name: Documentation
+    url: https://mitarnik04.github.io/MicroUnit/
+    about: A page for every feature, including troubleshooting.
+  - name: Security problem
+    url: https://github.com/mitarnik04/MicroUnit/security/policy
+    about: Please report privately, never in a public issue.

@@ -1,0 +1,38 @@
+name: Migration problem
+description: microunit migrate translated a PHPUnit test wrongly, or not at all.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        `migrate` is tested against the suites of real projects, but PHPUnit can be written in many ways.
+        A PHPUnit test next to what `migrate` made of it is all it takes to fix it.
+  - type: textarea
+    id: phpunit-test
+    attributes:
+      label: The PHPUnit test
+      description: The smallest test class (or method) that shows the problem.
+      render: php
+    validations:
+      required: true
+  - type: textarea
+    id: migrated
+    attributes:
+      label: What migrate produced
+      description: The generated test, or the entry from migration-report.json if it was skipped.
+      render: php
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+      description: How the test should look or behave after migration.
+  - type: input
+    id: versions
+    attributes:
+      label: Versions
+      description: MicroUnit, PHPUnit and PHP.
+      placeholder: MicroUnit 1.0.0, PHPUnit 11.5, PHP 8.5.1
+    validations:
+      required: true
