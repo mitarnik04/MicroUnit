@@ -2,41 +2,45 @@
 
 namespace MicroUnit\Mock;
 
-class CallLog
+/** Records which methods were called, how often, with which arguments and in which order. */
+final class CallLog
 {
-    private array $callLog = [];
+    /** @var array<string, list<list<mixed>>> method => arguments of each call */
+    private array $argumentsByMethod = [];
+
+    /** @var list<string> */
     private array $callSequence = [];
 
-    public function addCall(string $method, array $callArgs = []): void
+    /** @param list<mixed> $args */
+    public function addCall(string $method, array $args = []): void
     {
-        if (!isset($this->callLog[$method])) {
-            $this->callLog[$method] = [
-                'callLog' => 0,
-                'argLog' => [],
-            ];
-        }
-
-        $this->callLog[$method]['argLog'][] = $callArgs;
-        $this->callLog[$method]['callLog']++;
+        $this->argumentsByMethod[$method][] = $args;
         $this->callSequence[] = $method;
     }
 
     public function getCallCount(string $method): int
     {
-        return $this->callLog[$method]['callLog'] ?? 0;
+        return count($this->argumentsByMethod[$method] ?? []);
     }
 
+    /** @return list<list<mixed>> */
     public function getAllCallArgs(string $method): array
     {
-        return $this->callLog[$method]['argLog'] ?? [];
+        return $this->argumentsByMethod[$method] ?? [];
+    }
+
+    /** @return list<mixed>|null arguments of the given call (1-based), null if there was no such call */
+    public function getCallArgs(string $method, int $callNumber): ?array
+    {
+        return $this->argumentsByMethod[$method][$callNumber - 1] ?? null;
     }
 
     public function hasCalls(string $method): bool
     {
-        return !empty($this->callLog[$method]['callLog']);
+        return isset($this->argumentsByMethod[$method]);
     }
 
-    /** @return array<string> */
+    /** @return list<string> method names in the order they were called */
     public function getCallSequence(): array
     {
         return $this->callSequence;

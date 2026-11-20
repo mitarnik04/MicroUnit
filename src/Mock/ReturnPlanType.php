@@ -4,8 +4,9 @@ namespace MicroUnit\Mock;
 
 enum ReturnPlanType
 {
-    case FIXED;
-    case SEQUENCE;
-    case CALLBACK;
-    case THROWABLE;
+    case Fixed;
+    case Sequence;
+    case Callback;
+    case Map;
+    case Throwable;
 }
