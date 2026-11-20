@@ -2,51 +2,41 @@
 
 namespace MicroUnit\Toolkit;
 
-class ManagedValue
+/**
+ * A bag of named values with property-style access, handy for returning several values from setUp().
+ * Values set with set($name, $value, readonly: true) cannot be overwritten.
+ */
+final class ValueBundle
 {
-    public function __construct(
-        public mixed $value,
-        public bool $readonly
-    ) {}
-}
-
-class ValueBundle
-{
-    /** @var array<ManagedValue> */
+    /** @var array<string, ManagedValue> */
     private array $values = [];
 
     public function __get(string $name): mixed
     {
-        if ($this->tryGetValue($name, $managedValue)) {
-            return $managedValue->value;
-        }
-
-        return null;
+        return ($this->values[$name] ?? null)?->value;
     }
 
     public function __set(string $name, mixed $value): void
     {
-        $this->set($name, $value, false);
+        $this->set($name, $value);
+    }
+
+    public function __isset(string $name): bool
+    {
+        return isset($this->values[$name]) && $this->values[$name]->value !== null;
     }
 
     public function set(string $name, mixed $value, bool $readonly = false): void
     {
-        if ($this->tryGetValue($name, $managedValue) && $managedValue->readonly) {
-            throw new \RuntimeException("Readonly property '$name' cannot be modified");
+        if (($this->values[$name] ?? null)?->isReadonly) {
+            throw new \RuntimeException("Readonly value '$name' cannot be modified.");
         }
 
         $this->values[$name] = new ManagedValue($value, $readonly);
     }
 
-    /**
-     * Attempts to get the ManagedValue by name.
-     *
-     * @param ?ManagedValue &$output variable to assign found `ManagedValue` (assigns `null` if not found). 
-     * @return bool True if the value exists, false otherwise.
-     */
-    private function tryGetValue(string $name, ?ManagedValue &$output): bool
+    public function has(string $name): bool
     {
-        $output = $this->values[$name] ?? null;
-        return !is_null($output);
+        return array_key_exists($name, $this->values);
     }
 }
