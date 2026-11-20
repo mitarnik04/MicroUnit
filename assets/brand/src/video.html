@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>MicroUnit 1.0 product video</title>
+<link rel="stylesheet" href="brand.css">
+<!--
+  The 1.0 product video, 1920 x 1080. The timeline is deterministic: render(seconds) draws the frame for
+  that moment, so a renderer can capture any frame exactly. Open the page in a browser to watch it play.
+  The benchmark numbers are read from the published results.
+-->
+<style>
+  :root { --w: 1920px; --h: 1080px; --ink: #FFFFFF; --muted: #A5B1DF; --line: rgba(255, 255, 255, .14); --panel: #0B1550; --block: #FFFFFF; }
+  body { background: var(--deep); color: var(--ink); }
+  .scene { position: absolute; inset: 0; padding: 120px 150px; opacity: 0; }
+  [data-in] { will-change: opacity, transform; }
+  .headline { font-family: "Archivo Wide"; font-weight: 800; letter-spacing: -.035em; line-height: .98; font-size: 92px; margin: 0; }
+  .headline em { font-style: normal; color: var(--cyan); }
+  .sub { margin: 28px 0 0; font-size: 32px; line-height: 1.4; color: var(--muted); max-width: 1300px; }
+  .label { font-size: 22px; color: var(--cyan); }
+
+  /* 1: opener */
+  .opener { display: grid; place-items: center; text-align: center; }
+  .opener .h-lock { font-size: 170px; justify-content: center; }
+  .opener .h-lock .word { color: #FFFFFF; }
+  .opener .tag { margin-top: 56px; display: flex; gap: 40px; justify-content: center; font-size: 34px; }
+  .opener .tag span { display: inline-flex; align-items: center; gap: 40px; }
+  .opener .tag span + span::before { content: ""; width: 14px; height: 14px; background: var(--cyan); }
+  .opener .sub { margin: 40px auto 0; text-align: center; }
+
+  /* Code and terminal cards */
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 34px 40px; font-family: var(--font-code, ui-monospace, "Cascadia Mono", Consolas, monospace); font-size: 27px; line-height: 1.55; white-space: pre; color: #E6ECFF; font-variant-ligatures: none; }
+  .card .bar { display: flex; gap: 10px; margin-bottom: 22px; }
+  .card .bar i { width: 14px; height: 14px; border-radius: 50%; background: rgba(255, 255, 255, .18); }
+  .k { color: #C79BFF; } .s { color: #7FE0A4; } .n { color: #FFB86B; } .v { color: #8CC8FF; } .f { color: #6FD6FA; } .c { color: #FF9BC9; }
+  .ok { color: #3DCB7B; } .dim { color: #8E9BCF; } .warn { color: #FFBE3D; } .bad { color: #FF6A6F; }
+  .caret { display: inline-block; width: .55em; height: 1.1em; margin-bottom: -.2em; background: var(--cyan); }
+
+  .write { display: grid; grid-template-columns: auto 1fr; gap: 40px; margin-top: 56px; align-items: start; }
+  .write .card { font-size: 23px; min-height: 600px; }
+
+  /* 3: benchmark */
+  .bench-rows { margin-top: 48px; display: grid; gap: 12px; }
+  .bench-rows .row { display: grid; grid-template-columns: 330px 1fr; align-items: center; height: 54px; }
+  .bench-rows .name { font-family: "Archivo Condensed"; font-weight: 600; font-size: 32px; }
+  .bench-rows .track { position: relative; height: 34px; border-left: 2px solid rgba(255, 255, 255, .4); }
+  .bench-rows .track i { position: absolute; left: 0; top: 0; bottom: 0; background: var(--cyan); border-radius: 0 6px 6px 0; }
+  .bench-rows .track b { position: absolute; top: 50%; transform: translateY(-50%); font-family: "Archivo Condensed"; font-weight: 700; font-size: 34px; }
+  .bench-foot { position: absolute; left: 150px; right: 150px; bottom: 110px; display: flex; justify-content: space-between; align-items: end; }
+  .bench-foot .won { font-family: "Archivo Wide"; font-weight: 800; font-size: 64px; letter-spacing: -.03em; }
+  .bench-foot .won span { color: var(--cyan); }
+  .bench-foot .note { font-family: "Archivo Condensed"; font-size: 24px; color: var(--muted); text-align: right; line-height: 1.5; }
+
+  /* 4: agents */
+  .agents { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; margin-top: 64px; align-items: start; }
+  .agents .card { font-size: 24px; min-height: 560px; }
+  .points { display: grid; gap: 38px; padding-top: 18px; }
+  .points div { font-size: 36px; line-height: 1.3; }
+  .points div small { display: block; margin-top: 8px; font-size: 26px; color: var(--muted); }
+  .points div::before { content: ""; display: block; width: 18px; height: 18px; background: var(--cyan); margin-bottom: 18px; }
+
+  /* 5: features */
+  .chips { margin-top: 80px; display: flex; flex-wrap: wrap; gap: 26px; max-width: 1560px; }
+  .chips span { font-family: "Archivo Condensed"; font-weight: 600; font-size: 40px; padding: 22px 34px; border-radius: 12px; background: var(--panel); border: 1px solid var(--line); }
+  .chips span::before { content: ""; display: inline-block; width: 14px; height: 14px; margin-right: 18px; background: var(--cyan); vertical-align: .14em; }
+
+  /* 6: explorer */
+  .shot { position: absolute; left: 150px; right: 150px; top: 330px; border-radius: 14px; overflow: hidden; border: 1px solid var(--line); box-shadow: 0 30px 80px rgba(0, 0, 0, .45); }
+  .shot img { display: block; width: 100%; }
+
+  /* 7: migrate and closing card */
+  .migrate .card { margin-top: 64px; font-size: 30px; max-width: 1300px; }
+  .closer { display: grid; place-items: center; text-align: center; }
+  .closer .h-lock { font-size: 130px; justify-content: center; }
+  .closer .h-lock .word { color: #FFFFFF; }
+  .closer .install { margin: 64px auto 0; display: inline-block; font-size: 38px; padding: 26px 44px; }
+  .closer .url { margin-top: 44px; font-family: "Archivo Condensed"; font-weight: 600; font-size: 36px; color: var(--cyan); letter-spacing: .02em; }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="mk" viewBox="0 0 64 64"><path d="M7 12H33a3 3 0 0 1 3 3V28H49a3 3 0 0 1 3 3V57a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3V15a3 3 0 0 1 3-3z" fill="var(--block)"/><rect x="44" y="4" width="16" height="16" rx="3" fill="var(--unit)"/></symbol></svg>
+<main class="canvas">
+  <section class="scene opener" data-scene="0 4.6">
+    <div>
+      <div class="h-lock" data-in="0.3"><svg class="mk"><use href="#mk"/></svg><span class="word">microunit</span></div>
+      <div class="tag label"><span data-in="1.3">Minimal</span><span data-in="1.7">Modern</span><span data-in="2.1">Mighty</span></div>
+      <p class="sub" data-in="2.7">The dependency-free testing framework for PHP. Version 1.0.</p>
+    </div>
+  </section>
+
+  <section class="scene" data-scene="4.6 13.4">
+    <div class="label" data-in="4.8">Writing tests</div>
+    <h1 class="headline" data-in="5.0" style="margin-top:22px">Tests that read like <em>a description.</em></h1>
+    <div class="write">
+      <div class="card" data-in="5.6"><div class="bar"><i></i><i></i><i></i></div><div data-type="code" data-from="6.0" data-to="10.2"></div></div>
+      <div class="card" data-in="10.0"><div class="bar"><i></i><i></i><i></i></div><div data-lines="terminal" data-from="10.4" data-step="0.32"></div></div>
+    </div>
+  </section>
+
+  <section class="scene" data-scene="13.4 21.6">
+    <div class="label" data-in="13.6">Benchmark · full test suite</div>
+    <h1 class="headline" data-in="13.8" style="margin-top:22px">Faster than PHPUnit. <em>On real projects.</em></h1>
+    <div class="bench-rows" id="bench-rows"></div>
+    <div class="bench-foot">
+      <div class="won" data-in="18.2" id="score"></div>
+      <div class="note" data-in="18.6" id="bench-note"></div>
+    </div>
+  </section>
+
+  <section class="scene" data-scene="21.6 29.2">
+    <div class="label" data-in="21.8">AI coding agents</div>
+    <h1 class="headline" data-in="22.0" style="margin-top:22px">Built for the agents <em>writing your tests.</em></h1>
+    <div class="agents">
+      <div class="card" data-in="22.6"><div class="bar"><i></i><i></i><i></i></div><div data-lines="agent" data-from="23.0" data-step="0.16"></div></div>
+      <div class="points">
+        <div data-in="24.6">Only the failures, as compact JSON.<small>A fraction of the tokens a full report costs.</small></div>
+        <div data-in="25.8">Catches tests weakened to pass.<small>Removed assertions, new skips, changed expectations.</small></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="scene" data-scene="29.2 35.4">
+    <div class="label" data-in="29.4">Everything in the box</div>
+    <h1 class="headline" data-in="29.6" style="margin-top:22px">Zero dependencies. <em>Nothing missing.</em></h1>
+    <div class="chips">
+      <span data-in="30.3">Mocks and spies</span><span data-in="30.55">Snapshots</span><span data-in="30.8">Data sets and fixtures</span>
+      <span data-in="31.05">Coverage without Xdebug</span><span data-in="31.3">Parallel runs</span><span data-in="31.55">Test Explorer</span>
+      <span data-in="31.8">JUnit, HTML, GitHub annotations</span><span data-in="32.05">Laravel · Symfony · CodeIgniter</span>
+    </div>
+  </section>
+
+  <section class="scene" data-scene="35.4 41.6">
+    <div class="label" data-in="35.6">Test Explorer</div>
+    <h1 class="headline" data-in="35.8" style="margin-top:22px">Every test, <em>one click away.</em></h1>
+    <div class="shot" data-in="36.4" data-rise="60"><img src="../explorer-dark.png" alt=""></div>
+  </section>
+
+  <section class="scene migrate" data-scene="41.6 46.4">
+    <div class="label" data-in="41.8">Coming from PHPUnit</div>
+    <h1 class="headline" data-in="42.0" style="margin-top:22px">Switching takes <em>one command.</em></h1>
+    <div class="card" data-in="42.6"><div class="bar"><i></i><i></i><i></i></div><div data-lines="migrate" data-from="43.0" data-step="0.45"></div></div>
+  </section>
+
+  <section class="scene closer" data-scene="46.4 52">
+    <div>
+      <div class="h-lock" data-in="46.6"><svg class="mk"><use href="#mk"/></svg><span class="word">microunit</span></div>
+      <div class="card install" data-in="47.4">composer require --dev microunit/microunit</div>
+      <div class="url" data-in="48.2">mitarnik04.github.io/MicroUnit</div>
+    </div>
+  </section>
+</main>
+<script>
+const RESULTS = '../../../benchmarks/results/2026-11-19/';
+// The timeline below is written in story seconds; PACE stretches it evenly into real seconds.
+const PACE = 1.12;
+const DURATION = 52 * PACE;
+
+const CODE = `$tester = TestSetup::getTester('Cart');
+
+$tester->fixture('cart', fn() => new Cart());
+
+$tester->define('totals_the_items', function (Cart $cart): void {
+    $cart->add(new Item('Keyboard', 4900));
+    $cart->add(new Item('Mouse', 1900));
+
+    Assert::exact(6800, $cart->total());
+});
+
+$tester->define('starts_empty', function (Cart $cart): void {
+    Assert::empty($cart->items());
+});`;
+
+const LINES = {
+  terminal: [
+    '<span class="dim">$</span> vendor/bin/microunit', '', '<b>-- Cart --</b>',
+    '<span class="ok">[✔]</span> totals_the_items <span class="dim">(2.18ms)</span>',
+    '<span class="ok">[✔]</span> starts_empty <span class="dim">(0.01ms)</span>', '',
+    '<span class="ok">Summary: 2/2 passed, 0 failed</span> <span class="dim">in 14.37ms</span>',
+  ],
+  agent: [
+    '{', '  <span class="v">"result"</span>: <span class="s">"failed"</span>,', '  <span class="v">"tests"</span>: <span class="n">3</span>, <span class="v">"failed"</span>: <span class="n">1</span>,',
+    '  <span class="v">"failures"</span>: [{', '    <span class="v">"test"</span>: <span class="s">"Cart::gives_ten_percent_off"</span>,', '    <span class="v">"at"</span>: <span class="s">"tests/cart-tests.php:22"</span>,',
+    '    <span class="v">"expected"</span>: <span class="s">"10000 (int)"</span>,', '    <span class="v">"actual"</span>: <span class="s">"10800 (int)"</span>,', '    <span class="v">"code"</span>: [<span class="s">"22&gt;  Assert::exact(10000, …)"</span>]', '  }]', '}',
+  ],
+  migrate: [
+    '<span class="dim">$</span> vendor/bin/microunit migrate',
+    '<span class="ok">✔</span> Translated your PHPUnit suite into <b>tests-microunit/</b>',
+    '<span class="ok">✔</span> Mocks, data providers, base classes, expected exceptions',
+    '<span class="warn">!</span> Anything it could not translate: <b>migration-report.json</b>',
+  ],
+};
+
+const clamp = value => Math.min(1, Math.max(0, value));
+const ease = value => 1 - Math.pow(1 - value, 3);
+const progress = (t, start, length) => clamp((t - start) / length);
+
+function highlight(code) {
+  const pattern = /('[^']*')|(\$\w+)|\b(fn|function|new|void|use)\b|\b(\d+)\b|\b([A-Z]\w*)\b|(\w+)(?=\()/g;
+  return code.replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]))
+    .replace(pattern, (match, string, variable, keyword, number, type, call) =>
+      string ? `<span class="s">${string}</span>` : variable ? `<span class="v">${variable}</span>`
+      : keyword ? `<span class="k">${keyword}</span>` : number ? `<span class="n">${number}</span>`
+      : type ? `<span class="c">${type}</span>` : `<span class="f">${call}</span>`);
+}
+
+function render(seconds) {
+  const t = seconds / PACE;
+  for (const scene of document.querySelectorAll('[data-scene]')) {
+    const [start, end] = scene.dataset.scene.split(' ').map(Number);
+    scene.style.opacity = t < start || t > end ? 0 : Math.min(progress(t, start, 0.35), 1 - progress(t, end - 0.45, 0.45));
+  }
+  for (const node of document.querySelectorAll('[data-in]')) {
+    const shown = ease(progress(t, Number(node.dataset.in), 0.6));
+    node.style.opacity = shown;
+    node.style.transform = `translateY(${(1 - shown) * Number(node.dataset.rise ?? 26)}px)`;
+  }
+  for (const node of document.querySelectorAll('[data-type]')) {
+    const visible = Math.round(CODE.length * progress(t, Number(node.dataset.from), Number(node.dataset.to) - Number(node.dataset.from)));
+    const typing = visible < CODE.length && t >= Number(node.dataset.from);
+    node.innerHTML = highlight(CODE.slice(0, visible)) + (typing || Math.floor(seconds * 2) % 2 === 0 ? '<span class="caret"></span>' : '');
+  }
+  for (const node of document.querySelectorAll('[data-lines]')) {
+    const count = Math.floor((t - Number(node.dataset.from)) / Number(node.dataset.step)) + 1;
+    node.innerHTML = LINES[node.dataset.lines].slice(0, Math.max(0, count)).join('\n');
+  }
+  for (const row of document.querySelectorAll('#bench-rows .row')) {
+    const grown = ease(progress(t, Number(row.dataset.at), 0.9));
+    const width = Number(row.dataset.speedup) / 6 * grown;
+    row.querySelector('i').style.width = `calc(${width} * (100% - 120px))`;
+    const label = row.querySelector('b');
+    label.style.left = `calc(${width} * (100% - 120px) + 18px)`;
+    label.style.opacity = progress(t, Number(row.dataset.at) + 0.5, 0.4);
+  }
+}
+
+Promise.all([load('summary.json'), load('environment.json'), document.fonts.ready]).then(([summary, environment]) => {
+  const rows = document.getElementById('bench-rows');
+  const results = Object.values(summary.results);
+  results.forEach(({ project, summary: s }, index) => {
+    const speedup = s.suite.tools.phpunit.seconds.median / s.suite.tools.microunit.seconds.median;
+    const row = document.createElement('div');
+    row.className = 'row';
+    row.dataset.speedup = speedup;
+    row.dataset.at = 14.5 + index * 0.35;
+    row.innerHTML = `<span class="name">${project.name}</span><div class="track"><i></i><b>${speedup.toFixed(2)}×</b></div>`;
+    rows.append(row);
+  });
+  // Each scenario against its rival: ParaTest for the parallel run, PHPUnit for the rest.
+  const won = results.flatMap(({ summary: s }) => ['suite', 'parallel', 'file', 'startup'].map(key => {
+    const tools = s[key].tools;
+    return tools.microunit.seconds.median < tools[key === 'parallel' ? 'paratest' : 'phpunit'].seconds.median;
+  }));
+  const ranDate = new Date(environment.capturedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
+  document.getElementById('score').innerHTML = `<span>${won.filter(Boolean).length}/${won.length}</span> comparisons won`;
+  document.getElementById('bench-note').innerHTML = `Six popular PHP projects, the same tests<br>Median of ${summary.options.runs} runs · PHP ${environment.php.version} · ${ranDate}`;
+  window.ready = true;
+  render(0);
+  // Watching in a browser: play in real time. A renderer calls render(t) itself.
+  if (!navigator.webdriver && !location.search.includes('render')) {
+    const begin = performance.now();
+    const tick = () => { render(((performance.now() - begin) / 1000) % DURATION); requestAnimationFrame(tick); };
+    requestAnimationFrame(tick);
+  }
+});
+
+function load(file) {
+  return fetch(RESULTS + file).then(response => response.json());
+}
+</script>
+</body>
+</html>
