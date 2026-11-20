@@ -1,0 +1,26 @@
+$ vendor/bin/microunit --no-colors --no-agent --filter=/^(?!(?:ErrorHandler\:\:handle_error|ErrorHandler\:\:capture_stack_traces|ErrorHandler\:\:fatal_handler_attaches_stack_trace|JsonFormatter\:\:base_p... tests-microunit/Monolog/Formatter/JsonFormatterTest.php
+
+
+-- JsonFormatter --
+[✔] construct (1.21ms)
+[✔] format (1.45ms)
+[✔] format_with_pretty_print (0.02ms)
+[✔] format_batch (0.01ms)
+[✔] format_batch_newlines (0.01ms)
+[✔] format_batch_newlines_restores_newline_when_formatting_fails (0.03ms)
+[✔] def_format_with_exception (0.03ms)
+[✔] def_format_with_previous_exception (0.03ms)
+[✔] def_format_with_throwable (0.01ms)
+[✔] max_normalize_depth (0.01ms)
+[✔] scalars_and_null_bypass_max_normalize_depth (0.02ms)
+[✔] non_finite_floats_are_not_encoded_as_zero (0.02ms)
+[✔] max_normalize_item_count_with0_items_max (0.01ms)
+[✔] def_format_with_resource (0.17ms)
+[✔] normalize_handle_large_arrays_with_exactly1000_items (0.07ms)
+[✔] normalize_handle_large_arrays (0.09ms)
+[✔] can_normalize_incomplete_object (0.32ms)
+[✔] empty_context_and_extra_fields_can_be_ignored (0.01ms)
+[✔] format_objects (0.01ms)
+[✔] normalize_handle_exception_in_to_string (0.01ms)
+
+Summary: 20/20 passed, 0 failed in 30.15ms

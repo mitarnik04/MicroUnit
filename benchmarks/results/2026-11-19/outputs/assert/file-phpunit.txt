@@ -1,0 +1,11 @@
+$ tools/phpunit/vendor/bin/phpunit --no-progress --filter=/^(?!(?:Webmozart\\Assert\\Tests\\AssertTest::(?:testAllArray.with.data.set.(?:#(?:433|435|436|438|440|91)(?!\d))|testAllNullOrArray.with.data.set.(... tests/AssertTest.php --log-junit=C:\Users\mitar\Projekte\micro_unit\benchmarks/results/2026-11-19/junit/assert-file-phpunit.xml
+
+PHPUnit 11.5.50 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.6.0
+Configuration: C:\Users\mitar\AppData\Local\Temp\claude\44ad5a94702ce5d3\e92ce737-a9a4-4dea-9275-d96f0984a25f\scratchpad\benchlab\projects\assert\phpunit.xml.dist
+
+Time: 00:00.472, Memory: 26.00 MB
+
+OK, but there were issues!
+Tests: 4328, Assertions: 4634, Notices: 2, Skipped: 54.

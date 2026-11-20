@@ -1,0 +1,8 @@
+$ tools/phpunit/vendor/bin/phpunit --no-progress --filter=/^no_test_has_this_name$/
+
+PHPUnit 11.5.50 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.6.0
+Configuration: C:\Users\mitar\AppData\Local\Temp\claude\44ad5a94702ce5d3\e92ce737-a9a4-4dea-9275-d96f0984a25f\scratchpad\benchlab\projects\assert\phpunit.xml.dist
+
+No tests executed!

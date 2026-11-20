@@ -1,0 +1,11 @@
+$ vendor/bin/phpunit --no-progress --filter=/^(?!(?:Brick\\Math\\Tests\\BigIntegerTest::(?:testDividedBy\b|testOne\b|testTen\b|testZero\b)|Brick\\Math\\Tests\\PcreFailureTest::(?:testFromArbit... --log-junit=C:\Users\mitar\Projekte\micro_unit\benchmarks/results/2026-11-19/junit/math-suite-phpunit.xml
+
+Using Brick\Math\Internal\Calculator\BcMathCalculator
+PHPUnit 11.5.58 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.6.0
+Configuration: C:\Users\mitar\AppData\Local\Temp\claude\44ad5a94702ce5d3\e92ce737-a9a4-4dea-9275-d96f0984a25f\scratchpad\benchlab\projects\math\phpunit.xml
+
+Time: 00:03.729, Memory: 114.00 MB
+
+OK (24782 tests, 95619 assertions)

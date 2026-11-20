@@ -1,0 +1,4 @@
+$ vendor/bin/microunit --no-colors --no-agent --filter=/^no_test_has_this_name$/
+
+
+Summary: 0/0 passed, 0 failed in 70.99ms

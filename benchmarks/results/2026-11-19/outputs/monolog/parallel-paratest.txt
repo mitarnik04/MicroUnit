@@ -1,0 +1,174 @@
+$ vendor/bin/paratest --processes=4 --filter=/^(?!(?:Monolog\\ErrorHandlerTest::(?:testCaptureStackTraces\b|testFatalHandlerAttachesStackTrace\b|testHandleError\b)|Monolog\\Formatter\\JsonForma... --log-junit=C:\Users\mitar\Projekte\micro_unit\benchmarks/results/2026-11-19/junit/monolog-parallel-paratest.xml
+
+ParaTest v7.8.6 upon PHPUnit 11.5.58 by Sebastian Bergmann and contributors.
+
+Processes:     4
+Runtime:       PHP 8.6.0
+Configuration: C:\Users\mitar\AppData\Local\Temp\claude\44ad5a94702ce5d3\e92ce737-a9a4-4dea-9275-d96f0984a25f\scratchpad\benchlab\projects-paratest\monolog\phpunit.xml.dist
+
+...................................................D........   60 / 1197 (  5%)
+.......S................SSSSSSS..S................D.........  120 / 1197 ( 10%)
+............................................................  180 / 1197 ( 15%)
+........S..............................D.....S..............  240 / 1197 ( 20%)
+.......SSSS.................................................  300 / 1197 ( 25%)
+....................SSS.............................DD.D....  360 / 1197 ( 30%)
+D........................SSS.SS.............................  420 / 1197 ( 35%)
+............................................................  480 / 1197 ( 40%)
+..................SS................................SSSSS...  540 / 1197 ( 45%)
+......SS....................................................  600 / 1197 ( 50%)
+............................................................  660 / 1197 ( 55%)
+............................................................  720 / 1197 ( 60%)
+............................................................  780 / 1197 ( 65%)
+............................................................  840 / 1197 ( 70%)
+............................................................  900 / 1197 ( 75%)
+............................................................  960 / 1197 ( 80%)
+............................................................ 1020 / 1197 ( 85%)
+.....S...................................................... 1080 / 1197 ( 90%)
+............................................................ 1140 / 1197 ( 95%)
+..........................................SSSS..W......SS    1197 / 1197 (100%)
+
+Time: 00:05.183, Memory: 24.00 MB
+
+There was 1 PHPUnit error:
+
+1) Monolog\SignalHandlerTest::testRegisterDefaultPreviousSignalHandler
+The data provider specified for Monolog\SignalHandlerTest::testRegisterDefaultPreviousSignalHandler is invalid
+Empty data set provided by data provider
+C:\Users\mitar\AppData\Local\Temp\claude\44ad5a94702ce5d3\e92ce737-a9a4-4dea-9275-d96f0984a25f\scratchpad\benchlab\projects-paratest\monolog\vendor\symfony\console\Command\Command.php:341
+C:\Users\mitar\AppData\Local\Temp\claude\44ad5a94702ce5d3\e92ce737-a9a4-4dea-9275-d96f0984a25f\scratchpad\benchlab\projects-paratest\monolog\vendor\symfony\console\Application.php:1104
+C:\Users\mitar\AppData\Local\Temp\claude\44ad5a94702ce5d3\e92ce737-a9a4-4dea-9275-d96f0984a25f\scratchpad\benchlab\projects-paratest\monolog\vendor\symfony\console\Application.php:357
+C:\Users\mitar\AppData\Local\Temp\claude\44ad5a94702ce5d3\e92ce737-a9a4-4dea-9275-d96f0984a25f\scratchpad\benchlab\projects-paratest\monolog\vendor\symfony\console\Application.php:196
+C:\Users\mitar\AppData\Local\Temp\claude\44ad5a94702ce5d3\e92ce737-a9a4-4dea-9275-d96f0984a25f\scratchpad\benchlab\projects-paratest\monolog\vendor\brianium\paratest\bin\paratest:37
+
+C:\Users\mitar\AppData\Local\Temp\claude\44ad5a94702ce5d3\e92ce737-a9a4-4dea-9275-d96f0984a25f\scratchpad\benchlab\projects-paratest\monolog\tests\Monolog\SignalHandlerTest.php:132
+
+--
+
+There were 39 skipped tests:
+
+1) Monolog\Formatter\NormalizerFormatterTest::testFormatSoapFaultException
+Requires the soap extension
+
+2) Monolog\Handler\ElasticsearchHandlerTest::testSetFormatter
+Could not connect to Elasticsearch on 127.0.0.1:9200
+
+3) Monolog\Handler\ElasticsearchHandlerTest::testSetFormatterInvalid
+Could not connect to Elasticsearch on 127.0.0.1:9200
+
+4) Monolog\Handler\ElasticsearchHandlerTest::testOptions
+Could not connect to Elasticsearch on 127.0.0.1:9200
+
+5) Monolog\Handler\ElasticsearchHandlerTest::testHandleBatchIntegration
+Could not connect to Elasticsearch on 127.0.0.1:9200
+
+6) Monolog\Handler\RedisHandlerTest::testConstructorShouldWorkWithRedis
+The redis ext is required to run this test
+
+7) Monolog\Handler\RedisHandlerTest::testRedisHandle
+The redis ext is required to run this test
+
+8) Monolog\Handler\RedisHandlerTest::testRedisHandleCapped
+The redis ext is required to run this test
+
+9) Monolog\Formatter\LineFormatterTest::testDefFormatWithSoapFaultException
+Requires the soap extension
+
+10) Monolog\Formatter\MongoDBFormatterTest::testSimpleFormat
+PHP extension mongodb is required.
+
+11) Monolog\Formatter\MongoDBFormatterTest::testRecursiveFormat
+PHP extension mongodb is required.
+
+12) Monolog\Formatter\MongoDBFormatterTest::testFormatDepthArray
+PHP extension mongodb is required.
+
+13) Monolog\Formatter\MongoDBFormatterTest::testFormatDepthArrayInfiniteNesting
+PHP extension mongodb is required.
+
+14) Monolog\Formatter\MongoDBFormatterTest::testFormatDepthObjects
+PHP extension mongodb is required.
+
+15) Monolog\Formatter\MongoDBFormatterTest::testFormatDepthException
+PHP extension mongodb is required.
+
+16) Monolog\Formatter\MongoDBFormatterTest::testBsonTypes
+PHP extension mongodb is required.
+
+17) Monolog\Handler\AmqpHandlerTest::testHandleAmqpExt
+amqp-php not installed
+
+18) Monolog\Handler\CouchDBHandlerTest::testHandle
+Could not connect to couchdb server on http://localhost:5984
+
+19) Monolog\Handler\ElasticaHandlerTest::testHandleIntegrationNewESVersion
+Cannot connect to Elastic Search server on localhost
+
+20) Monolog\Handler\MongoDBHandlerTest::testConstructorShouldThrowExceptionForInvalidMongo
+PHP extension mongodb is required.
+
+21) Monolog\Handler\MongoDBHandlerTest::testHandleWithLibraryClient
+PHP extension mongodb is required.
+
+22) Monolog\Handler\MongoDBHandlerTest::testHandleWithDriverManager
+PHP extension mongodb is required.
+
+23) Monolog\Handler\RedisPubSubHandlerTest::testConstructorShouldWorkWithRedis
+The redis ext is required to run this test
+
+24) Monolog\Handler\RedisPubSubHandlerTest::testRedisHandle
+The redis ext is required to run this test
+
+25) Monolog\Handler\StreamHandlerTest::testWriteNonExistingAndNotCreatablePath with data set "/foo/bar/…" ('/foo/bar/733\2847')
+Permissions checks can not run on windows
+
+26) Monolog\Handler\StreamHandlerTest::testWriteNonExistingAndNotCreatablePath with data set "file:///foo/bar/…" ('file:///foo/bar/9684\625')
+Permissions checks can not run on windows
+
+27) Monolog\Handler\StreamHandlerTest::testPreventOOMError with data set #0 ('1M', 104857)
+We could not set a memory limit that would trigger the error.
+
+28) Monolog\Handler\StreamHandlerTest::testPreventOOMError with data set #1 ('10M', 1048576)
+We could not set a memory limit that would trigger the error.
+
+29) Monolog\Handler\StreamHandlerTest::testNonBlockingStreamDoesNotTruncateWrites
+Requires the pcntl extension and stream_socket_pair()
+
+30) Monolog\Handler\RotatingFileHandlerTest::testRotationIgnoresUnreadableDirectories
+Directory permissions are not enforced for this user.
+
+31) Monolog\Handler\RotatingFileHandlerTest::testRotationOfFilenameContainingABackslash
+A backslash is a directory separator on Windows.
+
+32) Monolog\Handler\UdpSocketTest::testWeDoNotTruncateShortMessages
+PHP extension sockets is required.
+
+33) Monolog\Handler\UdpSocketTest::testLongMessagesAreTruncated
+PHP extension sockets is required.
+
+34) Monolog\Handler\UdpSocketTest::testCustomMaxLengthTruncatesEarlier
+PHP extension sockets is required.
+
+35) Monolog\Handler\UdpSocketTest::testDefaultMaxLengthIsUsedWhenNotSpecified
+PHP extension sockets is required.
+
+36) Monolog\Handler\UdpSocketTest::testDoubleCloseDoesNotError
+PHP extension sockets is required.
+
+37) Monolog\Handler\ZendMonitorHandlerTest::testWrite
+ZendServer is not installed
+
+38) Monolog\Handler\ZendMonitorHandlerTest::testGetDefaultFormatterReturnsNormalizerFormatter
+ZendServer is not installed
+
+39) Monolog\Processor\MercurialProcessorTest::testProcessor
+hg is missing
+
+--
+
+1 test triggered 1 PHP warning:
+
+1) C:\Users\mitar\AppData\Local\Temp\claude\44ad5a94702ce5d3\e92ce737-a9a4-4dea-9275-d96f0984a25f\scratchpad\benchlab\projects-paratest\monolog\tests\Monolog\Handler\StreamHandlerTest.php:347
+Failed to set memory limit to 134217728 bytes (Current memory usage is 226492416 bytes)
+
+ERRORS!
+Tests: 1197, Assertions: 2097, Errors: 1, Warnings: 1, Deprecations: 13, PHPUnit Deprecations: 474, Skipped: 39.

@@ -1,0 +1,10 @@
+{
+    "Brick\\Math\\Tests\\BigIntegerTest::testDividedBy": "not migrated automatically: line 783: calls $this->expectException() somewhere migrate cannot wrap (only at the top level of a test). calls expectExceptionMessageExact(), which only sets expectations; migrate can only expand that at the top level of a test.",
+    "Brick\\Math\\Tests\\BigIntegerTest::testOne": "not migrated automatically: runs in a separate process.",
+    "Brick\\Math\\Tests\\BigIntegerTest::testTen": "not migrated automatically: runs in a separate process.",
+    "Brick\\Math\\Tests\\BigIntegerTest::testZero": "not migrated automatically: runs in a separate process.",
+    "Brick\\Math\\Tests\\PcreFailureTest::testFromArbitraryBase": "not migrated automatically: runs in a separate process.",
+    "Brick\\Math\\Tests\\PcreFailureTest::testFromBase": "not migrated automatically: runs in a separate process.",
+    "Brick\\Math\\Tests\\PcreFailureTest::testOfDecimalNumber": "not migrated automatically: runs in a separate process.",
+    "Brick\\Math\\Tests\\PcreFailureTest::testOfRationalNumber": "not migrated automatically: runs in a separate process."
+}

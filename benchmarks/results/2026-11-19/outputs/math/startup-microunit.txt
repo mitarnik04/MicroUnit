@@ -1,0 +1,5 @@
+$ vendor/bin/microunit --no-colors --no-agent --filter=/^no_test_has_this_name$/
+
+Using Brick\Math\Internal\Calculator\BcMathCalculator
+
+Summary: 0/0 passed, 0 failed in 76.02ms

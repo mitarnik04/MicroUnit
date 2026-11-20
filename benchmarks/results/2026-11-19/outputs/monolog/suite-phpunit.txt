@@ -1,0 +1,140 @@
+$ vendor/bin/phpunit --no-progress --filter=/^(?!(?:Monolog\\ErrorHandlerTest::(?:testCaptureStackTraces\b|testFatalHandlerAttachesStackTrace\b|testHandleError\b)|Monolog\\Formatter\\JsonForma... --log-junit=C:\Users\mitar\Projekte\micro_unit\benchmarks/results/2026-11-19/junit/monolog-suite-phpunit.xml
+
+PHPUnit 11.5.58 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.6.0
+Configuration: C:\Users\mitar\AppData\Local\Temp\claude\44ad5a94702ce5d3\e92ce737-a9a4-4dea-9275-d96f0984a25f\scratchpad\benchlab\projects\monolog\phpunit.xml.dist
+
+Time: 00:09.031, Memory: 34.00 MB
+
+There was 1 PHPUnit error:
+
+1) Monolog\SignalHandlerTest::testRegisterDefaultPreviousSignalHandler
+The data provider specified for Monolog\SignalHandlerTest::testRegisterDefaultPreviousSignalHandler is invalid
+Empty data set provided by data provider
+
+C:\Users\mitar\AppData\Local\Temp\claude\44ad5a94702ce5d3\e92ce737-a9a4-4dea-9275-d96f0984a25f\scratchpad\benchlab\projects\monolog\tests\Monolog\SignalHandlerTest.php:132
+
+--
+
+There were 39 skipped tests:
+
+1) Monolog\Formatter\LineFormatterTest::testDefFormatWithSoapFaultException
+Requires the soap extension
+
+2) Monolog\Formatter\MongoDBFormatterTest::testSimpleFormat
+PHP extension mongodb is required.
+
+3) Monolog\Formatter\MongoDBFormatterTest::testRecursiveFormat
+PHP extension mongodb is required.
+
+4) Monolog\Formatter\MongoDBFormatterTest::testFormatDepthArray
+PHP extension mongodb is required.
+
+5) Monolog\Formatter\MongoDBFormatterTest::testFormatDepthArrayInfiniteNesting
+PHP extension mongodb is required.
+
+6) Monolog\Formatter\MongoDBFormatterTest::testFormatDepthObjects
+PHP extension mongodb is required.
+
+7) Monolog\Formatter\MongoDBFormatterTest::testFormatDepthException
+PHP extension mongodb is required.
+
+8) Monolog\Formatter\MongoDBFormatterTest::testBsonTypes
+PHP extension mongodb is required.
+
+9) Monolog\Formatter\NormalizerFormatterTest::testFormatSoapFaultException
+Requires the soap extension
+
+10) Monolog\Handler\AmqpHandlerTest::testHandleAmqpExt
+amqp-php not installed
+
+11) Monolog\Handler\CouchDBHandlerTest::testHandle
+Could not connect to couchdb server on http://localhost:5984
+
+12) Monolog\Handler\ElasticaHandlerTest::testHandleIntegrationNewESVersion
+Cannot connect to Elastic Search server on localhost
+
+13) Monolog\Handler\ElasticsearchHandlerTest::testSetFormatter
+Could not connect to Elasticsearch on 127.0.0.1:9200
+
+14) Monolog\Handler\ElasticsearchHandlerTest::testSetFormatterInvalid
+Could not connect to Elasticsearch on 127.0.0.1:9200
+
+15) Monolog\Handler\ElasticsearchHandlerTest::testOptions
+Could not connect to Elasticsearch on 127.0.0.1:9200
+
+16) Monolog\Handler\ElasticsearchHandlerTest::testHandleBatchIntegration
+Could not connect to Elasticsearch on 127.0.0.1:9200
+
+17) Monolog\Handler\MongoDBHandlerTest::testConstructorShouldThrowExceptionForInvalidMongo
+PHP extension mongodb is required.
+
+18) Monolog\Handler\MongoDBHandlerTest::testHandleWithLibraryClient
+PHP extension mongodb is required.
+
+19) Monolog\Handler\MongoDBHandlerTest::testHandleWithDriverManager
+PHP extension mongodb is required.
+
+20) Monolog\Handler\RedisHandlerTest::testConstructorShouldWorkWithRedis
+The redis ext is required to run this test
+
+21) Monolog\Handler\RedisHandlerTest::testRedisHandle
+The redis ext is required to run this test
+
+22) Monolog\Handler\RedisHandlerTest::testRedisHandleCapped
+The redis ext is required to run this test
+
+23) Monolog\Handler\RedisPubSubHandlerTest::testConstructorShouldWorkWithRedis
+The redis ext is required to run this test
+
+24) Monolog\Handler\RedisPubSubHandlerTest::testRedisHandle
+The redis ext is required to run this test
+
+25) Monolog\Handler\RotatingFileHandlerTest::testRotationIgnoresUnreadableDirectories
+Directory permissions are not enforced for this user.
+
+26) Monolog\Handler\RotatingFileHandlerTest::testRotationOfFilenameContainingABackslash
+A backslash is a directory separator on Windows.
+
+27) Monolog\Handler\StreamHandlerTest::testWriteNonExistingAndNotCreatablePath with data set "/foo/bar/…" ('/foo/bar/156\5529')
+Permissions checks can not run on windows
+
+28) Monolog\Handler\StreamHandlerTest::testWriteNonExistingAndNotCreatablePath with data set "file:///foo/bar/…" ('file:///foo/bar/3641\5514')
+Permissions checks can not run on windows
+
+29) Monolog\Handler\StreamHandlerTest::testPreventOOMError with data set #0 ('1M', 104857)
+We could not set a memory limit that would trigger the error.
+
+30) Monolog\Handler\StreamHandlerTest::testPreventOOMError with data set #1 ('10M', 1048576)
+We could not set a memory limit that would trigger the error.
+
+31) Monolog\Handler\StreamHandlerTest::testNonBlockingStreamDoesNotTruncateWrites
+Requires the pcntl extension and stream_socket_pair()
+
+32) Monolog\Handler\UdpSocketTest::testWeDoNotTruncateShortMessages
+PHP extension sockets is required.
+
+33) Monolog\Handler\UdpSocketTest::testLongMessagesAreTruncated
+PHP extension sockets is required.
+
+34) Monolog\Handler\UdpSocketTest::testCustomMaxLengthTruncatesEarlier
+PHP extension sockets is required.
+
+35) Monolog\Handler\UdpSocketTest::testDefaultMaxLengthIsUsedWhenNotSpecified
+PHP extension sockets is required.
+
+36) Monolog\Handler\UdpSocketTest::testDoubleCloseDoesNotError
+PHP extension sockets is required.
+
+37) Monolog\Handler\ZendMonitorHandlerTest::testWrite
+ZendServer is not installed
+
+38) Monolog\Handler\ZendMonitorHandlerTest::testGetDefaultFormatterReturnsNormalizerFormatter
+ZendServer is not installed
+
+39) Monolog\Processor\MercurialProcessorTest::testProcessor
+hg is missing
+
+ERRORS!
+Tests: 1197, Assertions: 2097, Errors: 1, Deprecations: 13, PHPUnit Deprecations: 242, Skipped: 39.

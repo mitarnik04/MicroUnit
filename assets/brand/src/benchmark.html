@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Benchmark charts</title>
+<link rel="stylesheet" href="brand.css">
+<!--
+  One source for every benchmark asset. build.php opens it as benchmark.html#<asset>-<theme>:
+  #overview-dark, #suite-light (speedup chart per scenario), #table-suite-dark (results table).
+  The numbers, the run date and the versions are read from the published results, never typed in.
+-->
+<script>
+const RESULTS = '../../../benchmarks/results/2026-11-19/';
+const parts = location.hash.slice(1).split('-');
+const THEME = parts.pop() === 'dark' ? 'dark' : 'light';
+const ASSET = parts.join('-');
+document.documentElement.className = `bench-page ${THEME}`;
+</script>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="mk" viewBox="0 0 64 64"><path d="M7 12H33a3 3 0 0 1 3 3V28H49a3 3 0 0 1 3 3V57a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3V15a3 3 0 0 1 3-3z" fill="var(--block)"/><rect x="44" y="4" width="16" height="16" rx="3" fill="var(--unit)"/></symbol></svg>
+<main class="bench">
+  <header>
+    <div class="h-lock"><svg class="mk"><use href="#mk"/></svg><span class="word">microunit</span></div>
+    <div class="label kicker" id="kicker"></div>
+  </header>
+  <h1 class="display" id="title"></h1>
+  <p class="lede" id="lede"></p>
+  <div id="content"></div>
+  <footer id="footer"></footer>
+</main>
+<script>
+// Each scenario in summary.json and the tool MicroUnit is compared with there.
+const SCENARIOS = {
+  suite: { rival: 'phpunit', title: 'Full test suite', lede: 'All tests in one process, the way CI runs them.' },
+  parallel: { rival: 'paratest', title: 'Full test suite, 4 workers', lede: 'MicroUnit’s built-in parallel runner against ParaTest, both with 4 worker processes.' },
+  file: { rival: 'phpunit', title: 'One test file', lede: 'The edit-and-rerun loop that you and your AI agent repeat all day.' },
+  startup: { rival: 'phpunit', title: 'Startup', lede: 'The fixed cost of every run: start, load the suite, select no test.' },
+};
+const TOOL_NAMES = { microunit: 'MicroUnit', phpunit: 'PHPUnit', paratest: 'ParaTest' };
+const SIX_PROJECTS = 'the real test suites of six popular PHP projects';
+
+const seconds = value => (value < 10 ? value.toFixed(2) : value.toFixed(1)) + ' s';
+const mebibytes = value => Math.round(value) + ' MiB';
+
+function element(tag, className, text) {
+  const node = document.createElement(tag);
+  if (className) node.className = className;
+  if (text !== undefined) node.textContent = text;
+  return node;
+}
+
+/** [{name, mine, theirs, speedup}] for one scenario, in the corpus order. */
+function timings(results, scenario) {
+  const { rival } = SCENARIOS[scenario];
+  return Object.values(results).map(({ project, summary }) => {
+    const tools = summary[scenario].tools;
+    const mine = tools.microunit.seconds.median;
+    const theirs = tools[rival].seconds.median;
+    return { name: project.name, mine, theirs, speedup: theirs / mine };
+  });
+}
+
+// One speedup chart: per project, how many times faster MicroUnit ran the same tests. Every chart shares
+// one axis (0x to the largest speedup of any scenario, rounded up), so the charts compare with each other.
+function speedupChart(results, scenario, axisMax, isCompact) {
+  const { rival, title } = SCENARIOS[scenario];
+  const panel = element('section', 'speedup' + (isCompact ? ' compact' : ''));
+  panel.style.setProperty('--max', axisMax);
+  if (isCompact) {
+    const heading = element('h2', 'label panel-title', title);
+    heading.append(element('em', '', `vs. ${TOOL_NAMES[rival]}`));
+    panel.append(heading);
+  }
+
+  const steps = Array.from({ length: axisMax + 1 }, (_, step) => step);
+  for (const { name, speedup } of timings(results, scenario)) {
+    const row = element('div', 'row');
+    const track = element('div', 'track');
+    track.style.setProperty('--r', speedup);
+    steps.slice(1).forEach(step => {
+      const line = element('s', step === 1 ? 'same' : '');
+      line.style.setProperty('--step', step);
+      track.append(line);
+    });
+    track.append(element('i'), element('b', '', speedup.toFixed(2) + '×'));
+    row.append(element('span', 'name', name), track);
+    panel.append(row);
+  }
+
+  const axis = element('div', 'axis');
+  const scale = element('div', 'scale');
+  scale.append(element('u'));
+  steps.forEach(step => {
+    const label = element('em', step === 1 ? 'same' : '', `${step}×`);
+    label.style.setProperty('--step', step);
+    scale.append(label);
+  });
+  scale.append(element('span', 'title', `times faster than ${TOOL_NAMES[rival]} · 1× = the same speed`));
+  axis.append(element('span'), scale);
+  panel.append(axis);
+
+  return panel;
+}
+
+// The overview's closing band: time comparisons won, and on how many projects MicroUnit needs less memory.
+function scoreBand(results) {
+  const comparisons = Object.keys(SCENARIOS).flatMap(scenario => timings(results, scenario));
+  const won = comparisons.filter(({ mine, theirs }) => mine < theirs).length;
+  const memory = Object.values(results).map(({ summary }) => summary.suite.tools);
+  const lighter = memory.filter(tools => tools.microunit.peakMemoryMiB.median < tools.phpunit.peakMemoryMiB.median).length;
+
+  const band = element('section', 'score');
+  const words = element('div', 'words');
+  words.append(
+    element('p', '', `time comparisons won: full suite, 4 workers, one test file and startup on ${memory.length} projects.`),
+    element('p', 'second', `Less peak memory on ${lighter} of ${memory.length} projects.`),
+  );
+  band.append(element('div', 'figure display', `${won}/${comparisons.length}`), words);
+  return band;
+}
+
+// BenchmarkDotNet-style table: one row per tool, the comparison tool is the 1.00 baseline.
+function table(results, scenario) {
+  const { rival } = SCENARIOS[scenario];
+  const node = element('table', 'results');
+  const head = element('tr');
+  ['Project', 'Tool', 'Tests', 'Median', 'StdDev', 'Ratio', 'Peak memory', 'Memory ratio'].forEach(column => head.append(element('th', 'label', column)));
+  node.appendChild(element('thead')).append(head);
+  const body = node.appendChild(element('tbody'));
+
+  for (const { project, summary } of Object.values(results)) {
+    const { tools, testCounts } = summary[scenario];
+    const baseline = tools[rival];
+    for (const tool of [rival, 'microunit']) {
+      const { seconds: time, peakMemoryMiB: memory } = tools[tool];
+      const isMine = tool === 'microunit';
+      const row = element('tr', isMine ? 'mine' : 'baseline');
+      if (!isMine) {
+        const cell = element('td', 'project', project.name);
+        cell.rowSpan = 2;
+        row.append(cell);
+      }
+      const count = testCounts?.[tool] ?? testCounts?.microunit;
+      row.append(
+        element('td', 'tool', TOOL_NAMES[tool]),
+        element('td', 'num', typeof count === 'number' && count > 0 ? count.toLocaleString('en-US') : '–'),
+        element('td', 'num', seconds(time.median)),
+        element('td', 'num dim', seconds(time.standardDeviation)),
+        element('td', 'num ratio', (time.median / baseline.seconds.median).toFixed(2)),
+        element('td', 'num', mebibytes(memory.median)),
+        element('td', 'num ratio', (memory.median / baseline.peakMemoryMiB.median).toFixed(2)),
+      );
+      body.append(row);
+    }
+  }
+
+  return node;
+}
+
+/** "10.5–13.4": the oldest and newest minor version of a tool across the projects (from its version line). */
+function versionRange(results, tool) {
+  const versions = Object.values(results)
+    .map(({ versions }) => versions[tool]?.match(/(\d+)\.(\d+)/))
+    .filter(Boolean)
+    .map(([, major, minor]) => [Number(major), Number(minor)])
+    .sort(([a, b], [c, d]) => a - c || b - d);
+  const [first, last] = [versions[0], versions.at(-1)].map(([major, minor]) => `${major}.${minor}`);
+
+  return first === last ? first : `${first}–${last}`;
+}
+
+Promise.all(['summary.json', 'environment.json'].map(file => fetch(RESULTS + file).then(response => response.json())))
+  .then(([summary, environment]) => {
+    const results = summary.results;
+    const isTable = ASSET.startsWith('table-');
+    const scenario = isTable ? ASSET.slice(6) : ASSET;
+    const axisMax = Math.ceil(Math.max(...Object.keys(SCENARIOS).flatMap(key => timings(results, key).map(({ speedup }) => speedup))));
+
+    // When and against what: a chart found years later still says which versions it compared.
+    const php = environment.php.version;
+    const machine = environment.machine.cpu.replace(/^\d+th Gen /, '').replace(/\((R|TM)\)/g, '') + ', ' + environment.machine.os.replace('Microsoft ', '');
+    const ranDate = new Date(environment.capturedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
+    const microunit = environment.microunit.version;
+    const shownTools = ASSET === 'overview' ? ['phpunit', 'paratest'] : [SCENARIOS[scenario].rival];
+    const rivals = shownTools.map(tool => `${TOOL_NAMES[tool]} ${versionRange(results, tool)}`).join(' and ');
+
+    const title = document.getElementById('title');
+    const lede = document.getElementById('lede');
+    const content = document.getElementById('content');
+    document.getElementById('kicker').textContent = `MicroUnit ${microunit} · ${ranDate}`;
+    if (ASSET === 'overview') {
+      title.textContent = 'Same tests, less waiting.';
+      lede.textContent = `How many times faster MicroUnit runs the same tests, on ${SIX_PROJECTS}. Same machine, same PHP.`;
+      content.className = 'overview';
+      Object.keys(SCENARIOS).forEach(key => content.append(speedupChart(results, key, axisMax, true)));
+      content.append(scoreBand(results));
+    } else if (isTable) {
+      title.textContent = SCENARIOS[scenario].title;
+      lede.textContent = `${SCENARIOS[scenario].lede} Ratio: time or memory relative to ${TOOL_NAMES[SCENARIOS[scenario].rival]} (1.00 = the same, 0.25 = a quarter).`;
+      content.append(table(results, scenario));
+    } else {
+      title.textContent = SCENARIOS[scenario].title;
+      lede.textContent = `${SCENARIOS[scenario].lede} How many times faster MicroUnit runs the same tests than ${TOOL_NAMES[SCENARIOS[scenario].rival]}, on ${SIX_PROJECTS}.`;
+      content.append(speedupChart(results, scenario, axisMax, false));
+    }
+
+    const footer = document.getElementById('footer');
+    footer.append(
+      element('span', 'run', `Run on ${ranDate}: MicroUnit ${microunit} against ${rivals} (each project on its own PHPUnit version)`),
+      element('span', '', `Median of ${summary.options.runs} runs after a warm-up, tools in rotating order · PHP ${php}, OPcache off (MicroUnit’s parallel workers use their built-in file cache) · ${machine}`),
+    );
+    const link = element('span', '', 'Raw numbers, method and every exclusion: ');
+    link.append(element('strong', '', 'github.com/mitarnik04/MicroUnit/tree/main/benchmarks'));
+    footer.append(link);
+    document.title = `${document.body.scrollHeight}`;
+  });
+</script>
+</body>
+</html>

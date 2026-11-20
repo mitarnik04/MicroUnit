@@ -1,0 +1,17 @@
+$ vendor/bin/microunit --no-colors --no-agent --filter=/^(?!(?:DefaultAttributesConfiguration\:\:invalid_attribute_map_is_rejected|DefaultAttributesExtension\:\:colliding_string_in_legacy_mode_names_the_... tests-microunit/functional/Extension/Footnote/FootnoteExtensionTest.php
+
+
+-- FootnoteExtension --
+[✔] footnote_1 (35.72ms)
+[✔] footnote_2 (0.49ms)
+[✔] footnote_3 (0.40ms)
+[✔] footnote_4 (0.36ms)
+[✔] footnote_5 (0.39ms)
+[✔] footnote_6 (0.97ms)
+[✔] footnote_7 (0.47ms)
+[✔] footnotes_with_custom_options_1 (0.61ms)
+[✔] footnotes_with_custom_options_2 (2.58ms)
+[✔] footnotes_with_custom_options_3 (0.81ms)
+[✔] footnotes_with_empty_symbol (0.49ms)
+
+Summary: 11/11 passed, 0 failed in 72.29ms

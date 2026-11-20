@@ -1,0 +1,11 @@
+$ vendor/bin/phpunit --no-progress --log-junit=C:\Users\mitar\Projekte\micro_unit\benchmarks/results/2026-11-19/junit/yaml-suite-phpunit.xml
+
+PHPUnit 13.4.7 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.6.0
+Configuration: C:\Users\mitar\AppData\Local\Temp\claude\44ad5a94702ce5d3\e92ce737-a9a4-4dea-9275-d96f0984a25f\scratchpad\benchlab\projects\yaml\phpunit.xml.dist
+
+Time: 00:01.018, Memory: 42.00 MB
+
+[30;42mOK, but some tests were skipped![0m
+[30;42mTests: 1427[0m[30;42m, Assertions: 1881[0m[30;42m, Skipped: 203[0m[30;42m.[0m

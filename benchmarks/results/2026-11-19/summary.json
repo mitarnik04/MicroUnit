@@ -1,0 +1,2228 @@
+{
+    "options": {
+        "runs": 5,
+        "warmup": 1,
+        "workers": 4,
+        "scenarios": [
+            "suite",
+            "parallel",
+            "file",
+            "startup"
+        ]
+    },
+    "results": {
+        "math": {
+            "project": {
+                "slug": "math",
+                "name": "brick/math",
+                "repo": "https://github.com/brick/math",
+                "tag": "1.0.0",
+                "sha": "2effe05d2177c451b86c6a073196a4034c02f211",
+                "tests": "tests",
+                "file": "tests/BigNumberTest.php",
+                "environment": {
+                    "CALCULATOR": "BCMath"
+                },
+                "phpArguments": [
+                    "-d",
+                    "memory_limit=-1"
+                ],
+                "setup": [
+                    "git clone --depth 1 --branch 1.0.0 -c core.autocrlf=false https://github.com/brick/math math",
+                    "composer install"
+                ],
+                "paratestSetup": [
+                    "copy the checkout above to ../projects-paratest/math",
+                    "composer require --dev brianium/paratest:7.8.6 phpunit/phpunit:11.5.58 -W"
+                ],
+                "tools": {
+                    "phpunit": {
+                        "dir": ".",
+                        "command": [
+                            "vendor/bin/phpunit",
+                            "--no-progress"
+                        ]
+                    },
+                    "paratest": {
+                        "dir": "../../projects-paratest/math",
+                        "command": [
+                            "vendor/bin/paratest",
+                            "--processes={workers}"
+                        ]
+                    },
+                    "microunit": {
+                        "dir": ".",
+                        "command": [
+                            "{microunit}",
+                            "--no-colors",
+                            "--no-agent"
+                        ]
+                    }
+                }
+            },
+            "summary": {
+                "suite": {
+                    "valid": true,
+                    "testCounts": {
+                        "phpunit": 24782,
+                        "microunit": 24782
+                    },
+                    "problems": [],
+                    "tools": {
+                        "phpunit": {
+                            "seconds": {
+                                "runs": 5,
+                                "median": 3.74,
+                                "mean": 3.6646,
+                                "standardDeviation": 0.2134,
+                                "coefficientOfVariation": 0.0582,
+                                "minimum": 3.2938,
+                                "p90": 3.8268,
+                                "maximum": 3.8268
+                            },
+                            "peakMemoryMiB": {
+                                "runs": 5,
+                                "median": 120.9727,
+                                "mean": 120.9813,
+                                "standardDeviation": 0.0343,
+                                "coefficientOfVariation": 0.0003,
+                                "minimum": 120.9492,
+                                "p90": 121.0391,
+                                "maximum": 121.0391
+                            },
+                            "exitCodes": [
+                                0
+                            ],
+                            "command": "vendor/bin/phpunit --no-progress --filter=/^(?!(?:Brick\\\\Math\\\\Tests\\\\BigIntegerTest::(?:testDividedBy\\b|testOne\\b|testTen\\b|testZero\\b)|Brick\\\\Math\\\\Tests\\\\PcreFailureTest::(?:testFromArbit..."
+                        },
+                        "microunit": {
+                            "seconds": {
+                                "runs": 5,
+                                "median": 0.7672,
+                                "mean": 0.7613,
+                                "standardDeviation": 0.027,
+                                "coefficientOfVariation": 0.0354,
+                                "minimum": 0.7237,
+                                "p90": 0.7865,
+                                "maximum": 0.7865
+                            },
+                            "peakMemoryMiB": {
+                                "runs": 5,
+                                "median": 66.5977,
+                                "mean": 66.5641,
+                                "standardDeviation": 0.0668,
+                                "coefficientOfVariation": 0.001,
+                                "minimum": 66.4844,
+                                "p90": 66.6289,
+                                "maximum": 66.6289
+                            },
+                            "exitCodes": [
+                                0
+                            ],
+                            "command": "vendor/bin/microunit --no-colors --no-agent --filter=/^(?!(?:BigInteger\\:\\:zero|BigInteger\\:\\:one|BigInteger\\:\\:ten|BigInteger\\:\\:divided_by|PcreFailure\\:\\:of_decimal_number|PcreFailure\\:\\:of_rational_..."
+                        }
+                    }
+                },
+                "parallel": {
+                    "valid": true,
+                    "testCounts": {
+                        "paratest": 24782,
+                        "microunit": 24782
+                    },
+                    "problems": [],
+                    "tools": {
+                        "paratest": {
+                            "seconds": {
+                                "runs": 5,
+                                "median": 3.572,
+                                "mean": 3.5899,
+                                "standardDeviation": 0.1696,
+                                "coefficientOfVariation": 0.0472,
+                                "minimum": 3.4047,
+                                "p90": 3.8232,
+                                "maximum": 3.8232
+                            },
+                            "peakMemoryMiB": {
+                                "runs": 5,
+                                "median": 120.2578,
+                                "mean": 120.25,
+                                "standardDeviation": 0.0374,
+                                "coefficientOfVariation": 0.0003,
+                                "minimum": 120.1992,
+                                "p90": 120.293,
+                                "maximum": 120.293
+                            },
+                            "exitCodes": [
+                                0
+                            ],
+                            "command": "vendor/bin/paratest --processes=4 --filter=/^(?!(?:Brick\\\\Math\\\\Tests\\\\BigIntegerTest::(?:testDividedBy\\b|testOne\\b|testTen\\b|testZero\\b)|Brick\\\\Math\\\\Tests\\\\PcreFailureTest::(?:testFromArbit..."
+                        },
+                        "microunit": {
+                            "seconds": {
+                                "runs": 5,
+                                "median": 0.8637,
+                                "mean": 0.8489,
+                                "standardDeviation": 0.0267,
+                                "coefficientOfVariation": 0.0315,
+                                "minimum": 0.8037,
+                                "p90": 0.8675,
+                                "maximum": 0.8675
+                            },
+                            "peakMemoryMiB": {
+                                "runs": 5,
+                                "median": 110.875,
+                                "mean": 110.8945,
+                                "standardDeviation": 0.0398,
+                                "coefficientOfVariation": 0.0004,
+                                "minimum": 110.8555,
+                                "p90": 110.9375,
+                                "maximum": 110.9375
+                            },
+                            "exitCodes": [
+                                0
+                            ],
+                            "command": "vendor/bin/microunit --no-colors --no-agent --filter=/^(?!(?:BigInteger\\:\\:zero|BigInteger\\:\\:one|BigInteger\\:\\:ten|BigInteger\\:\\:divided_by|PcreFailure\\:\\:of_decimal_number|PcreFailure\\:\\:of_rational_... --parallel=4"
+                        }
+                    }
+                },
+                "file": {
+                    "valid": true,
+                    "testCounts": {
+                        "phpunit": 2694,
+                        "microunit": 2694
+                    },
+                    "problems": [],
+                    "tools": {
+                        "phpunit": {
+                            "seconds": {
+                                "runs": 5,
+                                "median": 0.5677,
+                                "mean": 0.5685,
+                                "standardDeviation": 0.0072,
+                                "coefficientOfVariation": 0.0126,
+                                "minimum": 0.5606,
+                                "p90": 0.5783,
+                                "maximum": 0.5783
+                            },
+                            "peakMemoryMiB": {
+                                "runs": 5,
+                                "median": 52.2695,
+                                "mean": 52.2711,
+                                "standardDeviation": 0.0106,
+                                "coefficientOfVariation": 0.0002,
+                                "minimum": 52.2617,
+                                "p90": 52.2891,
+                                "maximum": 52.2891
+                            },
+                            "exitCodes": [
+                                0
+                            ],
+                            "command": "vendor/bin/phpunit --no-progress --filter=/^(?!(?:Brick\\\\Math\\\\Tests\\\\BigIntegerTest::(?:testDividedBy\\b|testOne\\b|testTen\\b|testZero\\b)|Brick\\\\Math\\\\Tests\\\\PcreFailureTest::(?:testFromArbit... tests/BigNumberTest.php"
+                        },
+                        "microunit": {
+                            "seconds": {
+                                "runs": 5,
+                                "median": 0.1237,
+                                "mean": 0.127,
+                                "standardDeviation": 0.0066,
+                                "coefficientOfVariation": 0.0524,
+                                "minimum": 0.1233,
+                                "p90": 0.1388,
+                                "maximum": 0.1388
+                            },
+                            "peakMemoryMiB": {
+                                "runs": 5,
+                                "median": 35.3398,
+                                "mean": 35.3461,
+                                "standardDeviation": 0.032,
+                                "coefficientOfVariation": 0.0009,
+                                "minimum": 35.3125,
+                                "p90": 35.3984,
+                                "maximum": 35.3984
+                            },
+                            "exitCodes": [
+                                0
+                            ],
+                            "command": "vendor/bin/microunit --no-colors --no-agent --filter=/^(?!(?:BigInteger\\:\\:zero|BigInteger\\:\\:one|BigInteger\\:\\:ten|BigInteger\\:\\:divided_by|PcreFailure\\:\\:of_decimal_number|PcreFailure\\:\\:of_rational_... tests-microunit/BigNumberTest.php"
+                        }
+                    }
+                },
+                "startup": {
+                    "valid": true,
+                    "testCounts": {
+                        "phpunit": null,
+                        "microunit": 0
+                    },
+                    "problems": [],
+                    "tools": {
+                        "phpunit": {
+                            "seconds": {
+                                "runs": 5,
+                                "median": 0.896,
+                                "mean": 0.8984,
+                                "standardDeviation": 0.0557,
+                                "coefficientOfVariation": 0.062,
+                                "minimum": 0.8194,
+                                "p90": 0.9586,
+                                "maximum": 0.9586
+                            },
+                            "peakMemoryMiB": {
+                                "runs": 5,
+                                "median": 118.0273,
+                                "mean": 118.018,
+                                "standardDeviation": 0.0269,
+                                "coefficientOfVariation": 0.0002,
+                                "minimum": 117.9883,
+                                "p90": 118.0508,
+                                "maximum": 118.0508
+                            },
+                            "exitCodes": [
+                                0
+                            ],
+                            "command": "vendor/bin/phpunit --no-progress --filter=/^no_test_has_this_name$/"
+                        },
+                        "microunit": {
+                            "seconds": {
+                                "runs": 5,
+                                "median": 0.1532,
+                                "mean": 0.1456,
+                                "standardDeviation": 0.0133,
+                                "coefficientOfVariation": 0.0913,
+                                "minimum": 0.1247,
+                                "p90": 0.1561,
+                                "maximum": 0.1561
+                            },
+                            "peakMemoryMiB": {
+                                "runs": 5,
+                                "median": 49.0742,
+                                "mean": 49.0688,
+                                "standardDeviation": 0.0187,
+                                "coefficientOfVariation": 0.0004,
+                                "minimum": 49.0391,
+                                "p90": 49.0898,
+                                "maximum": 49.0898
+                            },
+                            "exitCodes": [
+                                0
+                            ],
+                            "command": "vendor/bin/microunit --no-colors --no-agent --filter=/^no_test_has_this_name$/"
+                        }
+                    }
+                }
+            },
+            "excluded": {
+                "Brick\\Math\\Tests\\BigIntegerTest::testDividedBy": "not migrated automatically: line 783: calls $this->expectException() somewhere migrate cannot wrap (only at the top level of a test). calls expectExceptionMessageExact(), which only sets expectations; migrate can only expand that at the top level of a test.",
+                "Brick\\Math\\Tests\\BigIntegerTest::testOne": "not migrated automatically: runs in a separate process.",
+                "Brick\\Math\\Tests\\BigIntegerTest::testTen": "not migrated automatically: runs in a separate process.",
+                "Brick\\Math\\Tests\\BigIntegerTest::testZero": "not migrated automatically: runs in a separate process.",
+                "Brick\\Math\\Tests\\PcreFailureTest::testFromArbitraryBase": "not migrated automatically: runs in a separate process.",
+                "Brick\\Math\\Tests\\PcreFailureTest::testFromBase": "not migrated automatically: runs in a separate process.",
+                "Brick\\Math\\Tests\\PcreFailureTest::testOfDecimalNumber": "not migrated automatically: runs in a separate process.",
+                "Brick\\Math\\Tests\\PcreFailureTest::testOfRationalNumber": "not migrated automatically: runs in a separate process."
+            },
+            "versions": {
+                "phpunit": "PHPUnit 11.5.58 by Sebastian Bergmann and contributors.",
+                "paratest": "ParaTest v7.8.6",
+                "microunit": "microunit 1.0.0 (PHP 8.6.0)"
+            }
+        },
+        "carbon": {
+            "project": {
+                "slug": "carbon",
+                "name": "nesbot/carbon",
+                "repo": "https://github.com/briannesbitt/Carbon",
+                "tag": "3.15.1",
+                "sha": "ce0e5636fae7d1e99856eb70cae4c719a284aa08",
+                "tests": "tests",
+                "file": "tests/Carbon/AddTest.php",
+                "phpArguments": [
+                    "-d",
+                    "memory_limit=-1"
+                ],
+                "setup": [
+                    "git clone --depth 1 --branch 3.15.1 -c core.autocrlf=false https://github.com/briannesbitt/Carbon carbon",
+                    "composer update --prefer-dist --prefer-stable"
+                ],
+                "paratestSetup": [
+                    "copy the checkout above to ../projects-paratest/carbon",
+                    "composer require --dev brianium/paratest:7.4.9 phpunit/phpunit:10.5.67 -W --ignore-platform-req=php"
+                ],
+                "tools": {
+                    "phpunit": {
+                        "dir": ".",
+                        "command": [
+                            "vendor/bin/phpunit",
+                            "--no-progress"
+                        ]
+                    },
+                    "paratest": {
+                        "dir": "../../projects-paratest/carbon",
+                        "command": [
+                            "vendor/bin/paratest",
+                            "--processes={workers}"
+                        ]
+                    },
+                    "microunit": {
+                        "dir": ".",
+                        "command": [
+                            "{microunit}",
+                            "--no-colors",
+                            "--no-agent"
+                        ]
+                    }
+                }
+            },
+            "summary": {
+                "suite": {
+                    "valid": true,
+                    "testCounts": {
+                        "phpunit": 6233,
+                        "microunit": 6233
+                    },
+                    "problems": [],
+                    "tools": {
+                        "phpunit": {
+                            "seconds": {
+                                "runs": 5,
+                                "median": 40.3986,
+                                "mean": 39.38,
+                                "standardDeviation": 1.4723,
+                                "coefficientOfVariation": 0.0374,
+                                "minimum": 37.7481,
+                                "p90": 40.4833,
+                                "maximum": 40.4833
+                            },
+                            "peakMemoryMiB": {
+                                "runs": 5,
+                                "median": 165.2891,
+                                "mean": 165.2883,
+                                "standardDeviation": 0.1153,
+                                "coefficientOfVariation": 0.0007,
+                                "minimum": 165.1641,
+                                "p90": 165.4648,
+                                "maximum": 165.4648
+                            },
+                            "exitCodes": [
+                                0
+                            ],
+                            "command": "vendor/bin/phpunit --no-progress --filter=/^(?!(?:SerializationTest::(?:testSerialization.with.data.set.(?:.exclude\\x20start\\x20and\\x20end.|.include\\x20start\\x20and\\x20end.|.new.|.range\\x20s..."
+                        },
+                        "microunit": {
+                            "seconds": {
+                                "runs": 5,
+                                "median": 35.8502,
+                                "mean": 36.2863,
+                                "standardDeviation": 2.8195,
+                                "coefficientOfVariation": 0.0777,
+                                "minimum": 33.6661,
+                                "p90": 40.8047,
+                                "maximum": 40.8047
+                            },
+                            "peakMemoryMiB": {
+                                "runs": 5,
+                                "median": 226.3242,
+                                "mean": 226.3117,
+                                "standardDeviation": 0.06,
+                                "coefficientOfVariation": 0.0003,
+                                "minimum": 226.2422,
+                                "p90": 226.3945,
+                                "maximum": 226.3945
+                            },
+                            "exitCodes": [
+                                0
+                            ],
+                            "command": "vendor/bin/microunit --no-colors --no-agent --filter=/^(?!(?:CarbonImmutable\\\\Diff\\:\\:diff_in_hours_with_timezones|CarbonImmutable\\\\Diff\\:\\:diff_in_seconds_with_timezones|CarbonImmutable\\\\GenericMacro\\..."
+                        }
+                    }
+                },
+                "parallel": {
+                    "valid": true,
+                    "testCounts": {
+                        "paratest": 6233,
+                        "microunit": 6233
+                    },
+                    "problems": [],
+                    "tools": {
+                        "paratest": {
+                            "seconds": {
+                                "runs": 5,
+                                "median": 29.8995,
+                                "mean": 29.8733,
+                                "standardDeviation": 0.3196,
+                                "coefficientOfVariation": 0.0107,
+                                "minimum": 29.3444,
+                                "p90": 30.1924,
+                                "maximum": 30.1924
+                            },
+                            "peakMemoryMiB": {
+                                "runs": 5,
+                                "median": 108.7813,
+                                "mean": 108.7844,
+                                "standardDeviation": 0.0286,
+                                "coefficientOfVariation": 0.0003,
+                                "minimum": 108.7539,
+                                "p90": 108.8281,
+                                "maximum": 108.8281
+                            },
+                            "exitCodes": [
+                                0
+                            ],
+                            "command": "vendor/bin/paratest --processes=4 --filter=/^(?!(?:SerializationTest::(?:testSerialization.with.data.set.(?:.exclude\\x20start\\x20and\\x20end.|.include\\x20start\\x20and\\x20end.|.new.|.range\\x20s..."
+                        },
+                        "microunit": {
+                            "seconds": {
+                                "runs": 5,
+                                "median": 17.1037,
+                                "mean": 17.0538,
+                                "standardDeviation": 0.4747,
+                                "coefficientOfVariation": 0.0278,
+                                "minimum": 16.4672,
+                                "p90": 17.6911,
+                                "maximum": 17.6911
+                            },
+                            "peakMemoryMiB": {
+                                "runs": 5,
+                                "median": 189.8516,
+                                "mean": 189.8461,
+                                "standardDeviation": 0.06,
+                                "coefficientOfVariation": 0.0003,
+                                "minimum": 189.7539,
+                                "p90": 189.918,
+                                "maximum": 189.918
+                            },
+                            "exitCodes": [
+                                0
+                            ],
+                            "command": "vendor/bin/microunit --no-colors --no-agent --filter=/^(?!(?:CarbonImmutable\\\\Diff\\:\\:diff_in_hours_with_timezones|CarbonImmutable\\\\Diff\\:\\:diff_in_seconds_with_timezones|CarbonImmutable\\\\GenericMacro\\... --parallel=4"
+                        }
+                    }
+                },
+                "file": {
+                    "valid": true,
+                    "testCounts": {
+                        "phpunit": 70,
+                        "microunit": 70
+                    },
+                    "problems": [],
+                    "tools": {
+                        "phpunit": {
+                            "seconds": {
+                                "runs": 5,
+                                "median": 0.2359,
+                                "mean": 0.2405,
+                                "standardDeviation": 0.007,
+                                "coefficientOfVariation": 0.029,
+                                "minimum": 0.2347,
+                                "p90": 0.2481,
+                                "maximum": 0.2481
+                            },
+                            "peakMemoryMiB": {
+                                "runs": 5,
+                                "median": 38.9375,
+                                "mean": 38.9258,
+                                "standardDeviation": 0.0515,
+                                "coefficientOfVariation": 0.0013,
+                                "minimum": 38.8711,
+                                "p90": 38.9883,
+                                "maximum": 38.9883
+                            },
+                            "exitCodes": [
+                                0
+                            ],
+                            "command": "vendor/bin/phpunit --no-progress --filter=/^(?!(?:SerializationTest::(?:testSerialization.with.data.set.(?:.exclude\\x20start\\x20and\\x20end.|.include\\x20start\\x20and\\x20end.|.new.|.range\\x20s... tests/Carbon/AddTest.php"
+                        },
+                        "microunit": {
+                            "seconds": {
+                                "runs": 5,
+                                "median": 0.1711,
+                                "mean": 0.1679,
+                                "standardDeviation": 0.0077,
+                                "coefficientOfVariation": 0.0459,
+                                "minimum": 0.1541,
+                                "p90": 0.1721,
+                                "maximum": 0.1721
+                            },
+                            "peakMemoryMiB": {
+                                "runs": 5,
+                                "median": 33.1758,
+                                "mean": 33.1914,
+                                "standardDeviation": 0.0333,
+                                "coefficientOfVariation": 0.001,
+                                "minimum": 33.1602,
+                                "p90": 33.2422,
+                                "maximum": 33.2422
+                            },
+                            "exitCodes": [
+                                0
+                            ],
+                            "command": "vendor/bin/microunit --no-colors --no-agent --filter=/^(?!(?:CarbonImmutable\\\\Diff\\:\\:diff_in_hours_with_timezones|CarbonImmutable\\\\Diff\\:\\:diff_in_seconds_with_timezones|CarbonImmutable\\\\GenericMacro\\... tests-microunit/Carbon/AddTest.php"
+                        }
+                    }
+                },
+                "startup": {
+                    "valid": true,
+                    "testCounts": {
+                        "phpunit": null,
+                        "microunit": 0
+                    },
+                    "problems": [],
+                    "tools": {
+                        "phpunit": {
+                            "seconds": {
+                                "runs": 5,
+                                "median": 1.0401,
+                                "mean": 1.0382,
+                                "standardDeviation": 0.0273,
+                                "coefficientOfVariation": 0.0263,
+                                "minimum": 0.9948,
+                                "p90": 1.0698,
+                                "maximum": 1.0698
+                            },
+                            "peakMemoryMiB": {
+                                "runs": 5,
+                                "median": 107.2852,
+                                "mean": 107.2867,
+                                "standardDeviation": 0.0116,
+                                "coefficientOfVariation": 0.0001,
+                                "minimum": 107.2734,
+                                "p90": 107.3047,
+                                "maximum": 107.3047
+                            },
+                            "exitCodes": [
+                                0
+                            ],
+                            "command": "vendor/bin/phpunit --no-progress --filter=/^no_test_has_this_name$/"
+                        },
+                        "microunit": {
+                            "seconds": {
+                                "runs": 5,
+                                "median": 0.8992,
+                                "mean": 0.9484,
+                                "standardDeviation": 0.0765,
+                                "coefficientOfVariation": 0.0806,
+                                "minimum": 0.8817,
+                                "p90": 1.034,
+                                "maximum": 1.034
+                            },
+                            "peakMemoryMiB": {
+                                "runs": 5,
+                                "median": 172.9688,
+                                "mean": 172.9633,
+                                "standardDeviation": 0.0497,
+                                "coefficientOfVariation": 0.0003,
+                                "minimum": 172.8906,
+                                "p90": 173.0156,
+                                "maximum": 173.0156
+                            },
+                            "exitCodes": [
+                                0
+                            ],
+                            "command": "vendor/bin/microunit --no-colors --no-agent --filter=/^no_test_has_this_name$/"
+                        }
+                    }
+                }
+            },
+            "excluded": {
+                "SerializationTest::testSerialization with data set \"exclude start and end\"": "fails after migration (a migrate limitation)",
+                "SerializationTest::testSerialization with data set \"include start and end\"": "fails after migration (a migrate limitation)",
+                "SerializationTest::testSerialization with data set \"new\"": "fails after migration (a migrate limitation)",
+                "SerializationTest::testSerialization with data set \"range string\"": "fails after migration (a migrate limitation)",
+                "SerializationTest::testSerialization with data set \"with timezone\"": "fails after migration (a migrate limitation)",
+                "SerializationTest::testSerializationWithRecurrences": "fails after migration (a migrate limitation)",
+                "Tests\\CarbonImmutable\\DiffTest::testDiffInHoursWithTimezones": "fails under PHPUnit on this machine",
+                "Tests\\CarbonImmutable\\DiffTest::testDiffInSecondsWithTimezones": "fails under PHPUnit on this machine",
+                "Tests\\CarbonImmutable\\GenericMacroTest::testGenericMacro": "not migrated automatically: line 29: calls $this->this(), which is neither a helper of the class nor a PHPUnit assertion.",
+                "Tests\\CarbonImmutable\\InstanceTest::testMutableConversions": "fails after migration (a migrate limitation)",
+                "Tests\\CarbonImmutable\\LastErrorTest::testLastErrorsInitialization": "not migrated automatically: line 72: calls $this->setLastErrors(), which is neither a helper of the class nor a PHPUnit assertion.",
+                "Tests\\CarbonImmutable\\MacroTest::testCarbonIsMacroableWhenNotCalledDynamicallyUsingThis": "not migrated automatically: line 53: uses $this directly; there is no test case object in MicroUnit.",
+                "Tests\\CarbonImmutable\\MacroTest::testLazyMixinMethodCall": "not migrated automatically: line 184: uses self::$calledMethods, which migrate cannot translate. line 189: uses self::$calledMethods, which migrate cannot translate. line 194: uses self::$calledMethods, which migrate cannot translate. line 201: uses self::$calledMethods, which migrate cannot translate. line 206: uses self::$calledMethods, which migrate cannot translate. line 213: uses self::$calledMethods, which migrate cannot translate. line 220: uses self::$calledMethods, which migrate cannot translate. line 227: uses self::$calledMethods, which migrate cannot translate. line 234: uses self::$calledMethods, which migrate cannot translate. line 241: uses self::$calledMethods, which migrate cannot translate. line 248: uses self::$calledMethods, which migrate cannot translate.",
+                "Tests\\CarbonImmutable\\MacroTest::testSubClassMacro": "not migrated automatically: line 168: calls $this->diffInYears(), which is neither a helper of the class nor a PHPUnit assertion.",
+                "Tests\\CarbonImmutable\\SerializationTest::testNewInstanceWithoutConstructor": "not migrated automatically: line 200: uses $this directly; there is no test case object in MicroUnit.",
+                "Tests\\CarbonImmutable\\SetStateTest::testSteState": "not migrated automatically: line 38: calls $this->__set_state(), which is neither a helper of the class nor a PHPUnit assertion.",
+                "Tests\\CarbonImmutable\\StringsTest::testInvalidEraDate": "not migrated automatically: line 392: calls $this->expectExceptionObject() somewhere migrate cannot wrap (only at the top level of a test).",
+                "Tests\\CarbonImmutable\\StringsTest::testIsoFormatEras": "fails when run in parallel under ParaTest (depends on the test order)",
+                "Tests\\CarbonImmutable\\TestingAidsTest::testWithTestNow": "not migrated automatically: line 285: uses $this directly; there is no test case object in MicroUnit.",
+                "Tests\\CarbonInterval\\ConstructTest::testFromSerialization": "fails after migration (a migrate limitation)",
+                "Tests\\CarbonInterval\\ConstructTest::testFromSerializationConst": "fails after migration (a migrate limitation)",
+                "Tests\\CarbonInterval\\MacroTest::testCarbonIsMacroableWhenNotCalledStatically": "not migrated automatically: line 27: uses $this directly; there is no test case object in MicroUnit. line 39: uses $this directly; there is no test case object in MicroUnit.",
+                "Tests\\CarbonInterval\\MacroTest::testCarbonIsMacroableWhenNotCalledStaticallyUsingThis": "not migrated automatically: line 73: uses $this directly; there is no test case object in MicroUnit.",
+                "Tests\\CarbonPeriodImmutable\\AliasTest::testSetDates": "fails after migration (a migrate limitation)",
+                "Tests\\CarbonPeriodImmutable\\AliasTest::testSetEndDate": "fails after migration (a migrate limitation)",
+                "Tests\\CarbonPeriodImmutable\\AliasTest::testSetEndDateWithNamedParameters": "fails after migration (a migrate limitation)",
+                "Tests\\CarbonPeriodImmutable\\AliasTest::testSetStartDate": "fails after migration (a migrate limitation)",
+                "Tests\\CarbonPeriodImmutable\\AliasTest::testSetStartDateWithNamedParameters": "fails after migration (a migrate limitation)",
+                "Tests\\CarbonPeriodImmutable\\CreateTest::testCast": "not migrated automatically: line 722: calls $this->getStartDate(), which is neither a helper of the class nor a PHPUnit assertion. line 723: calls $this->getDateInterval(), which is neither a helper of the class nor a PHPUnit assertion. line 724: calls $this->getEndDate(), which is neither a helper of the class nor a PHPUnit assertion. line 730: calls $this->getStartDate(), which is neither a helper of the class nor a PHPUnit assertion. line 731: calls $this->getDateInterval(), which is neither a helper of the class nor a PHPUnit assertion. line 732: calls $this->getEndDate(), which is neither a helper of the class nor a PHPUnit assertion.",
+                "Tests\\CarbonPeriodImmutable\\CreateTest::testCreateEmpty": "fails after migration (a migrate limitation)",
+                "Tests\\CarbonPeriodImmutable\\CreateTest::testCreateFromRelativeDates": "fails after migration (a migrate limitation)",
+                "Tests\\CarbonPeriodImmutable\\FilterTest::testAddFilterFromCarbonMacro": "not migrated automatically: line 409: uses $this directly; there is no test case object in MicroUnit.",
+                "Tests\\CarbonPeriodImmutable\\FilterTest::testCallbackArguments": "not migrated automatically: line 299: uses $this directly; there is no test case object in MicroUnit.",
+                "Tests\\CarbonPeriodImmutable\\FilterTest::testRunCallableFilters": "fails after migration (a migrate limitation)",
+                "Tests\\CarbonPeriodImmutable\\FilterTest::testUpdateInternalStateWhenBuiltInFiltersAreRemoved": "fails after migration (a migrate limitation)",
+                "Tests\\CarbonPeriodImmutable\\GettersTest::testOverlaps": "not migrated automatically: line 267: reads $this->dateInterval, which is not a property of the class. line 276: reads $this->dateInterval, which is not a property of the class.",
+                "Tests\\CarbonPeriodImmutable\\IteratorTest::testChangeStartDateBeforeIteration": "fails after migration (a migrate limitation)",
+                "Tests\\CarbonPeriodImmutable\\IteratorTest::testRevalidateCurrentAfterChangeOfParameters": "fails after migration (a migrate limitation)",
+                "Tests\\CarbonPeriodImmutable\\IteratorTest::testRevalidateCurrentAfterEndOfIteration": "fails after migration (a migrate limitation)",
+                "Tests\\CarbonPeriodImmutable\\MacroTest::testCallMacro": "not migrated automatically: line 41: uses $this directly; there is no test case object in MicroUnit.",
+                "Tests\\CarbonPeriodImmutable\\MacroTest::testInstantiateViaStaticMacroCall": "not migrated automatically: line 198: uses $this directly; there is no test case object in MicroUnit.",
+                "Tests\\CarbonPeriodImmutable\\MacroTest::testMacroIsBindedToDatePeriodInstance": "not migrated automatically: line 100: uses $this directly; there is no test case object in MicroUnit.",
+                "Tests\\CarbonPeriodImmutable\\MacroTest::testPassPeriodInstanceAfterOptionalParameters": "not migrated automatically: line 82: uses $this directly; there is no test case object in MicroUnit.",
+                "Tests\\CarbonPeriodImmutable\\SettersTest::testFluentSetters": "fails after migration (a migrate limitation)",
+                "Tests\\CarbonPeriodImmutable\\ToArrayTest::testFirst": "fails after migration (a migrate limitation)",
+                "Tests\\CarbonPeriodImmutable\\ToArrayTest::testLast": "fails after migration (a migrate limitation)",
+                "Tests\\CarbonPeriodImmutable\\ToArrayTest::testRestoreIterationStateAfterCallingToArray": "fails after migration (a migrate limitation)",
+                "Tests\\CarbonPeriodImmutable\\ToDatePeriodTest::testRawDate": "fails after migration (a migrate limitation)",
+                "Tests\\CarbonPeriod\\CreateTest::testCast": "not migrated automatically: line 722: calls $this->getStartDate(), which is neither a helper of the class nor a PHPUnit assertion. line 723: calls $this->getDateInterval(), which is neither a helper of the class nor a PHPUnit assertion. line 724: calls $this->getEndDate(), which is neither a helper of the class nor a PHPUnit assertion. line 730: calls $this->getStartDate(), which is neither a helper of the class nor a PHPUnit assertion. line 731: calls $this->getDateInterval(), which is neither a helper of the class nor a PHPUnit assertion. line 732: calls $this->getEndDate(), which is neither a helper of the class nor a PHPUnit assertion.",
+                "Tests\\CarbonPeriod\\FilterTest::testAddFilterFromCarbonMacro": "not migrated automatically: line 409: uses $this directly; there is no test case object in MicroUnit.",
+                "Tests\\CarbonPeriod\\FilterTest::testCallbackArguments": "not migrated automatically: line 299: uses $this directly; there is no test case object in MicroUnit.",
+                "Tests\\CarbonPeriod\\FilterTest::testRunCallableFilters": "fails after migration (a migrate limitation)",
+                "Tests\\CarbonPeriod\\FilterTest::testUpdateInternalStateWhenBuiltInFiltersAreRemoved": "fails after migration (a migrate limitation)",
+                "Tests\\CarbonPeriod\\GettersTest::testOverlaps": "not migrated automatically: line 267: reads $this->dateInterval, which is not a property of the class. line 276: reads $this->dateInterval, which is not a property of the class.",
+                "Tests\\CarbonPeriod\\MacroTest::testCallMacro": "not migrated automatically: line 41: uses $this directly; there is no test case object in MicroUnit.",
+                "Tests\\CarbonPeriod\\MacroTest::testInstantiateViaStaticMacroCall": "not migrated automatically: line 198: uses $this directly; there is no test case object in MicroUnit.",
+                "Tests\\CarbonPeriod\\MacroTest::testMacroIsBindedToDatePeriodInstance": "not migrated automatically: line 100: uses $this directly; there is no test case object in MicroUnit.",
+                "Tests\\CarbonPeriod\\MacroTest::testPassPeriodInstanceAfterOptionalParameters": "not migrated automatically: line 82: uses $this directly; there is no test case object in MicroUnit.",
+                "Tests\\CarbonPeriod\\MonthlyTest::testMonthlyWithOtherDateRepresentations with data set #0": "fails after migration (a migrate limitation)",
+                "Tests\\CarbonPeriod\\MonthlyTest::testMonthlyWithOtherDateRepresentations with data set #1": "fails after migration (a migrate limitation)",
+                "Tests\\CarbonPeriod\\MonthlyTest::testMonthlyWithOtherDateRepresentations with data set #2": "fails after migration (a migrate limitation)",
+                "Tests\\CarbonPeriod\\MonthlyTest::testMonthlyWithTimestamps": "fails after migration (a migrate limitation)",
+                "Tests\\CarbonPeriod\\QuarterlyTest::testMonthlyWithVariousDateRepresentations with data set #0": "fails after migration (a migrate limitation)",
+                "Tests\\CarbonPeriod\\QuarterlyTest::testMonthlyWithVariousDateRepresentations with data set #1": "fails after migration (a migrate limitation)",
+                "Tests\\CarbonPeriod\\QuarterlyTest::testMonthlyWithVariousDateRepresentations with data set #2": "fails after migration (a migrate limitation)",
+                "Tests\\CarbonPeriod\\QuarterlyTest::testMonthlyWithVariousDateRepresentations with data set #3": "fails after migration (a migrate limitation)",
+                "Tests\\CarbonPeriod\\ToDatePeriodTest::testRawDate": "fails after migration (a migrate limitation)",
+                "Tests\\CarbonPeriod\\YearlyTest::testYearlyWithOtherDateRepresentations with data set #0": "fails after migration (a migrate limitation)",
+                "Tests\\CarbonPeriod\\YearlyTest::testYearlyWithOtherDateRepresentations with data set #1": "fails after migration (a migrate limitation)",
+                "Tests\\CarbonPeriod\\YearlyTest::testYearlyWithOtherDateRepresentations with data set #2": "fails after migration (a migrate limitation)",
+                "Tests\\CarbonPeriod\\YearlyTest::testYearlyWithTimestamps": "fails after migration (a migrate limitation)",
+                "Tests\\Carbon\\ComparisonTest::testEqualWithTimezoneFalse": "fails under PHPUnit on this machine",
+                "Tests\\Carbon\\DiffTest::testDiffInHoursWithTimezones": "fails under PHPUnit on this machine",
+                "Tests\\Carbon\\DiffTest::testDiffInSecondsWithTimezones": "fails under PHPUnit on this machine",
+                "Tests\\Carbon\\GenericMacroTest::testGenericMacro": "not migrated automatically: line 29: calls $this->this(), which is neither a helper of the class nor a PHPUnit assertion.",
+                "Tests\\Carbon\\InstanceTest::testMutableConversions": "fails after migration (a migrate limitation)",
+                "Tests\\Carbon\\LastErrorTest::testLastErrorsInitialization": "not migrated automatically: line 72: calls $this->setLastErrors(), which is neither a helper of the class nor a PHPUnit assertion.",
+                "Tests\\Carbon\\MacroTest::testCarbonIsMacroableWhenNotCalledDynamicallyUsingThis": "not migrated automatically: line 65: uses $this directly; there is no test case object in MicroUnit.",
+                "Tests\\Carbon\\MacroTest::testLocalMacroProperties": "not migrated automatically: line 175: uses $this directly; there is no test case object in MicroUnit. line 185: uses $this directly; there is no test case object in MicroUnit.",
+                "Tests\\Carbon\\MacroTest::testMacroOverridingMethod": "not migrated automatically: line 223: uses $this directly; there is no test case object in MicroUnit.",
+                "Tests\\Carbon\\MacroTest::testMacroProperties": "not migrated automatically: line 124: uses $this directly; there is no test case object in MicroUnit. line 135: uses $this directly; there is no test case object in MicroUnit.",
+                "Tests\\Carbon\\MacroTest::testSubClassMacro": "not migrated automatically: line 338: calls $this->diffInYears(), which is neither a helper of the class nor a PHPUnit assertion.",
+                "Tests\\Carbon\\ModifyTest::testInvalidModifier": "fails after migration (a migrate limitation)",
+                "Tests\\Carbon\\StringsTest::testInvalidEraDate": "not migrated automatically: line 448: calls $this->expectExceptionObject() somewhere migrate cannot wrap (only at the top level of a test).",
+                "Tests\\Carbon\\TestingAidsTest::testTestingAidsWithTestNowSet": "fails after migration (a migrate limitation)",
+                "Tests\\Carbon\\TestingAidsTest::testTestingAidsWithTestNowSetToString": "fails after migration (a migrate limitation)",
+                "Tests\\Carbon\\TestingAidsTest::testWithModifyReturningDateTime": "not migrated automatically: line 404: calls $this->toDateTimeImmutable(), which is neither a helper of the class nor a PHPUnit assertion.",
+                "Tests\\Carbon\\TestingAidsTest::testWithTestNow": "not migrated automatically: line 353: uses $this directly; there is no test case object in MicroUnit.",
+                "Tests\\CommonTraits\\MacroContextNestingTest::testMacroContextDetectionNesting": "not migrated automatically: line 78: calls $this->context(), which is neither a helper of the class nor a PHPUnit assertion. line 85: calls $this->$macro1(), which is neither a helper of the class nor a PHPUnit assertion. line 85: calls $this->this(), which is neither a helper of the class nor a PHPUnit assertion. line 88: calls $this->$macro1(), which is neither a helper of the class nor a PHPUnit assertion.",
+                "Tests\\CommonTraits\\MacroContextNestingTest::testMacroContextNesting": "not migrated automatically: line 48: calls $this->this(), which is neither a helper of the class nor a PHPUnit assertion. line 53: calls $this->this(), which is neither a helper of the class nor a PHPUnit assertion. line 56: calls $this->this(), which is neither a helper of the class nor a PHPUnit assertion.",
+                "Tests\\Factory\\FactoryTest::testPsrClock": "fails after migration (a migrate limitation)",
+                "Tests\\Factory\\WrapperClockTest::testWrapperClockPsrLink": "not migrated automatically: line 89: reads $this->currentTime, which is not a property of the class.",
+                "Tests\\Localization\\LanguagesCoverageTest::testAllLanguagesAreTested": "not migrated automatically: line 26: uses $this directly; there is no test case object in MicroUnit.",
+                "Tests\\PHPStan\\MacroExtensionTest::testGetDeclaringClass": "fails after migration (a migrate limitation)",
+                "Tests\\PHPStan\\MacroExtensionTest::testGetDocComment": "fails after migration (a migrate limitation)",
+                "Tests\\PHPStan\\MacroExtensionTest::testGetMacro": "fails after migration (a migrate limitation)",
+                "Tests\\PHPStan\\MacroExtensionTest::testGetName": "fails after migration (a migrate limitation)",
+                "Tests\\PHPStan\\MacroExtensionTest::testGetParameters": "fails after migration (a migrate limitation)",
+                "Tests\\PHPStan\\MacroExtensionTest::testGetPrototype": "fails after migration (a migrate limitation)",
+                "Tests\\PHPStan\\MacroExtensionTest::testGetReturnType": "fails after migration (a migrate limitation)",
+                "Tests\\PHPStan\\MacroExtensionTest::testGetThrowType": "fails after migration (a migrate limitation)",
+                "Tests\\PHPStan\\MacroExtensionTest::testHasMacro": "fails after migration (a migrate limitation)",
+                "Tests\\PHPStan\\MacroExtensionTest::testHasSideEffects": "fails after migration (a migrate limitation)",
+                "Tests\\PHPStan\\MacroExtensionTest::testIsDeprecated": "fails after migration (a migrate limitation)",
+                "Tests\\PHPStan\\MacroExtensionTest::testIsFinal": "fails after migration (a migrate limitation)",
+                "Tests\\PHPStan\\MacroExtensionTest::testIsInternal": "fails after migration (a migrate limitation)",
+                "Tests\\PHPStan\\MacroExtensionTest::testIsPrivate": "fails after migration (a migrate limitation)",
+                "Tests\\PHPStan\\MacroExtensionTest::testIsPublic": "fails after migration (a migrate limitation)",
+                "Tests\\PHPStan\\MacroExtensionTest::testIsStatic": "not migrated automatically: line 82: calls $this->this(), which is neither a helper of the class nor a PHPUnit assertion. line 91: calls $this->tz(), which is neither a helper of the class nor a PHPUnit assertion.",
+                "Tests\\PHPStan\\MacroExtensionTest::testIsVariadic": "fails after migration (a migrate limitation)"
+            },
+            "versions": {
+                "phpunit": "PHPUnit 10.5.67 by Sebastian Bergmann and contributors.",
+                "paratest": "ParaTest v7.4.9",
+                "microunit": "microunit 1.0.0 (PHP 8.6.0)"
+            }
+        },
+        "assert": {
+            "project": {
+                "slug": "assert",
+                "name": "webmozart/assert",
+                "repo": "https://github.com/webmozarts/assert",
+                "tag": "2.5.1",
+                "sha": "e578132c01bd0c64108386ab20d8217cd175ddec",
+                "tests": "tests",
+                "file": "tests/AssertTest.php",
+                "phpArguments": [
+                    "-d",
+                    "memory_limit=-1"
+                ],
+                "setup": [
+                    "git clone --depth 1 --branch 2.5.1 -c core.autocrlf=false https://github.com/webmozarts/assert assert",
+                    "composer install",
+                    "composer install --working-dir=tools/phpunit"
+                ],
+                "paratestSetup": [
+                    "copy the checkout above to ../projects-paratest/assert",
+                    "composer require --dev brianium/paratest:7.8.5 phpunit/phpunit:11.5.50 -W"
+                ],
+                "tools": {
+                    "phpunit": {
+                        "dir": ".",
+                        "command": [
+                            "tools/phpunit/vendor/bin/phpunit",
+                            "--no-progress"
+                        ]
+                    },
+                    "paratest": {
+                        "dir": "../../projects-paratest/assert",
+                        "command": [
+                            "vendor/bin/paratest",
+                            "--processes={workers}"
+                        ]
+                    },
+                    "microunit": {
+                        "dir": ".",
+                        "command": [
+                            "{microunit}",
+                            "--no-colors",
+                            "--no-agent"
+                        ]
+                    }
+                }
+            },
+            "summary": {
+                "suite": {
+                    "valid": true,
+                    "testCounts": {
+                        "phpunit": 4942,
+                        "microunit": 4942
+                    },
+                    "problems": [],
+                    "tools": {
+                        "phpunit": {
+                            "seconds": {
+                                "runs": 5,
+                                "median": 0.8009,
+                                "mean": 0.7586,
+                                "standardDeviation": 0.0616,
+                                "coefficientOfVariation": 0.0812,
+                                "minimum": 0.6897,
+                                "p90": 0.8059,
+                                "maximum": 0.8059
+                            },
+                            "peakMemoryMiB": {
+                                "runs": 5,
+                                "median": 51.0117,
+                                "mean": 51.0281,
+                                "standardDeviation": 0.0582,
+                                "coefficientOfVariation": 0.0011,
+                                "minimum": 50.9805,
+                                "p90": 51.1289,
+                                "maximum": 51.1289
+                            },
+                            "exitCodes": [
+                                0
+                            ],
+                            "command": "tools/phpunit/vendor/bin/phpunit --no-progress --filter=/^(?!(?:Webmozart\\\\Assert\\\\Tests\\\\AssertTest::(?:testAllArray.with.data.set.(?:#(?:433|435|436|438|440|91)(?!\\d))|testAllNullOrArray.with.data.set.(..."
+                        },
+                        "microunit": {
+                            "seconds": {
+                                "runs": 5,
+                                "median": 0.1557,
+                                "mean": 0.1594,
+                                "standardDeviation": 0.0166,
+                                "coefficientOfVariation": 0.1042,
+                                "minimum": 0.14,
+                                "p90": 0.1854,
+                                "maximum": 0.1854
+                            },
+                            "peakMemoryMiB": {
+                                "runs": 5,
+                                "median": 35.125,
+                                "mean": 35.1102,
+                                "standardDeviation": 0.0278,
+                                "coefficientOfVariation": 0.0008,
+                                "minimum": 35.0781,
+                                "p90": 35.1367,
+                                "maximum": 35.1367
+                            },
+                            "exitCodes": [
+                                0
+                            ],
+                            "command": "vendor/bin/microunit --no-colors --no-agent --filter=/^(?!(?:Assert\\:\\:assert_92|Assert\\:\\:assert_434|Assert\\:\\:assert_436|Assert\\:\\:assert_437|Assert\\:\\:assert_439|Assert\\:\\:assert_441|Assert\\:\\:custo..."
+                        }
+                    }
+                },
+                "parallel": {
+                    "valid": true,
+                    "testCounts": {
+                        "paratest": 4942,
+                        "microunit": 4942
+                    },
+                    "problems": [],
+                    "tools": {
+                        "paratest": {
+                            "seconds": {
+                                "runs": 5,
+                                "median": 1.3198,
+                                "mean": 1.3363,
+                                "standardDeviation": 0.0299,
+                                "coefficientOfVariation": 0.0224,
+                                "minimum": 1.3132,
+                                "p90": 1.3835,
+                                "maximum": 1.3835
+                            },
+                            "peakMemoryMiB": {
+                                "runs": 5,
+                                "median": 52.7539,
+                                "mean": 52.7523,
+                                "standardDeviation": 0.0256,
+                                "coefficientOfVariation": 0.0005,
+                                "minimum": 52.7148,
+                                "p90": 52.7852,
+                                "maximum": 52.7852
+                            },
+                            "exitCodes": [
+                                0
+                            ],
+                            "command": "vendor/bin/paratest --processes=4 --filter=/^(?!(?:Webmozart\\\\Assert\\\\Tests\\\\AssertTest::(?:testAllArray.with.data.set.(?:#(?:433|435|436|438|440|91)(?!\\d))|testAllNullOrArray.with.data.set.(..."
+                        },
+                        "microunit": {
+                            "seconds": {
+                                "runs": 5,
+                                "median": 0.2805,
+                                "mean": 0.2799,
+                                "standardDeviation": 0.0026,
+                                "coefficientOfVariation": 0.0092,
+                                "minimum": 0.2765,
+                                "p90": 0.2834,
+                                "maximum": 0.2834
+                            },
+                            "peakMemoryMiB": {
+                                "runs": 5,
+                                "median": 46.8789,
+                                "mean": 46.8773,
+                                "standardDeviation": 0.0081,
+                                "coefficientOfVariation": 0.0002,
+                                "minimum": 46.8672,
+                                "p90": 46.8867,
+                                "maximum": 46.8867
+                            },
+                            "exitCodes": [
+                                0
+                            ],
+                            "command": "vendor/bin/microunit --no-colors --no-agent --filter=/^(?!(?:Assert\\:\\:assert_92|Assert\\:\\:assert_434|Assert\\:\\:assert_436|Assert\\:\\:assert_437|Assert\\:\\:assert_439|Assert\\:\\:assert_441|Assert\\:\\:custo... --parallel=4"
+                        }
+                    }
+                },
+                "file": {
+                    "valid": true,
+                    "testCounts": {
+                        "phpunit": 4328,
+                        "microunit": 4328
+                    },
+                    "problems": [],
+                    "tools": {
+                        "phpunit": {
+                            "seconds": {
+                                "runs": 5,
+                                "median": 0.6904,
+                                "mean": 0.6878,
+                                "standardDeviation": 0.0236,
+                                "coefficientOfVariation": 0.0344,
+                                "minimum": 0.6601,
+                                "p90": 0.7234,
+                                "maximum": 0.7234
+                            },
+                            "peakMemoryMiB": {
+                                "runs": 5,
+                                "median": 49.2031,
+                                "mean": 49.1836,
+                                "standardDeviation": 0.0664,
+                                "coefficientOfVariation": 0.0014,
+                                "minimum": 49.1094,
+                                "p90": 49.2461,
+                                "maximum": 49.2461
+                            },
+                            "exitCodes": [
+                                0
+                            ],
+                            "command": "tools/phpunit/vendor/bin/phpunit --no-progress --filter=/^(?!(?:Webmozart\\\\Assert\\\\Tests\\\\AssertTest::(?:testAllArray.with.data.set.(?:#(?:433|435|436|438|440|91)(?!\\d))|testAllNullOrArray.with.data.set.(... tests/AssertTest.php"
+                        },
+                        "microunit": {
+                            "seconds": {
+                                "runs": 5,
+                                "median": 0.1404,
+                                "mean": 0.1426,
+                                "standardDeviation": 0.0056,
+                                "coefficientOfVariation": 0.039,
+                                "minimum": 0.1391,
+                                "p90": 0.1524,
+                                "maximum": 0.1524
+                            },
+                            "peakMemoryMiB": {
+                                "runs": 5,
+                                "median": 33.9531,
+                                "mean": 33.9375,
+                                "standardDeviation": 0.0366,
+                                "coefficientOfVariation": 0.0011,
+                                "minimum": 33.8906,
+                                "p90": 33.9688,
+                                "maximum": 33.9688
+                            },
+                            "exitCodes": [
+                                0
+                            ],
+                            "command": "vendor/bin/microunit --no-colors --no-agent --filter=/^(?!(?:Assert\\:\\:assert_92|Assert\\:\\:assert_434|Assert\\:\\:assert_436|Assert\\:\\:assert_437|Assert\\:\\:assert_439|Assert\\:\\:assert_441|Assert\\:\\:custo... tests-microunit/AssertTest.php"
+                        }
+                    }
+                },
+                "startup": {
+                    "valid": true,
+                    "testCounts": {
+                        "phpunit": null,
+                        "microunit": 0
+                    },
+                    "problems": [],
+                    "tools": {
+                        "phpunit": {
+                            "seconds": {
+                                "runs": 5,
+                                "median": 0.3134,
+                                "mean": 0.3158,
+                                "standardDeviation": 0.0071,
+                                "coefficientOfVariation": 0.0225,
+                                "minimum": 0.3115,
+                                "p90": 0.3284,
+                                "maximum": 0.3284
+                            },
+                            "peakMemoryMiB": {
+                                "runs": 5,
+                                "median": 50.0469,
+                                "mean": 50.0453,
+                                "standardDeviation": 0.0162,
+                                "coefficientOfVariation": 0.0003,
+                                "minimum": 50.0273,
+                                "p90": 50.0664,
+                                "maximum": 50.0664
+                            },
+                            "exitCodes": [
+                                0
+                            ],
+                            "command": "tools/phpunit/vendor/bin/phpunit --no-progress --filter=/^no_test_has_this_name$/"
+                        },
+                        "microunit": {
+                            "seconds": {
+                                "runs": 5,
+                                "median": 0.0928,
+                                "mean": 0.0985,
+                                "standardDeviation": 0.009,
+                                "coefficientOfVariation": 0.0916,
+                                "minimum": 0.0914,
+                                "p90": 0.1088,
+                                "maximum": 0.1088
+                            },
+                            "peakMemoryMiB": {
+                                "runs": 5,
+                                "median": 30.1484,
+                                "mean": 30.1398,
+                                "standardDeviation": 0.036,
+                                "coefficientOfVariation": 0.0012,
+                                "minimum": 30.0898,
+                                "p90": 30.1758,
+                                "maximum": 30.1758
+                            },
+                            "exitCodes": [
+                                0
+                            ],
+                            "command": "vendor/bin/microunit --no-colors --no-agent --filter=/^no_test_has_this_name$/"
+                        }
+                    }
+                }
+            },
+            "excluded": {
+                "Webmozart\\Assert\\Tests\\AssertTest::testAllArray with data set #433": "fails after migration (a migrate limitation)",
+                "Webmozart\\Assert\\Tests\\AssertTest::testAllArray with data set #435": "fails after migration (a migrate limitation)",
+                "Webmozart\\Assert\\Tests\\AssertTest::testAllArray with data set #436": "fails after migration (a migrate limitation)",
+                "Webmozart\\Assert\\Tests\\AssertTest::testAllArray with data set #438": "fails after migration (a migrate limitation)",
+                "Webmozart\\Assert\\Tests\\AssertTest::testAllArray with data set #440": "fails after migration (a migrate limitation)",
+                "Webmozart\\Assert\\Tests\\AssertTest::testAllArray with data set #91": "fails after migration (a migrate limitation)",
+                "Webmozart\\Assert\\Tests\\AssertTest::testAllNullOrArray with data set #433": "fails after migration (a migrate limitation)",
+                "Webmozart\\Assert\\Tests\\AssertTest::testAllNullOrArray with data set #435": "fails after migration (a migrate limitation)",
+                "Webmozart\\Assert\\Tests\\AssertTest::testAllNullOrArray with data set #436": "fails after migration (a migrate limitation)",
+                "Webmozart\\Assert\\Tests\\AssertTest::testAllNullOrArray with data set #438": "fails after migration (a migrate limitation)",
+                "Webmozart\\Assert\\Tests\\AssertTest::testAllNullOrArray with data set #440": "fails after migration (a migrate limitation)",
+                "Webmozart\\Assert\\Tests\\AssertTest::testAllNullOrArray with data set #91": "fails after migration (a migrate limitation)",
+                "Webmozart\\Assert\\Tests\\AssertTest::testAllTraversable with data set #433": "fails after migration (a migrate limitation)",
+                "Webmozart\\Assert\\Tests\\AssertTest::testAllTraversable with data set #435": "fails after migration (a migrate limitation)",
+                "Webmozart\\Assert\\Tests\\AssertTest::testAllTraversable with data set #436": "fails after migration (a migrate limitation)",
+                "Webmozart\\Assert\\Tests\\AssertTest::testAllTraversable with data set #438": "fails after migration (a migrate limitation)",
+                "Webmozart\\Assert\\Tests\\AssertTest::testAllTraversable with data set #440": "fails after migration (a migrate limitation)",
+                "Webmozart\\Assert\\Tests\\AssertTest::testAllTraversable with data set #91": "fails after migration (a migrate limitation)",
+                "Webmozart\\Assert\\Tests\\AssertTest::testAssert with data set #433": "fails after migration (a migrate limitation)",
+                "Webmozart\\Assert\\Tests\\AssertTest::testAssert with data set #435": "fails after migration (a migrate limitation)",
+                "Webmozart\\Assert\\Tests\\AssertTest::testAssert with data set #436": "fails after migration (a migrate limitation)",
+                "Webmozart\\Assert\\Tests\\AssertTest::testAssert with data set #438": "fails after migration (a migrate limitation)",
+                "Webmozart\\Assert\\Tests\\AssertTest::testAssert with data set #440": "fails after migration (a migrate limitation)",
+                "Webmozart\\Assert\\Tests\\AssertTest::testAssert with data set #91": "fails after migration (a migrate limitation)",
+                "Webmozart\\Assert\\Tests\\AssertTest::testCustomMessage with data set #433": "fails after migration (a migrate limitation)",
+                "Webmozart\\Assert\\Tests\\AssertTest::testCustomMessage with data set #435": "fails after migration (a migrate limitation)",
+                "Webmozart\\Assert\\Tests\\AssertTest::testCustomMessage with data set #436": "fails after migration (a migrate limitation)",
+                "Webmozart\\Assert\\Tests\\AssertTest::testCustomMessage with data set #438": "fails after migration (a migrate limitation)",
+                "Webmozart\\Assert\\Tests\\AssertTest::testCustomMessage with data set #440": "fails after migration (a migrate limitation)",
+                "Webmozart\\Assert\\Tests\\AssertTest::testCustomMessage with data set #91": "fails after migration (a migrate limitation)",
+                "Webmozart\\Assert\\Tests\\AssertTest::testLazyMessageCallbackCalled with data set #433": "fails after migration (a migrate limitation)",
+                "Webmozart\\Assert\\Tests\\AssertTest::testLazyMessageCallbackCalled with data set #435": "fails after migration (a migrate limitation)",
+                "Webmozart\\Assert\\Tests\\AssertTest::testLazyMessageCallbackCalled with data set #436": "fails after migration (a migrate limitation)",
+                "Webmozart\\Assert\\Tests\\AssertTest::testLazyMessageCallbackCalled with data set #438": "fails after migration (a migrate limitation)",
+                "Webmozart\\Assert\\Tests\\AssertTest::testLazyMessageCallbackCalled with data set #440": "fails after migration (a migrate limitation)",
+                "Webmozart\\Assert\\Tests\\AssertTest::testLazyMessageCallbackCalled with data set #91": "fails after migration (a migrate limitation)",
+                "Webmozart\\Assert\\Tests\\AssertTest::testNullOr with data set #433": "fails after migration (a migrate limitation)",
+                "Webmozart\\Assert\\Tests\\AssertTest::testNullOr with data set #435": "fails after migration (a migrate limitation)",
+                "Webmozart\\Assert\\Tests\\AssertTest::testNullOr with data set #436": "fails after migration (a migrate limitation)",
+                "Webmozart\\Assert\\Tests\\AssertTest::testNullOr with data set #438": "fails after migration (a migrate limitation)",
+                "Webmozart\\Assert\\Tests\\AssertTest::testNullOr with data set #440": "fails after migration (a migrate limitation)",
+                "Webmozart\\Assert\\Tests\\AssertTest::testNullOr with data set #91": "fails after migration (a migrate limitation)"
+            },
+            "versions": {
+                "phpunit": "PHPUnit 11.5.50 by Sebastian Bergmann and contributors.",
+                "paratest": "ParaTest v7.8.5",
+                "microunit": "microunit 1.0.0 (PHP 8.6.0)"
+            }
+        },
+        "commonmark": {
+            "project": {
+                "slug": "commonmark",
+                "name": "league/commonmark",
+                "repo": "https://github.com/thephpleague/commonmark",
+                "tag": "2.10.7",
+                "sha": "8eb53e906fd60c67038d22f1f1cab420ed58b8be",
+                "tests": "tests",
+                "file": "tests/functional/Extension/Footnote/FootnoteExtensionTest.php",
+                "phpArguments": [
+                    "-d",
+                    "memory_limit=-1"
+                ],
+                "setup": [
+                    "git clone --depth 1 --branch 2.10.7 -c core.autocrlf=false https://github.com/thephpleague/commonmark commonmark",
+                    "composer install"
+                ],
+                "paratestSetup": [
+                    "copy the checkout above to ../projects-paratest/commonmark",
+                    "composer require --dev brianium/paratest:7.29.0 phpunit/phpunit:13.4.7 -W"
+                ],
+                "tools": {
+                    "phpunit": {
+                        "dir": ".",
+                        "command": [
+                            "vendor/bin/phpunit",
+                            "--no-progress",
+                            "--no-coverage"
+                        ]
+                    },
+                    "paratest": {
+                        "dir": "../../projects-paratest/commonmark",
+                        "command": [
+                            "vendor/bin/paratest",
+                            "--processes={workers}",
+                            "--no-coverage"
+                        ]
+                    },
+                    "microunit": {
+                        "dir": ".",
+                        "command": [
+                            "{microunit}",
+                            "--no-colors",
+                            "--no-agent"
+                        ]
+                    }
+                }
+            },
+            "summary": {
+                "suite": {
+                    "valid": true,
+                    "testCounts": {
+                        "phpunit": 4340,
+                        "microunit": 4340
+                    },
+                    "problems": [],
+                    "tools": {
+                        "phpunit": {
+                            "seconds": {
+                                "runs": 5,
+                                "median": 1.9216,
+                                "mean": 1.9509,
+                                "standardDeviation": 0.1156,
+                                "coefficientOfVariation": 0.0592,
+                                "minimum": 1.8126,
+                                "p90": 2.0774,
+                                "maximum": 2.0774
+                            },
+                            "peakMemoryMiB": {
+                                "runs": 5,
+                                "median": 92.6953,
+                                "mean": 92.7055,
+                                "standardDeviation": 0.1835,
+                                "coefficientOfVariation": 0.002,
+                                "minimum": 92.5469,
+                                "p90": 92.9961,
+                                "maximum": 92.9961
+                            },
+                            "exitCodes": [
+                                0
+                            ],
+                            "command": "vendor/bin/phpunit --no-progress --no-coverage --filter=/^(?!(?:League\\\\CommonMark\\\\Tests\\\\Functional\\\\Extension\\\\DefaultAttributes\\\\DefaultAttributesConfigurationTest::(?:testInvalidAttributeMapIsRejecte..."
+                        },
+                        "microunit": {
+                            "seconds": {
+                                "runs": 5,
+                                "median": 0.8159,
+                                "mean": 0.83,
+                                "standardDeviation": 0.0468,
+                                "coefficientOfVariation": 0.0564,
+                                "minimum": 0.8016,
+                                "p90": 0.9129,
+                                "maximum": 0.9129
+                            },
+                            "peakMemoryMiB": {
+                                "runs": 5,
+                                "median": 49.9375,
+                                "mean": 49.9336,
+                                "standardDeviation": 0.0423,
+                                "coefficientOfVariation": 0.0008,
+                                "minimum": 49.8789,
+                                "p90": 49.9961,
+                                "maximum": 49.9961
+                            },
+                            "exitCodes": [
+                                0
+                            ],
+                            "command": "vendor/bin/microunit --no-colors --no-agent --filter=/^(?!(?:DefaultAttributesConfiguration\\:\\:invalid_attribute_map_is_rejected|DefaultAttributesExtension\\:\\:colliding_string_in_legacy_mode_names_the_..."
+                        }
+                    }
+                },
+                "parallel": {
+                    "valid": true,
+                    "testCounts": {
+                        "paratest": 4340,
+                        "microunit": 4340
+                    },
+                    "problems": [],
+                    "tools": {
+                        "paratest": {
+                            "seconds": {
+                                "runs": 5,
+                                "median": 3.7043,
+                                "mean": 3.7381,
+                                "standardDeviation": 0.1252,
+                                "coefficientOfVariation": 0.0335,
+                                "minimum": 3.6135,
+                                "p90": 3.9198,
+                                "maximum": 3.9198
+                            },
+                            "peakMemoryMiB": {
+                                "runs": 5,
+                                "median": 70.1211,
+                                "mean": 70.1141,
+                                "standardDeviation": 0.4733,
+                                "coefficientOfVariation": 0.0068,
+                                "minimum": 69.5742,
+                                "p90": 70.6719,
+                                "maximum": 70.6719
+                            },
+                            "exitCodes": [
+                                0
+                            ],
+                            "command": "vendor/bin/paratest --processes=4 --no-coverage --filter=/^(?!(?:League\\\\CommonMark\\\\Tests\\\\Functional\\\\Extension\\\\DefaultAttributes\\\\DefaultAttributesConfigurationTest::(?:testInvalidAttributeMapIsRejecte..."
+                        },
+                        "microunit": {
+                            "seconds": {
+                                "runs": 5,
+                                "median": 0.9114,
+                                "mean": 0.8814,
+                                "standardDeviation": 0.0606,
+                                "coefficientOfVariation": 0.0687,
+                                "minimum": 0.8172,
+                                "p90": 0.9493,
+                                "maximum": 0.9493
+                            },
+                            "peakMemoryMiB": {
+                                "runs": 5,
+                                "median": 47.957,
+                                "mean": 47.9414,
+                                "standardDeviation": 0.0398,
+                                "coefficientOfVariation": 0.0008,
+                                "minimum": 47.8711,
+                                "p90": 47.9648,
+                                "maximum": 47.9648
+                            },
+                            "exitCodes": [
+                                0
+                            ],
+                            "command": "vendor/bin/microunit --no-colors --no-agent --filter=/^(?!(?:DefaultAttributesConfiguration\\:\\:invalid_attribute_map_is_rejected|DefaultAttributesExtension\\:\\:colliding_string_in_legacy_mode_names_the_... --parallel=4"
+                        }
+                    }
+                },
+                "file": {
+                    "valid": true,
+                    "testCounts": {
+                        "phpunit": 11,
+                        "microunit": 11
+                    },
+                    "problems": [],
+                    "tools": {
+                        "phpunit": {
+                            "seconds": {
+                                "runs": 5,
+                                "median": 0.4076,
+                                "mean": 0.4263,
+                                "standardDeviation": 0.0463,
+                                "coefficientOfVariation": 0.1086,
+                                "minimum": 0.3908,
+                                "p90": 0.5024,
+                                "maximum": 0.5024
+                            },
+                            "peakMemoryMiB": {
+                                "runs": 5,
+                                "median": 52.2734,
+                                "mean": 52.2594,
+                                "standardDeviation": 0.0434,
+                                "coefficientOfVariation": 0.0008,
+                                "minimum": 52.2031,
+                                "p90": 52.3086,
+                                "maximum": 52.3086
+                            },
+                            "exitCodes": [
+                                0
+                            ],
+                            "command": "vendor/bin/phpunit --no-progress --no-coverage --filter=/^(?!(?:League\\\\CommonMark\\\\Tests\\\\Functional\\\\Extension\\\\DefaultAttributes\\\\DefaultAttributesConfigurationTest::(?:testInvalidAttributeMapIsRejecte... tests/functional/Extension/Footnote/FootnoteExtensionTest.php"
+                        },
+                        "microunit": {
+                            "seconds": {
+                                "runs": 5,
+                                "median": 0.1247,
+                                "mean": 0.1277,
+                                "standardDeviation": 0.0077,
+                                "coefficientOfVariation": 0.0606,
+                                "minimum": 0.1234,
+                                "p90": 0.1415,
+                                "maximum": 0.1415
+                            },
+                            "peakMemoryMiB": {
+                                "runs": 5,
+                                "median": 30.7031,
+                                "mean": 30.7078,
+                                "standardDeviation": 0.0334,
+                                "coefficientOfVariation": 0.0011,
+                                "minimum": 30.6719,
+                                "p90": 30.7422,
+                                "maximum": 30.7422
+                            },
+                            "exitCodes": [
+                                0
+                            ],
+                            "command": "vendor/bin/microunit --no-colors --no-agent --filter=/^(?!(?:DefaultAttributesConfiguration\\:\\:invalid_attribute_map_is_rejected|DefaultAttributesExtension\\:\\:colliding_string_in_legacy_mode_names_the_... tests-microunit/functional/Extension/Footnote/FootnoteExtensionTest.php"
+                        }
+                    }
+                },
+                "startup": {
+                    "valid": true,
+                    "testCounts": {
+                        "phpunit": null,
+                        "microunit": 0
+                    },
+                    "problems": [],
+                    "tools": {
+                        "phpunit": {
+                            "seconds": {
+                                "runs": 5,
+                                "median": 0.7375,
+                                "mean": 0.7218,
+                                "standardDeviation": 0.0491,
+                                "coefficientOfVariation": 0.0681,
+                                "minimum": 0.6436,
+                                "p90": 0.7694,
+                                "maximum": 0.7694
+                            },
+                            "peakMemoryMiB": {
+                                "runs": 5,
+                                "median": 78.8945,
+                                "mean": 78.8969,
+                                "standardDeviation": 0.0269,
+                                "coefficientOfVariation": 0.0003,
+                                "minimum": 78.8594,
+                                "p90": 78.9336,
+                                "maximum": 78.9336
+                            },
+                            "exitCodes": [
+                                1
+                            ],
+                            "command": "vendor/bin/phpunit --no-progress --no-coverage --filter=/^no_test_has_this_name$/"
+                        },
+                        "microunit": {
+                            "seconds": {
+                                "runs": 5,
+                                "median": 0.2364,
+                                "mean": 0.2284,
+                                "standardDeviation": 0.0225,
+                                "coefficientOfVariation": 0.0986,
+                                "minimum": 0.2044,
+                                "p90": 0.2487,
+                                "maximum": 0.2487
+                            },
+                            "peakMemoryMiB": {
+                                "runs": 5,
+                                "median": 38.2813,
+                                "mean": 38.2969,
+                                "standardDeviation": 0.0373,
+                                "coefficientOfVariation": 0.001,
+                                "minimum": 38.2539,
+                                "p90": 38.3398,
+                                "maximum": 38.3398
+                            },
+                            "exitCodes": [
+                                0
+                            ],
+                            "command": "vendor/bin/microunit --no-colors --no-agent --filter=/^no_test_has_this_name$/"
+                        }
+                    }
+                }
+            },
+            "excluded": {
+                "League\\CommonMark\\Tests\\Functional\\Extension\\DefaultAttributes\\DefaultAttributesConfigurationTest::testInvalidAttributeMapIsRejected": "not migrated automatically: line 142: calls $this->expectExceptionMessageMatches() somewhere migrate cannot wrap (only at the top level of a test).",
+                "League\\CommonMark\\Tests\\Functional\\Extension\\DefaultAttributes\\DefaultAttributesExtensionTest::testCollidingStringInLegacyModeNamesTheConfiguration": "not migrated automatically: line 111: calls $this->expectException() somewhere migrate cannot wrap (only at the top level of a test).",
+                "League\\CommonMark\\Tests\\Functional\\Extension\\DescriptionList\\DescriptionListSpecTest::testSpecExample with data set \"Description List Spec #0\"": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Functional\\Extension\\DescriptionList\\DescriptionListSpecTest::testSpecExample with data set \"Description List Spec #1\"": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Functional\\Extension\\DescriptionList\\DescriptionListSpecTest::testSpecExample with data set \"Description List Spec #10\"": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Functional\\Extension\\DescriptionList\\DescriptionListSpecTest::testSpecExample with data set \"Description List Spec #11\"": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Functional\\Extension\\DescriptionList\\DescriptionListSpecTest::testSpecExample with data set \"Description List Spec #12\"": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Functional\\Extension\\DescriptionList\\DescriptionListSpecTest::testSpecExample with data set \"Description List Spec #13\"": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Functional\\Extension\\DescriptionList\\DescriptionListSpecTest::testSpecExample with data set \"Description List Spec #14\"": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Functional\\Extension\\DescriptionList\\DescriptionListSpecTest::testSpecExample with data set \"Description List Spec #2\"": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Functional\\Extension\\DescriptionList\\DescriptionListSpecTest::testSpecExample with data set \"Description List Spec #3\"": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Functional\\Extension\\DescriptionList\\DescriptionListSpecTest::testSpecExample with data set \"Description List Spec #4\"": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Functional\\Extension\\DescriptionList\\DescriptionListSpecTest::testSpecExample with data set \"Description List Spec #5\"": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Functional\\Extension\\DescriptionList\\DescriptionListSpecTest::testSpecExample with data set \"Description List Spec #6\"": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Functional\\Extension\\DescriptionList\\DescriptionListSpecTest::testSpecExample with data set \"Description List Spec #7\"": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Functional\\Extension\\DescriptionList\\DescriptionListSpecTest::testSpecExample with data set \"Description List Spec #8\"": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Functional\\Extension\\DescriptionList\\DescriptionListSpecTest::testSpecExample with data set \"Description List Spec #9\"": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Functional\\Extension\\Footnote\\FootnoteSpecTest::testSpecExample with data set \"Footnotes Spec #0\"": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Functional\\Extension\\Footnote\\FootnoteSpecTest::testSpecExample with data set \"Footnotes Spec #1\"": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Functional\\Extension\\Footnote\\FootnoteSpecTest::testSpecExample with data set \"Footnotes Spec #2\"": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Functional\\Extension\\Footnote\\FootnoteSpecTest::testSpecExample with data set \"Footnotes Spec #3\"": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Functional\\Extension\\Footnote\\FootnoteSpecTest::testSpecExample with data set \"Footnotes Spec #4\"": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Functional\\Extension\\Footnote\\FootnoteSpecTest::testSpecExample with data set \"Footnotes Spec #5\"": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Functional\\Extension\\Footnote\\FootnoteSpecTest::testSpecExample with data set \"Footnotes Spec #6\"": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Functional\\Extension\\Footnote\\FootnoteSpecTest::testSpecExample with data set \"Footnotes Spec #7\"": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Functional\\Extension\\Footnote\\FootnoteSpecTest::testSpecExample with data set \"Footnotes Spec #8\"": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Functional\\Extension\\Footnote\\FootnoteSpecTest::testSpecExample with data set \"Footnotes Spec #9\"": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Functional\\Extension\\GithubFlavoredMarkdownExtensionTest::testSpecExample with data set \"Autolinks (extension) #620\"": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Functional\\Extension\\GithubFlavoredMarkdownExtensionTest::testSpecExample with data set \"Autolinks (extension) #621\"": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Functional\\Extension\\GithubFlavoredMarkdownExtensionTest::testSpecExample with data set \"Autolinks (extension) #622\"": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Functional\\Extension\\GithubFlavoredMarkdownExtensionTest::testSpecExample with data set \"Autolinks (extension) #623\"": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Functional\\Extension\\GithubFlavoredMarkdownExtensionTest::testSpecExample with data set \"Autolinks (extension) #624\"": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Functional\\Extension\\GithubFlavoredMarkdownExtensionTest::testSpecExample with data set \"Autolinks (extension) #625\"": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Functional\\Extension\\GithubFlavoredMarkdownExtensionTest::testSpecExample with data set \"Autolinks (extension) #626\"": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Functional\\Extension\\GithubFlavoredMarkdownExtensionTest::testSpecExample with data set \"Autolinks (extension) #627\"": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Functional\\Extension\\GithubFlavoredMarkdownExtensionTest::testSpecExample with data set \"Autolinks (extension) #628\"": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Functional\\Extension\\GithubFlavoredMarkdownExtensionTest::testSpecExample with data set \"Autolinks (extension) #629\"": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Functional\\Extension\\GithubFlavoredMarkdownExtensionTest::testSpecExample with data set \"Autolinks (extension) #630\"": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Functional\\Extension\\GithubFlavoredMarkdownExtensionTest::testSpecExample with data set \"Disallowed Raw HTML (extension) #651\"": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Functional\\Extension\\GithubFlavoredMarkdownExtensionTest::testSpecExample with data set \"Strikethrough (extension) #490\"": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Functional\\Extension\\GithubFlavoredMarkdownExtensionTest::testSpecExample with data set \"Strikethrough (extension) #491\"": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Functional\\Extension\\GithubFlavoredMarkdownExtensionTest::testSpecExample with data set \"Tables (extension) #197\"": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Functional\\Extension\\GithubFlavoredMarkdownExtensionTest::testSpecExample with data set \"Tables (extension) #198\"": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Functional\\Extension\\GithubFlavoredMarkdownExtensionTest::testSpecExample with data set \"Tables (extension) #199\"": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Functional\\Extension\\GithubFlavoredMarkdownExtensionTest::testSpecExample with data set \"Tables (extension) #200\"": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Functional\\Extension\\GithubFlavoredMarkdownExtensionTest::testSpecExample with data set \"Tables (extension) #201\"": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Functional\\Extension\\GithubFlavoredMarkdownExtensionTest::testSpecExample with data set \"Tables (extension) #202\"": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Functional\\Extension\\GithubFlavoredMarkdownExtensionTest::testSpecExample with data set \"Tables (extension) #203\"": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Functional\\Extension\\GithubFlavoredMarkdownExtensionTest::testSpecExample with data set \"Tables (extension) #204\"": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Functional\\Extension\\GithubFlavoredMarkdownExtensionTest::testSpecExample with data set \"Task list items (extension) #278\"": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Functional\\Extension\\GithubFlavoredMarkdownExtensionTest::testSpecExample with data set \"Task list items (extension) #279\"": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Functional\\Extension\\InlinesOnly\\InlinesOnlyFunctionalTest::testExample with data set #0": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Functional\\Extension\\SmartPunct\\SmartPunctFunctionalTest::testSpecExample with data set \"Existing formatted quotes should be preserved (issue #1030)\"": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Functional\\Extension\\SmartPunct\\SmartPunctFunctionalTest::testSpecExample with data set \"Smart punctuation #0\"": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Functional\\Extension\\SmartPunct\\SmartPunctFunctionalTest::testSpecExample with data set \"Smart punctuation #1\"": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Functional\\Extension\\SmartPunct\\SmartPunctFunctionalTest::testSpecExample with data set \"Smart punctuation #10\"": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Functional\\Extension\\SmartPunct\\SmartPunctFunctionalTest::testSpecExample with data set \"Smart punctuation #11\"": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Functional\\Extension\\SmartPunct\\SmartPunctFunctionalTest::testSpecExample with data set \"Smart punctuation #12\"": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Functional\\Extension\\SmartPunct\\SmartPunctFunctionalTest::testSpecExample with data set \"Smart punctuation #13\"": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Functional\\Extension\\SmartPunct\\SmartPunctFunctionalTest::testSpecExample with data set \"Smart punctuation #14\"": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Functional\\Extension\\SmartPunct\\SmartPunctFunctionalTest::testSpecExample with data set \"Smart punctuation #2\"": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Functional\\Extension\\SmartPunct\\SmartPunctFunctionalTest::testSpecExample with data set \"Smart punctuation #3\"": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Functional\\Extension\\SmartPunct\\SmartPunctFunctionalTest::testSpecExample with data set \"Smart punctuation #4\"": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Functional\\Extension\\SmartPunct\\SmartPunctFunctionalTest::testSpecExample with data set \"Smart punctuation #5\"": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Functional\\Extension\\SmartPunct\\SmartPunctFunctionalTest::testSpecExample with data set \"Smart punctuation #6\"": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Functional\\Extension\\SmartPunct\\SmartPunctFunctionalTest::testSpecExample with data set \"Smart punctuation #7\"": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Functional\\Extension\\SmartPunct\\SmartPunctFunctionalTest::testSpecExample with data set \"Smart punctuation #8\"": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Functional\\Extension\\SmartPunct\\SmartPunctFunctionalTest::testSpecExample with data set \"Smart punctuation #9\"": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Functional\\Extension\\SmartPunct\\SmartPunctFunctionalTest::testSpecExample with data set \"already-formatted quotes are kept as-is\"": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Unit\\Environment\\EnvironmentTest::testDispatchDelegatesToProvidedDispatcher": "not migrated automatically: line 470: reads $this->dispatchersCalled, which is not a property of the class. line 475: reads $this->dispatchersCalled, which is not a property of the class.",
+                "League\\CommonMark\\Tests\\Unit\\Environment\\EnvironmentTest::testMergeConfig": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Unit\\Extension\\CommonMark\\Parser\\Block\\ListBlockStartParserTest::testOrderedListStartingAtOne": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Unit\\Extension\\CommonMark\\Parser\\Block\\ListBlockStartParserTest::testOrderedListStartingAtTwo": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Unit\\Extension\\CommonMark\\Parser\\Block\\ListBlockStartParserTest::testUnorderedListWithAsteriskMarker": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Unit\\Extension\\CommonMark\\Parser\\Block\\ListBlockStartParserTest::testUnorderedListWithCustomMarker": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Unit\\Extension\\CommonMark\\Parser\\Block\\ListBlockStartParserTest::testUnorderedListWithDashMarker": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Unit\\Extension\\CommonMark\\Parser\\Block\\ListBlockStartParserTest::testUnorderedListWithPlusMarker": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Unit\\Parser\\CursorTest::testBytePositionMapHasBoundedMemoryOverhead": "not migrated automatically: runs in a separate process.",
+                "League\\CommonMark\\Tests\\Unit\\Parser\\InlineParserEngineTest::testMultibyteDetectionRegressionFromIssue951": "not migrated automatically: runs in a separate process.",
+                "League\\CommonMark\\Tests\\Unit\\Util\\RegexHelperTest::testAttribute": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Unit\\Util\\RegexHelperTest::testAttributeName": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Unit\\Util\\RegexHelperTest::testAttributeValue": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Unit\\Util\\RegexHelperTest::testAttributeValueSpec": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Unit\\Util\\RegexHelperTest::testBlockTagName": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Unit\\Util\\RegexHelperTest::testCDATA": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Unit\\Util\\RegexHelperTest::testCloseBlockTag": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Unit\\Util\\RegexHelperTest::testCloseTag": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Unit\\Util\\RegexHelperTest::testDeclaration": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Unit\\Util\\RegexHelperTest::testDoubleQuotedValue": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Unit\\Util\\RegexHelperTest::testEscapable": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Unit\\Util\\RegexHelperTest::testEscapedChar": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Unit\\Util\\RegexHelperTest::testHtmlBlockOpen": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Unit\\Util\\RegexHelperTest::testHtmlComment": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Unit\\Util\\RegexHelperTest::testHtmlTag": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Unit\\Util\\RegexHelperTest::testInDoubleQuotes": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Unit\\Util\\RegexHelperTest::testInParens": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Unit\\Util\\RegexHelperTest::testInParensNoSp": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Unit\\Util\\RegexHelperTest::testInSingleQuotes": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Unit\\Util\\RegexHelperTest::testLinkTitle": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Unit\\Util\\RegexHelperTest::testOpenBlockTag": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Unit\\Util\\RegexHelperTest::testOpenTag": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Unit\\Util\\RegexHelperTest::testProcessingInstruction": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Unit\\Util\\RegexHelperTest::testRegChar": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Unit\\Util\\RegexHelperTest::testSingleQuotedValue": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Unit\\Util\\RegexHelperTest::testTagname": "fails after migration (a migrate limitation)",
+                "League\\CommonMark\\Tests\\Unit\\Util\\RegexHelperTest::testUnquotedValue": "fails after migration (a migrate limitation)"
+            },
+            "versions": {
+                "phpunit": "PHPUnit 13.4.7 by Sebastian Bergmann and contributors.",
+                "paratest": "ParaTest v7.29.0",
+                "microunit": "microunit 1.0.0 (PHP 8.6.0)"
+            }
+        },
+        "yaml": {
+            "project": {
+                "slug": "yaml",
+                "name": "symfony/yaml",
+                "repo": "https://github.com/symfony/yaml",
+                "tag": "v8.1.11",
+                "sha": "e8266f55160f674f290a5f567cb55e11e21f921b",
+                "tests": "Tests",
+                "file": "Tests/InlineTest.php",
+                "phpArguments": [
+                    "-d",
+                    "memory_limit=-1"
+                ],
+                "setup": [
+                    "git clone --depth 1 --branch v8.1.11 -c core.autocrlf=false https://github.com/symfony/yaml yaml",
+                    "composer require --dev phpunit/phpunit:^13.1 symfony/phpunit-bridge:^8.1",
+                    "composer update --prefer-stable"
+                ],
+                "paratestSetup": [
+                    "copy the checkout above to ../projects-paratest/yaml",
+                    "composer require --dev brianium/paratest:7.29.0 phpunit/phpunit:13.4.7 -W",
+                    "remove the two <method>Doctrine\\Deprecations\\Deprecation::...</method> lines from phpunit.xml.dist"
+                ],
+                "notes": [
+                    "The component ships without PHPUnit (the Symfony monorepo provides it), so PHPUnit and the PHPUnit bridge are added as dev dependencies.",
+                    "phpunit.xml.dist names two Doctrine methods as deprecation triggers with ignoreUndefinedTriggers=\"true\". Doctrine is not installed, so PHPUnit ignores them; ParaTest 7.29's workers assert that they exist and crash. The ParaTest copy drops the two lines, which leaves its effective configuration identical to PHPUnit's."
+                ],
+                "tools": {
+                    "phpunit": {
+                        "dir": ".",
+                        "command": [
+                            "vendor/bin/phpunit",
+                            "--no-progress"
+                        ]
+                    },
+                    "paratest": {
+                        "dir": "../../projects-paratest/yaml",
+                        "command": [
+                            "vendor/bin/paratest",
+                            "--processes={workers}"
+                        ]
+                    },
+                    "microunit": {
+                        "dir": ".",
+                        "command": [
+                            "{microunit}",
+                            "--no-colors",
+                            "--no-agent"
+                        ]
+                    }
+                }
+            },
+            "summary": {
+                "suite": {
+                    "valid": true,
+                    "testCounts": {
+                        "phpunit": 1427,
+                        "microunit": 1427
+                    },
+                    "problems": [],
+                    "tools": {
+                        "phpunit": {
+                            "seconds": {
+                                "runs": 5,
+                                "median": 1.6352,
+                                "mean": 1.922,
+                                "standardDeviation": 0.6152,
+                                "coefficientOfVariation": 0.3201,
+                                "minimum": 1.5355,
+                                "p90": 3.0043,
+                                "maximum": 3.0043
+                            },
+                            "peakMemoryMiB": {
+                                "runs": 5,
+                                "median": 67.7891,
+                                "mean": 67.7891,
+                                "standardDeviation": 0.0346,
+                                "coefficientOfVariation": 0.0005,
+                                "minimum": 67.7461,
+                                "p90": 67.832,
+                                "maximum": 67.832
+                            },
+                            "exitCodes": [
+                                0
+                            ],
+                            "command": "vendor/bin/phpunit --no-progress"
+                        },
+                        "microunit": {
+                            "seconds": {
+                                "runs": 5,
+                                "median": 0.9407,
+                                "mean": 1.033,
+                                "standardDeviation": 0.2141,
+                                "coefficientOfVariation": 0.2072,
+                                "minimum": 0.8336,
+                                "p90": 1.3548,
+                                "maximum": 1.3548
+                            },
+                            "peakMemoryMiB": {
+                                "runs": 5,
+                                "median": 45.8086,
+                                "mean": 45.8063,
+                                "standardDeviation": 0.0317,
+                                "coefficientOfVariation": 0.0007,
+                                "minimum": 45.7695,
+                                "p90": 45.8477,
+                                "maximum": 45.8477
+                            },
+                            "exitCodes": [
+                                0
+                            ],
+                            "command": "vendor/bin/microunit --no-colors --no-agent"
+                        }
+                    }
+                },
+                "parallel": {
+                    "valid": true,
+                    "testCounts": {
+                        "paratest": 1427,
+                        "microunit": 1427
+                    },
+                    "problems": [],
+                    "tools": {
+                        "paratest": {
+                            "seconds": {
+                                "runs": 5,
+                                "median": 1.5024,
+                                "mean": 1.5059,
+                                "standardDeviation": 0.0437,
+                                "coefficientOfVariation": 0.029,
+                                "minimum": 1.4448,
+                                "p90": 1.5511,
+                                "maximum": 1.5511
+                            },
+                            "peakMemoryMiB": {
+                                "runs": 5,
+                                "median": 50.6758,
+                                "mean": 50.6734,
+                                "standardDeviation": 0.015,
+                                "coefficientOfVariation": 0.0003,
+                                "minimum": 50.6563,
+                                "p90": 50.6914,
+                                "maximum": 50.6914
+                            },
+                            "exitCodes": [
+                                0
+                            ],
+                            "command": "vendor/bin/paratest --processes=4"
+                        },
+                        "microunit": {
+                            "seconds": {
+                                "runs": 5,
+                                "median": 1.0405,
+                                "mean": 1.0415,
+                                "standardDeviation": 0.0672,
+                                "coefficientOfVariation": 0.0645,
+                                "minimum": 0.9682,
+                                "p90": 1.1473,
+                                "maximum": 1.1473
+                            },
+                            "peakMemoryMiB": {
+                                "runs": 5,
+                                "median": 35.1367,
+                                "mean": 35.1359,
+                                "standardDeviation": 0.0112,
+                                "coefficientOfVariation": 0.0003,
+                                "minimum": 35.1211,
+                                "p90": 35.1523,
+                                "maximum": 35.1523
+                            },
+                            "exitCodes": [
+                                0
+                            ],
+                            "command": "vendor/bin/microunit --no-colors --no-agent --parallel=4"
+                        }
+                    }
+                },
+                "file": {
+                    "valid": true,
+                    "testCounts": {
+                        "phpunit": 423,
+                        "microunit": 423
+                    },
+                    "problems": [],
+                    "tools": {
+                        "phpunit": {
+                            "seconds": {
+                                "runs": 5,
+                                "median": 0.7753,
+                                "mean": 0.7751,
+                                "standardDeviation": 0.0123,
+                                "coefficientOfVariation": 0.0158,
+                                "minimum": 0.7573,
+                                "p90": 0.7887,
+                                "maximum": 0.7887
+                            },
+                            "peakMemoryMiB": {
+                                "runs": 5,
+                                "median": 57.2188,
+                                "mean": 57.2156,
+                                "standardDeviation": 0.0275,
+                                "coefficientOfVariation": 0.0005,
+                                "minimum": 57.1836,
+                                "p90": 57.2539,
+                                "maximum": 57.2539
+                            },
+                            "exitCodes": [
+                                0
+                            ],
+                            "command": "vendor/bin/phpunit --no-progress Tests/InlineTest.php"
+                        },
+                        "microunit": {
+                            "seconds": {
+                                "runs": 5,
+                                "median": 0.3939,
+                                "mean": 0.3985,
+                                "standardDeviation": 0.0092,
+                                "coefficientOfVariation": 0.0231,
+                                "minimum": 0.3895,
+                                "p90": 0.4088,
+                                "maximum": 0.4088
+                            },
+                            "peakMemoryMiB": {
+                                "runs": 5,
+                                "median": 37.0078,
+                                "mean": 37.0047,
+                                "standardDeviation": 0.0182,
+                                "coefficientOfVariation": 0.0005,
+                                "minimum": 36.9805,
+                                "p90": 37.0234,
+                                "maximum": 37.0234
+                            },
+                            "exitCodes": [
+                                0
+                            ],
+                            "command": "vendor/bin/microunit --no-colors --no-agent tests-microunit/InlineTest.php"
+                        }
+                    }
+                },
+                "startup": {
+                    "valid": true,
+                    "testCounts": {
+                        "phpunit": null,
+                        "microunit": 0
+                    },
+                    "problems": [],
+                    "tools": {
+                        "phpunit": {
+                            "seconds": {
+                                "runs": 5,
+                                "median": 0.6014,
+                                "mean": 0.5831,
+                                "standardDeviation": 0.0331,
+                                "coefficientOfVariation": 0.0567,
+                                "minimum": 0.5447,
+                                "p90": 0.6112,
+                                "maximum": 0.6112
+                            },
+                            "peakMemoryMiB": {
+                                "runs": 5,
+                                "median": 56.0234,
+                                "mean": 56.0016,
+                                "standardDeviation": 0.0433,
+                                "coefficientOfVariation": 0.0008,
+                                "minimum": 55.9375,
+                                "p90": 56.0391,
+                                "maximum": 56.0391
+                            },
+                            "exitCodes": [
+                                1
+                            ],
+                            "command": "vendor/bin/phpunit --no-progress --filter=/^no_test_has_this_name$/"
+                        },
+                        "microunit": {
+                            "seconds": {
+                                "runs": 5,
+                                "median": 0.2198,
+                                "mean": 0.2163,
+                                "standardDeviation": 0.0071,
+                                "coefficientOfVariation": 0.0327,
+                                "minimum": 0.2037,
+                                "p90": 0.2199,
+                                "maximum": 0.2199
+                            },
+                            "peakMemoryMiB": {
+                                "runs": 5,
+                                "median": 31.6563,
+                                "mean": 31.6664,
+                                "standardDeviation": 0.0357,
+                                "coefficientOfVariation": 0.0011,
+                                "minimum": 31.6328,
+                                "p90": 31.7148,
+                                "maximum": 31.7148
+                            },
+                            "exitCodes": [
+                                0
+                            ],
+                            "command": "vendor/bin/microunit --no-colors --no-agent --filter=/^no_test_has_this_name$/"
+                        }
+                    }
+                }
+            },
+            "excluded": [],
+            "versions": {
+                "phpunit": "PHPUnit 13.4.7 by Sebastian Bergmann and contributors.",
+                "paratest": "ParaTest v7.29.0",
+                "microunit": "microunit 1.0.0 (PHP 8.6.0)"
+            }
+        },
+        "monolog": {
+            "project": {
+                "slug": "monolog",
+                "name": "monolog/monolog",
+                "repo": "https://github.com/Seldaek/monolog",
+                "tag": "3.13.0",
+                "sha": "1f5f55bb4a9a230ff6d8a4ceccea31d10b0142ac",
+                "tests": "tests",
+                "file": "tests/Monolog/Formatter/JsonFormatterTest.php",
+                "phpArguments": [
+                    "-d",
+                    "memory_limit=-1"
+                ],
+                "excludeClasses": {
+                    "Monolog\\Handler\\ProcessHandlerTest": "hangs on Windows (waits for a child process forever)",
+                    "Monolog\\Handler\\FrankenPhpHandlerE2ETest": "waits 20 s for a FrankenPHP server, then skips",
+                    "Monolog\\Handler\\RotatingFileHandlerTest::testRotationWithFolderByDate": "depends on the wall clock (fails when the hour changes during the run)"
+                },
+                "setup": [
+                    "git clone --depth 1 --branch 3.13.0 -c core.autocrlf=false https://github.com/Seldaek/monolog monolog",
+                    "composer install --ignore-platform-req=ext-mongodb"
+                ],
+                "paratestSetup": [
+                    "copy the checkout above to ../projects-paratest/monolog",
+                    "composer require --dev brianium/paratest:7.8.6 phpunit/phpunit:11.5.58 -W --ignore-platform-req=ext-mongodb"
+                ],
+                "tools": {
+                    "phpunit": {
+                        "dir": ".",
+                        "command": [
+                            "vendor/bin/phpunit",
+                            "--no-progress"
+                        ]
+                    },
+                    "paratest": {
+                        "dir": "../../projects-paratest/monolog",
+                        "command": [
+                            "vendor/bin/paratest",
+                            "--processes={workers}"
+                        ]
+                    },
+                    "microunit": {
+                        "dir": ".",
+                        "command": [
+                            "{microunit}",
+                            "--no-colors",
+                            "--no-agent"
+                        ]
+                    }
+                }
+            },
+            "summary": {
+                "suite": {
+                    "valid": true,
+                    "testCounts": {
+                        "phpunit": 1197,
+                        "microunit": 1197
+                    },
+                    "problems": [],
+                    "tools": {
+                        "phpunit": {
+                            "seconds": {
+                                "runs": 5,
+                                "median": 9.3104,
+                                "mean": 9.3836,
+                                "standardDeviation": 0.1606,
+                                "coefficientOfVariation": 0.0171,
+                                "minimum": 9.2355,
+                                "p90": 9.6392,
+                                "maximum": 9.6392
+                            },
+                            "peakMemoryMiB": {
+                                "runs": 5,
+                                "median": 366.1992,
+                                "mean": 366.2148,
+                                "standardDeviation": 0.0948,
+                                "coefficientOfVariation": 0.0003,
+                                "minimum": 366.0898,
+                                "p90": 366.3438,
+                                "maximum": 366.3438
+                            },
+                            "exitCodes": [
+                                2
+                            ],
+                            "command": "vendor/bin/phpunit --no-progress --filter=/^(?!(?:Monolog\\\\ErrorHandlerTest::(?:testCaptureStackTraces\\b|testFatalHandlerAttachesStackTrace\\b|testHandleError\\b)|Monolog\\\\Formatter\\\\JsonForma..."
+                        },
+                        "microunit": {
+                            "seconds": {
+                                "runs": 5,
+                                "median": 9.0037,
+                                "mean": 9.0888,
+                                "standardDeviation": 0.2216,
+                                "coefficientOfVariation": 0.0244,
+                                "minimum": 8.9594,
+                                "p90": 9.4824,
+                                "maximum": 9.4824
+                            },
+                            "peakMemoryMiB": {
+                                "runs": 5,
+                                "median": 354.9297,
+                                "mean": 354.9469,
+                                "standardDeviation": 0.0447,
+                                "coefficientOfVariation": 0.0001,
+                                "minimum": 354.8906,
+                                "p90": 355,
+                                "maximum": 355
+                            },
+                            "exitCodes": [
+                                0
+                            ],
+                            "command": "vendor/bin/microunit --no-colors --no-agent --filter=/^(?!(?:ErrorHandler\\:\\:handle_error|ErrorHandler\\:\\:capture_stack_traces|ErrorHandler\\:\\:fatal_handler_attaches_stack_trace|JsonFormatter\\:\\:base_p..."
+                        }
+                    }
+                },
+                "parallel": {
+                    "valid": true,
+                    "testCounts": {
+                        "paratest": 1197,
+                        "microunit": 1197
+                    },
+                    "problems": [],
+                    "tools": {
+                        "paratest": {
+                            "seconds": {
+                                "runs": 5,
+                                "median": 5.2172,
+                                "mean": 5.2159,
+                                "standardDeviation": 0.0139,
+                                "coefficientOfVariation": 0.0027,
+                                "minimum": 5.196,
+                                "p90": 5.234,
+                                "maximum": 5.234
+                            },
+                            "peakMemoryMiB": {
+                                "runs": 5,
+                                "median": 50.4023,
+                                "mean": 50.5109,
+                                "standardDeviation": 0.2278,
+                                "coefficientOfVariation": 0.0045,
+                                "minimum": 50.3047,
+                                "p90": 50.8281,
+                                "maximum": 50.8281
+                            },
+                            "exitCodes": [
+                                2
+                            ],
+                            "command": "vendor/bin/paratest --processes=4 --filter=/^(?!(?:Monolog\\\\ErrorHandlerTest::(?:testCaptureStackTraces\\b|testFatalHandlerAttachesStackTrace\\b|testHandleError\\b)|Monolog\\\\Formatter\\\\JsonForma..."
+                        },
+                        "microunit": {
+                            "seconds": {
+                                "runs": 5,
+                                "median": 4.6314,
+                                "mean": 4.6336,
+                                "standardDeviation": 0.012,
+                                "coefficientOfVariation": 0.0026,
+                                "minimum": 4.6201,
+                                "p90": 4.6493,
+                                "maximum": 4.6493
+                            },
+                            "peakMemoryMiB": {
+                                "runs": 5,
+                                "median": 38,
+                                "mean": 38.0031,
+                                "standardDeviation": 0.0338,
+                                "coefficientOfVariation": 0.0009,
+                                "minimum": 37.9648,
+                                "p90": 38.043,
+                                "maximum": 38.043
+                            },
+                            "exitCodes": [
+                                0
+                            ],
+                            "command": "vendor/bin/microunit --no-colors --no-agent --filter=/^(?!(?:ErrorHandler\\:\\:handle_error|ErrorHandler\\:\\:capture_stack_traces|ErrorHandler\\:\\:fatal_handler_attaches_stack_trace|JsonFormatter\\:\\:base_p... --parallel=4"
+                        }
+                    }
+                },
+                "file": {
+                    "valid": true,
+                    "testCounts": {
+                        "phpunit": 20,
+                        "microunit": 20
+                    },
+                    "problems": [],
+                    "tools": {
+                        "phpunit": {
+                            "seconds": {
+                                "runs": 5,
+                                "median": 0.157,
+                                "mean": 0.1612,
+                                "standardDeviation": 0.0065,
+                                "coefficientOfVariation": 0.0405,
+                                "minimum": 0.1559,
+                                "p90": 0.1692,
+                                "maximum": 0.1692
+                            },
+                            "peakMemoryMiB": {
+                                "runs": 5,
+                                "median": 34.3516,
+                                "mean": 34.3672,
+                                "standardDeviation": 0.0365,
+                                "coefficientOfVariation": 0.0011,
+                                "minimum": 34.3359,
+                                "p90": 34.4258,
+                                "maximum": 34.4258
+                            },
+                            "exitCodes": [
+                                0
+                            ],
+                            "command": "vendor/bin/phpunit --no-progress --filter=/^(?!(?:Monolog\\\\ErrorHandlerTest::(?:testCaptureStackTraces\\b|testFatalHandlerAttachesStackTrace\\b|testHandleError\\b)|Monolog\\\\Formatter\\\\JsonForma... tests/Monolog/Formatter/JsonFormatterTest.php"
+                        },
+                        "microunit": {
+                            "seconds": {
+                                "runs": 5,
+                                "median": 0.0929,
+                                "mean": 0.101,
+                                "standardDeviation": 0.0125,
+                                "coefficientOfVariation": 0.1242,
+                                "minimum": 0.0919,
+                                "p90": 0.1197,
+                                "maximum": 0.1197
+                            },
+                            "peakMemoryMiB": {
+                                "runs": 5,
+                                "median": 28.6602,
+                                "mean": 28.6648,
+                                "standardDeviation": 0.0302,
+                                "coefficientOfVariation": 0.0011,
+                                "minimum": 28.6367,
+                                "p90": 28.7109,
+                                "maximum": 28.7109
+                            },
+                            "exitCodes": [
+                                0
+                            ],
+                            "command": "vendor/bin/microunit --no-colors --no-agent --filter=/^(?!(?:ErrorHandler\\:\\:handle_error|ErrorHandler\\:\\:capture_stack_traces|ErrorHandler\\:\\:fatal_handler_attaches_stack_trace|JsonFormatter\\:\\:base_p... tests-microunit/Monolog/Formatter/JsonFormatterTest.php"
+                        }
+                    }
+                },
+                "startup": {
+                    "valid": true,
+                    "testCounts": {
+                        "phpunit": null,
+                        "microunit": 0
+                    },
+                    "problems": [],
+                    "tools": {
+                        "phpunit": {
+                            "seconds": {
+                                "runs": 5,
+                                "median": 0.2601,
+                                "mean": 0.2577,
+                                "standardDeviation": 0.0066,
+                                "coefficientOfVariation": 0.0258,
+                                "minimum": 0.2499,
+                                "p90": 0.2649,
+                                "maximum": 0.2649
+                            },
+                            "peakMemoryMiB": {
+                                "runs": 5,
+                                "median": 46.5898,
+                                "mean": 46.5703,
+                                "standardDeviation": 0.0545,
+                                "coefficientOfVariation": 0.0012,
+                                "minimum": 46.4844,
+                                "p90": 46.6172,
+                                "maximum": 46.6172
+                            },
+                            "exitCodes": [
+                                2
+                            ],
+                            "command": "vendor/bin/phpunit --no-progress --filter=/^no_test_has_this_name$/"
+                        },
+                        "microunit": {
+                            "seconds": {
+                                "runs": 5,
+                                "median": 0.1252,
+                                "mean": 0.1291,
+                                "standardDeviation": 0.0075,
+                                "coefficientOfVariation": 0.0582,
+                                "minimum": 0.1219,
+                                "p90": 0.1383,
+                                "maximum": 0.1383
+                            },
+                            "peakMemoryMiB": {
+                                "runs": 5,
+                                "median": 34.7813,
+                                "mean": 34.775,
+                                "standardDeviation": 0.0328,
+                                "coefficientOfVariation": 0.0009,
+                                "minimum": 34.7344,
+                                "p90": 34.8203,
+                                "maximum": 34.8203
+                            },
+                            "exitCodes": [
+                                0
+                            ],
+                            "command": "vendor/bin/microunit --no-colors --no-agent --filter=/^no_test_has_this_name$/"
+                        }
+                    }
+                }
+            },
+            "excluded": {
+                "Monolog\\ErrorHandlerTest::testCaptureStackTraces": "fails after migration (a migrate limitation)",
+                "Monolog\\ErrorHandlerTest::testFatalHandlerAttachesStackTrace": "fails under PHPUnit on this machine",
+                "Monolog\\ErrorHandlerTest::testHandleError": "fails under PHPUnit on this machine",
+                "Monolog\\Formatter\\JsonFormatterTest::testBasePathWithException": "fails under PHPUnit on this machine",
+                "Monolog\\Formatter\\JsonFormatterTest::testMaxNormalizeItemCountWith2ItemsMax": "fails under PHPUnit on this machine",
+                "Monolog\\Formatter\\LineFormatterTest::testBasePath": "fails after migration (a migrate limitation)",
+                "Monolog\\Formatter\\LineFormatterTest::testDefFormatWithException": "fails under PHPUnit on this machine",
+                "Monolog\\Formatter\\LineFormatterTest::testDefFormatWithExceptionAndStacktrace": "fails under PHPUnit on this machine",
+                "Monolog\\Formatter\\LineFormatterTest::testDefFormatWithExceptionAndStacktraceParserEmpty": "fails under PHPUnit on this machine",
+                "Monolog\\Formatter\\LineFormatterTest::testDefFormatWithExceptionAndStacktraceParserFull": "fails after migration (a migrate limitation)",
+                "Monolog\\Formatter\\LineFormatterTest::testDefFormatWithPreviousException": "fails under PHPUnit on this machine",
+                "Monolog\\Formatter\\LineFormatterTest::testFormatChangedAfterConstructionIsUsed": "not migrated automatically: line 140: reads $this->format, which is not a property of the class.",
+                "Monolog\\Formatter\\MongoDBFormatterTest::testConstruct": "a different number of tests (PHPUnit reports 1, the migrated test 2)",
+                "Monolog\\Formatter\\NormalizerFormatterTest::testExceptionTraceDoesNotLeakCallUserFuncArgs": "not migrated automatically: line 619: uses $this directly; there is no test case object in MicroUnit.",
+                "Monolog\\Formatter\\NormalizerFormatterTest::testExceptionTraceReportsFramesWithoutFileAndLine": "fails after migration (a migrate limitation)",
+                "Monolog\\Formatter\\NormalizerFormatterTest::testExceptionTraceReportsFramesWithoutFileAndLineOrClass": "fails after migration (a migrate limitation)",
+                "Monolog\\Formatter\\NormalizerFormatterTest::testExceptionTraceStripsTheBasePathFromFramesWithoutFileAndLine": "fails after migration (a migrate limitation)",
+                "Monolog\\Formatter\\NormalizerFormatterTest::testExceptionTraceWithArgs": "fails after migration (a migrate limitation)",
+                "Monolog\\Formatter\\NormalizerFormatterTest::testFormatExceptionWithBasePath": "fails under PHPUnit on this machine",
+                "Monolog\\Formatter\\NormalizerFormatterTest::testIgnoresRecursiveObjectReferences": "not migrated automatically: line 210: uses $this directly; there is no test case object in MicroUnit.",
+                "Monolog\\Formatter\\NormalizerFormatterTest::testToJsonIgnoresInvalidTypes": "not migrated automatically: line 244: uses $this directly; there is no test case object in MicroUnit.",
+                "Monolog\\Formatter\\RedactingFormatterTest::testCustomMask": "fails after migration (a migrate limitation)",
+                "Monolog\\Formatter\\RedactingFormatterTest::testKeyMatchingIsCaseInsensitive": "fails after migration (a migrate limitation)",
+                "Monolog\\Formatter\\RedactingFormatterTest::testRedactsSensitiveKeysInContextAndExtra": "fails after migration (a migrate limitation)",
+                "Monolog\\Formatter\\RedactingFormatterTest::testRedactsSensitiveKeysReturnedByJsonSerialize": "not migrated automatically: line 545: reads $this->value, which is not a property of the class.",
+                "Monolog\\Formatter\\RedactingFormatterTest::testSelfReferencingFormatterOutputDoesNotRecurseForever": "not migrated automatically: line 503: calls $this->format(), which is neither a helper of the class nor a PHPUnit assertion.",
+                "Monolog\\Handler\\BufferHandlerTest::testPropagatesRecordsAtEndOfRequest": "not migrated automatically: line 49: uses $this directly; there is no test case object in MicroUnit.",
+                "Monolog\\Handler\\DeduplicationHandlerTest::testFlushPassthruIfLogTooOld": "not migrated automatically: depends on another test (#[Depends]); MicroUnit tests are independent.",
+                "Monolog\\Handler\\DeduplicationHandlerTest::testFlushSkipsIfLogExists": "not migrated automatically: depends on another test (#[Depends]); MicroUnit tests are independent.",
+                "Monolog\\Handler\\DynamoDbHandlerTest::testGetFormatter": "fails after migration (a migrate limitation)",
+                "Monolog\\Handler\\DynamoDbHandlerTest::testHandle": "fails after migration (a migrate limitation)",
+                "Monolog\\Handler\\ElasticaHandlerTest::testConnectionErrors": "not migrated automatically: line 166: calls $this->expectException() somewhere migrate cannot wrap (only at the top level of a test). line 167: calls $this->expectExceptionMessage() somewhere migrate cannot wrap (only at the top level of a test).",
+                "Monolog\\Handler\\ElasticaHandlerTest::testHandle": "fails after migration (a migrate limitation)",
+                "Monolog\\Handler\\ElasticsearchHandlerTest::testConnectionErrors": "not migrated automatically: line 111: calls $this->expectException() somewhere migrate cannot wrap (only at the top level of a test). line 112: calls $this->expectExceptionMessage() somewhere migrate cannot wrap (only at the top level of a test).",
+                "Monolog\\Handler\\FlowdockHandlerTest::testWriteContent": "not migrated automatically: depends on another test (#[Depends]); MicroUnit tests are independent.",
+                "Monolog\\Handler\\FrankenPhpHandlerE2ETest": "waits 20 s for a FrankenPHP server, then skips",
+                "Monolog\\Handler\\NativeMailerHandlerTest::testMessageSubjectFormatting": "fails after migration (a migrate limitation)",
+                "Monolog\\Handler\\NativeMailerHandlerTest::testSend": "fails after migration (a migrate limitation)",
+                "Monolog\\Handler\\NewRelicHandlerTest::testTheAppNameCanBeInjectedFromtheConstructor": "not migrated automatically: The helper function newrelic_set_appname() next to the test uses the PHPUnit test class itself (NewRelicHandlerTest::...); move that state out of the test class first.",
+                "Monolog\\Handler\\NewRelicHandlerTest::testTheAppNameCanBeOverriddenFromEachLog": "not migrated automatically: The helper function newrelic_set_appname() next to the test uses the PHPUnit test class itself (NewRelicHandlerTest::...); move that state out of the test class first.",
+                "Monolog\\Handler\\NewRelicHandlerTest::testTheAppNameIsNullByDefault": "not migrated automatically: The helper function newrelic_set_appname() next to the test uses the PHPUnit test class itself (NewRelicHandlerTest::...); move that state out of the test class first.",
+                "Monolog\\Handler\\NewRelicHandlerTest::testTheTransactionNameCanBeInjectedFromTheConstructor": "not migrated automatically: The helper function newrelic_set_appname() next to the test uses the PHPUnit test class itself (NewRelicHandlerTest::...); move that state out of the test class first.",
+                "Monolog\\Handler\\NewRelicHandlerTest::testTheTransactionNameCanBeOverriddenFromEachLog": "not migrated automatically: The helper function newrelic_set_appname() next to the test uses the PHPUnit test class itself (NewRelicHandlerTest::...); move that state out of the test class first.",
+                "Monolog\\Handler\\NewRelicHandlerTest::testTheTransactionNameIsNullByDefault": "not migrated automatically: The helper function newrelic_set_appname() next to the test uses the PHPUnit test class itself (NewRelicHandlerTest::...); move that state out of the test class first.",
+                "Monolog\\Handler\\NewRelicHandlerTest::testThehandlerCanAddContextParamsToTheNewRelicTrace": "not migrated automatically: The helper function newrelic_set_appname() next to the test uses the PHPUnit test class itself (NewRelicHandlerTest::...); move that state out of the test class first.",
+                "Monolog\\Handler\\NewRelicHandlerTest::testThehandlerCanAddExplodedContextParamsToTheNewRelicTrace": "not migrated automatically: The helper function newrelic_set_appname() next to the test uses the PHPUnit test class itself (NewRelicHandlerTest::...); move that state out of the test class first.",
+                "Monolog\\Handler\\NewRelicHandlerTest::testThehandlerCanAddExplodedExtraParamsToTheNewRelicTrace": "not migrated automatically: The helper function newrelic_set_appname() next to the test uses the PHPUnit test class itself (NewRelicHandlerTest::...); move that state out of the test class first.",
+                "Monolog\\Handler\\NewRelicHandlerTest::testThehandlerCanAddExtraContextAndParamsToTheNewRelicTrace": "not migrated automatically: The helper function newrelic_set_appname() next to the test uses the PHPUnit test class itself (NewRelicHandlerTest::...); move that state out of the test class first.",
+                "Monolog\\Handler\\NewRelicHandlerTest::testThehandlerCanAddExtraParamsToTheNewRelicTrace": "not migrated automatically: The helper function newrelic_set_appname() next to the test uses the PHPUnit test class itself (NewRelicHandlerTest::...); move that state out of the test class first.",
+                "Monolog\\Handler\\NewRelicHandlerTest::testThehandlerCanHandleTheRecord": "not migrated automatically: The helper function newrelic_set_appname() next to the test uses the PHPUnit test class itself (NewRelicHandlerTest::...); move that state out of the test class first.",
+                "Monolog\\Handler\\NewRelicHandlerTest::testThehandlerCanHandleTheRecordsFormattedUsingTheLineFormatter": "not migrated automatically: The helper function newrelic_set_appname() next to the test uses the PHPUnit test class itself (NewRelicHandlerTest::...); move that state out of the test class first.",
+                "Monolog\\Handler\\NewRelicHandlerTest::testThehandlerThrowsAnExceptionIfTheNRExtensionIsNotLoaded": "not migrated automatically: The helper function newrelic_set_appname() next to the test uses the PHPUnit test class itself (NewRelicHandlerTest::...); move that state out of the test class first.",
+                "Monolog\\Handler\\PHPConsoleHandlerTest::testError": "fails after migration (a migrate limitation)",
+                "Monolog\\Handler\\PHPConsoleHandlerTest::testOptionCallsConnectorMethod": "not migrated automatically: uses PHPUnit's mock API ($this->once()) in a way migrate cannot translate; rewrite it with MockBuilder or Mockery.",
+                "Monolog\\Handler\\PHPConsoleHandlerTest::testOptionDebugTagsKeysInContext": "fails after migration (a migrate limitation)",
+                "Monolog\\Handler\\ProcessHandlerTest": "hangs on Windows (waits for a child process forever)",
+                "Monolog\\Handler\\ProcessHandlerTest::testStartupWithFailingToSelectErrorStreamThrowsUnexpectedValueException": "not migrated automatically: uses PHPUnit's mock API ($this->getMockBuilder()) in a way migrate cannot translate; rewrite it with MockBuilder or Mockery.",
+                "Monolog\\Handler\\ProcessHandlerTest::testWriteOpensProcessAndWritesToStdInOfProcess": "not migrated automatically: uses PHPUnit's mock API ($this->getMockBuilder()) in a way migrate cannot translate; rewrite it with MockBuilder or Mockery. uses PHPUnit's mock API ($this->exactly()) in a way migrate cannot translate; rewrite it with MockBuilder or Mockery. uses the invocation matcher $matcher, which migrate cannot translate. uses PHPUnit's mock API ($this->stringContains()) in a way migrate cannot translate; rewrite it with MockBuilder or Mockery.",
+                "Monolog\\Handler\\ProcessHandlerTest::testWritingWithErrorsOnStdOutOfProcessThrowsInvalidArgumentException": "not migrated automatically: uses PHPUnit's mock API ($this->getMockBuilder()) in a way migrate cannot translate; rewrite it with MockBuilder or Mockery.",
+                "Monolog\\Handler\\PushoverHandlerTest::testWriteContent": "not migrated automatically: depends on another test (#[Depends]); MicroUnit tests are independent.",
+                "Monolog\\Handler\\RedisHandlerTest::testPredisHandle": "fails after migration (a migrate limitation)",
+                "Monolog\\Handler\\RedisHandlerTest::testPredisHandleCapped": "not migrated automatically: line 108: reads $this->testResults, which is not a property of the class. line 110: uses $this directly; there is no test case object in MicroUnit. line 115: reads $this->testResults, which is not a property of the class. line 117: uses $this directly; there is no test case object in MicroUnit. line 122: reads $this->testResults, which is not a property of the class. line 124: uses $this directly; there is no test case object in MicroUnit.",
+                "Monolog\\Handler\\RedisPubSubHandlerTest::testPredisHandle": "fails after migration (a migrate limitation)",
+                "Monolog\\Handler\\RollbarHandlerTest::testExceptionLogLevel": "fails after migration (a migrate limitation)",
+                "Monolog\\Handler\\RotatingFileHandlerTest::testCleanupHonoursAGetGlobPatternOverride": "not migrated automatically: line 590: reads $this->filename, which is not a property of the class.",
+                "Monolog\\Handler\\RotatingFileHandlerTest::testHourlyFormatsWithOtherSeparatorsAllowedBySubclassesRotateAtTheNextHour": "not migrated automatically: line 169: reads $this->dateFormat, which is not a property of the class.",
+                "Monolog\\Handler\\RotatingFileHandlerTest::testRotationPrunesOldFilesThroughStreamWrapper": "fails under PHPUnit on this machine",
+                "Monolog\\Handler\\RotatingFileHandlerTest::testRotationWithFolderByDate": "depends on the wall clock (fails when the hour changes during the run)",
+                "Monolog\\Handler\\StreamHandlerTest::testWriteErrorDuringWriteRetriesWithClose": "not migrated automatically: line 238: uses $this directly; there is no test case object in MicroUnit. line 239: calls $this->assertIsClosedResource(), which is neither a helper of the class nor a PHPUnit assertion.",
+                "Monolog\\Handler\\SymfonyMailerHandlerTest::testMessageSubjectFormatting": "fails after migration (a migrate limitation)",
+                "Monolog\\Handler\\SyslogUdpHandlerTest::testMaxLengthDefaultsToUdpSocketsOwnDefaultWhenNotSpecified": "fails after migration (a migrate limitation)",
+                "Monolog\\Handler\\SyslogUdpHandlerTest::testMaxLengthIsPassedToTheSocket": "fails after migration (a migrate limitation)",
+                "Monolog\\Handler\\SyslogUdpHandlerTest::testRfc": "fails after migration (a migrate limitation)",
+                "Monolog\\Handler\\SyslogUdpHandlerTest::testRfc3164PadsTheDayOfTheMonthWithASpace": "a different number of tests (PHPUnit reports 1, the migrated test 3)",
+                "Monolog\\Handler\\SyslogUdpHandlerTest::testSplitWorksOnEmptyMsg": "fails after migration (a migrate limitation)",
+                "Monolog\\Handler\\SyslogUdpHandlerTest::testWeSplitIntoLines": "not migrated automatically: uses PHPUnit's mock API ($this->atLeast()) in a way migrate cannot translate; rewrite it with MockBuilder or Mockery. uses the invocation matcher $matcher, which migrate cannot translate. uses PHPUnit's mock API ($this->equalTo()) in a way migrate cannot translate; rewrite it with MockBuilder or Mockery.",
+                "Monolog\\Handler\\SyslogUdpHandlerTest::testWeValidateFacilities": "fails after migration (a migrate limitation)",
+                "Monolog\\Handler\\UdpSocketTest::testWriteAfterCloseReopened": "fails after migration (a migrate limitation)",
+                "Monolog\\LoggerTest::testClockCanBeSetAndUnsetAtRuntime": "fails after migration (a migrate limitation)",
+                "Monolog\\LoggerTest::testClockDoesNotOverrideAnExplicitDateTime": "fails after migration (a migrate limitation)",
+                "Monolog\\LoggerTest::testClockInstantIsRenderedInTheLoggerTimezone": "fails after migration (a migrate limitation)",
+                "Monolog\\LoggerTest::testClockInstantIsReproducedExactly with data set \"ambiguous hour of a DST fall back\"": "fails after migration (a migrate limitation)",
+                "Monolog\\LoggerTest::testClockInstantIsReproducedExactly with data set \"before the epoch\"": "fails after migration (a migrate limitation)",
+                "Monolog\\LoggerTest::testClockInstantIsReproducedExactly with data set \"clock ticking in another timezone\"": "fails after migration (a migrate limitation)",
+                "Monolog\\LoggerTest::testClockInstantIsReproducedExactly with data set \"last microsecond of the second\"": "fails after migration (a migrate limitation)",
+                "Monolog\\LoggerTest::testClockInstantIsReproducedExactly with data set \"no microseconds\"": "fails after migration (a migrate limitation)",
+                "Monolog\\LoggerTest::testClockInstantIsReproducedExactly with data set \"one microsecond\"": "fails after migration (a migrate limitation)",
+                "Monolog\\LoggerTest::testClockInstantIsReproducedExactly with data set \"the epoch itself\"": "fails after migration (a migrate limitation)",
+                "Monolog\\LoggerTest::testClockIsUsedByIsHandling": "not migrated automatically: line 755: reads $this->seen, which is not a property of the class.",
+                "Monolog\\LoggerTest::testClockIsUsedWhenMicrosecondTimestampsAreDisabled": "fails after migration (a migrate limitation)",
+                "Monolog\\LoggerTest::testClockPassedToTheConstructorTimestampsRecords": "fails after migration (a migrate limitation)",
+                "Monolog\\LoggerTest::testClockReturningTheMonologTypeIsUsedAsIs": "fails after migration (a migrate limitation)",
+                "Monolog\\LoggerTest::testCustomHandleException": "not migrated automatically: line 887: uses $this directly; there is no test case object in MicroUnit.",
+                "Monolog\\LoggerTest::testProcessorsNotCalledWhenNotHandled": "not migrated automatically: line 321: uses $this directly; there is no test case object in MicroUnit.",
+                "Monolog\\LoggerTest::testUseMicrosecondTimestamps": "not migrated automatically: line 816: reads $this->{, which is not a property of the class.",
+                "Monolog\\Processor\\IntrospectionProcessorTest::testLevelEqual": "fails after migration (a migrate limitation)",
+                "Monolog\\Processor\\IntrospectionProcessorTest::testLevelHigher": "fails after migration (a migrate limitation)",
+                "Monolog\\Processor\\IntrospectionProcessorTest::testProcessorFromClass": "fails after migration (a migrate limitation)",
+                "Monolog\\Processor\\IntrospectionProcessorTest::testProcessorFromFunc": "fails after migration (a migrate limitation)",
+                "Monolog\\Processor\\LoadAverageProcessorTest::testProcessor": "fails under PHPUnit on this machine",
+                "Monolog\\SignalHandlerTest::testHandleSignal": "fails under PHPUnit on this machine",
+                "Monolog\\SignalHandlerTest::testRegisterAsyncSignalHandler": "not migrated automatically: depends on another test (#[Depends]); MicroUnit tests are independent.",
+                "Monolog\\SignalHandlerTest::testRegisterCallablePreviousSignalHandler": "not migrated automatically: depends on another test (#[Depends]); MicroUnit tests are independent.",
+                "Monolog\\SignalHandlerTest::testRegisterDefaultPreviousSignalHandler": "not migrated automatically: depends on another test (#[Depends]); MicroUnit tests are independent.",
+                "Monolog\\SignalHandlerTest::testRegisterSignalHandler": "not migrated automatically: depends on another test (#[Depends]); MicroUnit tests are independent.",
+                "Monolog\\SignalHandlerTest::testRegisterSyscallRestartingSignalHandler": "not migrated automatically: depends on another test (#[Depends]); MicroUnit tests are independent.",
+                "Monolog\\UtilsTest::testUnwrapFormatterTerminatesOnASelfWrappingFormatter": "not migrated automatically: line 168: uses $this directly; there is no test case object in MicroUnit."
+            },
+            "versions": {
+                "phpunit": "PHPUnit 11.5.58 by Sebastian Bergmann and contributors.",
+                "paratest": "ParaTest v7.8.6",
+                "microunit": "microunit 1.0.0 (PHP 8.6.0)"
+            }
+        }
+    }
+}
