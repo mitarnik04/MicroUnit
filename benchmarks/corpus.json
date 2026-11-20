@@ -1,0 +1,297 @@
+{
+    "description": "Real-world test suites of popular open-source PHP projects, pinned to an exact commit. Every tool runs the same test methods; see benchmarks/README.md for how the set is built.",
+    "layout": "--work DIR contains <slug>/ (the project with Composer dependencies and PHPUnit), plus ../projects-paratest/<slug>/, a copy of the same commit with ParaTest installed and PHPUnit pinned to the version of <slug>/ (see paratestSetup).",
+    "phpArgumentsForEveryTool": [
+        "-d",
+        "memory_limit=-1"
+    ],
+    "projects": [
+        {
+            "slug": "math",
+            "name": "brick/math",
+            "repo": "https://github.com/brick/math",
+            "tag": "1.0.0",
+            "sha": "2effe05d2177c451b86c6a073196a4034c02f211",
+            "tests": "tests",
+            "file": "tests/BigNumberTest.php",
+            "environment": {
+                "CALCULATOR": "BCMath"
+            },
+            "phpArguments": [
+                "-d",
+                "memory_limit=-1"
+            ],
+            "setup": [
+                "git clone --depth 1 --branch 1.0.0 -c core.autocrlf=false https://github.com/brick/math math",
+                "composer install"
+            ],
+            "paratestSetup": [
+                "copy the checkout above to ../projects-paratest/math",
+                "composer require --dev brianium/paratest:7.8.6 phpunit/phpunit:11.5.58 -W"
+            ],
+            "tools": {
+                "phpunit": {
+                    "dir": ".",
+                    "command": [
+                        "vendor/bin/phpunit",
+                        "--no-progress"
+                    ]
+                },
+                "paratest": {
+                    "dir": "../../projects-paratest/math",
+                    "command": [
+                        "vendor/bin/paratest",
+                        "--processes={workers}"
+                    ]
+                },
+                "microunit": {
+                    "dir": ".",
+                    "command": [
+                        "{microunit}",
+                        "--no-colors",
+                        "--no-agent"
+                    ]
+                }
+            }
+        },
+        {
+            "slug": "carbon",
+            "name": "nesbot/carbon",
+            "repo": "https://github.com/briannesbitt/Carbon",
+            "tag": "3.15.1",
+            "sha": "ce0e5636fae7d1e99856eb70cae4c719a284aa08",
+            "tests": "tests",
+            "file": "tests/Carbon/AddTest.php",
+            "phpArguments": [
+                "-d",
+                "memory_limit=-1"
+            ],
+            "setup": [
+                "git clone --depth 1 --branch 3.15.1 -c core.autocrlf=false https://github.com/briannesbitt/Carbon carbon",
+                "composer update --prefer-dist --prefer-stable"
+            ],
+            "paratestSetup": [
+                "copy the checkout above to ../projects-paratest/carbon",
+                "composer require --dev brianium/paratest:7.4.9 phpunit/phpunit:10.5.67 -W --ignore-platform-req=php"
+            ],
+            "tools": {
+                "phpunit": {
+                    "dir": ".",
+                    "command": [
+                        "vendor/bin/phpunit",
+                        "--no-progress"
+                    ]
+                },
+                "paratest": {
+                    "dir": "../../projects-paratest/carbon",
+                    "command": [
+                        "vendor/bin/paratest",
+                        "--processes={workers}"
+                    ]
+                },
+                "microunit": {
+                    "dir": ".",
+                    "command": [
+                        "{microunit}",
+                        "--no-colors",
+                        "--no-agent"
+                    ]
+                }
+            }
+        },
+        {
+            "slug": "assert",
+            "name": "webmozart/assert",
+            "repo": "https://github.com/webmozarts/assert",
+            "tag": "2.5.1",
+            "sha": "e578132c01bd0c64108386ab20d8217cd175ddec",
+            "tests": "tests",
+            "file": "tests/AssertTest.php",
+            "phpArguments": [
+                "-d",
+                "memory_limit=-1"
+            ],
+            "setup": [
+                "git clone --depth 1 --branch 2.5.1 -c core.autocrlf=false https://github.com/webmozarts/assert assert",
+                "composer install",
+                "composer install --working-dir=tools/phpunit"
+            ],
+            "paratestSetup": [
+                "copy the checkout above to ../projects-paratest/assert",
+                "composer require --dev brianium/paratest:7.8.5 phpunit/phpunit:11.5.50 -W"
+            ],
+            "tools": {
+                "phpunit": {
+                    "dir": ".",
+                    "command": [
+                        "tools/phpunit/vendor/bin/phpunit",
+                        "--no-progress"
+                    ]
+                },
+                "paratest": {
+                    "dir": "../../projects-paratest/assert",
+                    "command": [
+                        "vendor/bin/paratest",
+                        "--processes={workers}"
+                    ]
+                },
+                "microunit": {
+                    "dir": ".",
+                    "command": [
+                        "{microunit}",
+                        "--no-colors",
+                        "--no-agent"
+                    ]
+                }
+            }
+        },
+        {
+            "slug": "commonmark",
+            "name": "league/commonmark",
+            "repo": "https://github.com/thephpleague/commonmark",
+            "tag": "2.10.7",
+            "sha": "8eb53e906fd60c67038d22f1f1cab420ed58b8be",
+            "tests": "tests",
+            "file": "tests/functional/Extension/Footnote/FootnoteExtensionTest.php",
+            "phpArguments": [
+                "-d",
+                "memory_limit=-1"
+            ],
+            "setup": [
+                "git clone --depth 1 --branch 2.10.7 -c core.autocrlf=false https://github.com/thephpleague/commonmark commonmark",
+                "composer install"
+            ],
+            "paratestSetup": [
+                "copy the checkout above to ../projects-paratest/commonmark",
+                "composer require --dev brianium/paratest:7.29.0 phpunit/phpunit:13.4.7 -W"
+            ],
+            "tools": {
+                "phpunit": {
+                    "dir": ".",
+                    "command": [
+                        "vendor/bin/phpunit",
+                        "--no-progress",
+                        "--no-coverage"
+                    ]
+                },
+                "paratest": {
+                    "dir": "../../projects-paratest/commonmark",
+                    "command": [
+                        "vendor/bin/paratest",
+                        "--processes={workers}",
+                        "--no-coverage"
+                    ]
+                },
+                "microunit": {
+                    "dir": ".",
+                    "command": [
+                        "{microunit}",
+                        "--no-colors",
+                        "--no-agent"
+                    ]
+                }
+            }
+        },
+        {
+            "slug": "yaml",
+            "name": "symfony/yaml",
+            "repo": "https://github.com/symfony/yaml",
+            "tag": "v8.1.11",
+            "sha": "e8266f55160f674f290a5f567cb55e11e21f921b",
+            "tests": "Tests",
+            "file": "Tests/InlineTest.php",
+            "phpArguments": [
+                "-d",
+                "memory_limit=-1"
+            ],
+            "setup": [
+                "git clone --depth 1 --branch v8.1.11 -c core.autocrlf=false https://github.com/symfony/yaml yaml",
+                "composer require --dev phpunit/phpunit:^13.1 symfony/phpunit-bridge:^8.1",
+                "composer update --prefer-stable"
+            ],
+            "paratestSetup": [
+                "copy the checkout above to ../projects-paratest/yaml",
+                "composer require --dev brianium/paratest:7.29.0 phpunit/phpunit:13.4.7 -W",
+                "remove the two <method>Doctrine\\Deprecations\\Deprecation::...</method> lines from phpunit.xml.dist"
+            ],
+            "notes": [
+                "The component ships without PHPUnit (the Symfony monorepo provides it), so PHPUnit and the PHPUnit bridge are added as dev dependencies.",
+                "phpunit.xml.dist names two Doctrine methods as deprecation triggers with ignoreUndefinedTriggers=\"true\". Doctrine is not installed, so PHPUnit ignores them; ParaTest 7.29's workers assert that they exist and crash. The ParaTest copy drops the two lines, which leaves its effective configuration identical to PHPUnit's."
+            ],
+            "tools": {
+                "phpunit": {
+                    "dir": ".",
+                    "command": [
+                        "vendor/bin/phpunit",
+                        "--no-progress"
+                    ]
+                },
+                "paratest": {
+                    "dir": "../../projects-paratest/yaml",
+                    "command": [
+                        "vendor/bin/paratest",
+                        "--processes={workers}"
+                    ]
+                },
+                "microunit": {
+                    "dir": ".",
+                    "command": [
+                        "{microunit}",
+                        "--no-colors",
+                        "--no-agent"
+                    ]
+                }
+            }
+        },
+        {
+            "slug": "monolog",
+            "name": "monolog/monolog",
+            "repo": "https://github.com/Seldaek/monolog",
+            "tag": "3.13.0",
+            "sha": "1f5f55bb4a9a230ff6d8a4ceccea31d10b0142ac",
+            "tests": "tests",
+            "file": "tests/Monolog/Formatter/JsonFormatterTest.php",
+            "phpArguments": [
+                "-d",
+                "memory_limit=-1"
+            ],
+            "excludeClasses": {
+                "Monolog\\Handler\\ProcessHandlerTest": "hangs on Windows (waits for a child process forever)",
+                "Monolog\\Handler\\FrankenPhpHandlerE2ETest": "waits 20 s for a FrankenPHP server, then skips",
+                "Monolog\\Handler\\RotatingFileHandlerTest::testRotationWithFolderByDate": "depends on the wall clock (fails when the hour changes during the run)"
+            },
+            "setup": [
+                "git clone --depth 1 --branch 3.13.0 -c core.autocrlf=false https://github.com/Seldaek/monolog monolog",
+                "composer install --ignore-platform-req=ext-mongodb"
+            ],
+            "paratestSetup": [
+                "copy the checkout above to ../projects-paratest/monolog",
+                "composer require --dev brianium/paratest:7.8.6 phpunit/phpunit:11.5.58 -W --ignore-platform-req=ext-mongodb"
+            ],
+            "tools": {
+                "phpunit": {
+                    "dir": ".",
+                    "command": [
+                        "vendor/bin/phpunit",
+                        "--no-progress"
+                    ]
+                },
+                "paratest": {
+                    "dir": "../../projects-paratest/monolog",
+                    "command": [
+                        "vendor/bin/paratest",
+                        "--processes={workers}"
+                    ]
+                },
+                "microunit": {
+                    "dir": ".",
+                    "command": [
+                        "{microunit}",
+                        "--no-colors",
+                        "--no-agent"
+                    ]
+                }
+            }
+        }
+    ]
+}
