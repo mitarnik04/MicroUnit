@@ -1,0 +1,1216 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark light">
+<title>Test Explorer · microunit</title>
+<link rel="icon" id="favicon" href="data:,">
+<style>
+{{STYLES}}
+
+/* ---------- Test Explorer: a test-runner tool window ---------- */
+:root, :root[data-theme="dark"] {
+    --x-ground: #17181B; --x-pane: #1E2023; --x-raised: #26282D; --x-hover: #24272B; --x-press: #2C2F35;
+    --x-line: #2D3036; --x-line-strong: #3A3E45;
+    --x-ink: #DFE1E5; --x-ink-2: #B5B9C0; --x-ink-3: #8D929B;
+    --x-action: #3FC6F3; --x-action-hover: #6AD4F6; --x-action-ink: #071820;
+    --x-focus: #3FC6F3; --x-select: #213C4E; --x-select-idle: #262C33; --x-marked: #1B2B36; --x-select-marked: #27506A;
+    --x-pass: #5FB865; --x-fail: #F2545B; --x-skip: #E0A43A; --x-busy: #3FC6F3; --x-idle: #4A4E56;
+    --x-fail-tint: rgba(242, 84, 91, .13); --x-pass-tint: rgba(95, 184, 101, .13); --x-skip-tint: rgba(224, 164, 58, .13);
+    --x-code: #141518;
+    --x-shadow: 0 6px 16px rgba(0, 0, 0, .4);
+    color-scheme: dark;
+}
+:root[data-theme="light"] {
+    --x-ground: #EFF1F4; --x-pane: #FFFFFF; --x-raised: #F6F7F9; --x-hover: #F1F3F6; --x-press: #E7EAEF;
+    --x-line: #E1E4E9; --x-line-strong: #CDD1D8;
+    --x-ink: #1D1F23; --x-ink-2: #3C4049; --x-ink-3: #5C616C;
+    --x-action: #0A17A8; --x-action-hover: #1626C4; --x-action-ink: #FFFFFF;
+    --x-focus: #0A17A8; --x-select: #D3DEFF; --x-select-idle: #E6E9EF; --x-marked: #EAF0FF; --x-select-marked: #BFD0FF;
+    --x-pass: #1E8538; --x-fail: #CF2E39; --x-skip: #A86400; --x-busy: #0A17A8; --x-idle: #B9BEC6;
+    --x-fail-tint: rgba(207, 46, 57, .09); --x-pass-tint: rgba(30, 133, 56, .09); --x-skip-tint: rgba(168, 100, 0, .1);
+    --x-code: #F7F8FA;
+    --x-shadow: 0 6px 16px rgba(20, 24, 33, .12);
+    color-scheme: light;
+}
+
+html, body { height: 100%; }
+body {
+    margin: 0; display: grid; grid-template-rows: auto auto minmax(0, 1fr) auto; grid-template-columns: minmax(0, 1fr);
+    background: var(--x-ground); color: var(--x-ink); font: 400 13px/1.45 var(--font-ui);
+    -webkit-font-smoothing: antialiased;
+}
+button { font: inherit; color: inherit; }
+/* Links look like what they are here (buttons, paths, frames), not like the docs site's prose links. */
+:root[data-theme] a { color: inherit; text-decoration: none; }
+[hidden] { display: none !important; }
+::selection { background: color-mix(in srgb, var(--x-focus) 32%, transparent); }
+:focus-visible { outline: 2px solid var(--x-focus); outline-offset: 2px; border-radius: 4px; }
+* { scrollbar-width: thin; scrollbar-color: var(--x-line-strong) transparent; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.icon { width: 16px; height: 16px; flex: none; display: block; }
+kbd {
+    font: 600 11px/1 var(--font-ui); color: var(--x-ink-3); min-width: 18px; padding: 3px 5px; text-align: center;
+    border: 1px solid var(--x-line-strong); border-bottom-width: 2px; border-radius: 4px; background: var(--x-raised);
+}
+
+/* Toolbar */
+.toolbar {
+    display: flex; align-items: center; gap: 14px; flex-wrap: wrap; padding: 8px 14px;
+    background: var(--x-pane); border-bottom: 1px solid var(--x-line);
+}
+.brand { display: flex; align-items: center; gap: 9px; margin-right: 6px; }
+.brand .mark { width: 20px; height: 20px; }
+.brand .title { font-weight: 700; font-size: 14px; letter-spacing: -.005em; }
+.brand .project { color: var(--x-ink-3); max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.actions { display: flex; align-items: center; gap: 6px; }
+.btn {
+    display: inline-flex; align-items: center; gap: 7px; height: 30px; padding: 0 11px; border-radius: 6px; cursor: pointer;
+    border: 1px solid var(--x-line-strong); background: var(--x-raised); color: var(--x-ink); font-weight: 400; white-space: nowrap;
+    transition: background-color .12s, border-color .12s;
+}
+.btn:hover:not(:disabled) { background: var(--x-press); }
+.btn:disabled { opacity: .45; cursor: default; }
+.btn kbd { margin-left: 2px; }
+.btn.primary { background: var(--x-action); border-color: var(--x-action); color: var(--x-action-ink); font-weight: 700; }
+.btn.primary:hover:not(:disabled) { background: var(--x-action-hover); border-color: var(--x-action-hover); }
+.btn.primary kbd { color: inherit; background: color-mix(in srgb, var(--x-action-ink) 12%, transparent); border-color: color-mix(in srgb, var(--x-action-ink) 30%, transparent); }
+.btn .icon.fail { color: var(--x-fail); }
+.tools { display: flex; align-items: center; gap: 10px; margin-left: auto; }
+.search {
+    display: flex; align-items: center; gap: 7px; height: 30px; padding: 0 6px 0 9px; width: 240px; border-radius: 6px;
+    border: 1px solid var(--x-line-strong); background: var(--x-ground); color: var(--x-ink-3);
+}
+.search:focus-within { border-color: var(--x-focus); }
+.search input { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; color: var(--x-ink); font: inherit; }
+.search input::placeholder { color: var(--x-ink-3); }
+.segmented { display: flex; padding: 2px; gap: 2px; border-radius: 7px; background: var(--x-ground); border: 1px solid var(--x-line); }
+.segmented button {
+    display: inline-flex; align-items: center; gap: 6px; height: 24px; padding: 0 9px; border: 0; border-radius: 5px;
+    background: transparent; color: var(--x-ink-2); cursor: pointer; white-space: nowrap;
+}
+.segmented button:hover { color: var(--x-ink); }
+.segmented button[aria-pressed="true"] { background: var(--x-raised); color: var(--x-ink); box-shadow: 0 1px 2px rgba(0, 0, 0, .25); }
+.segmented .count { color: var(--x-ink-3); font-variant-numeric: tabular-nums; }
+.segmented .status { width: 14px; height: 14px; }
+
+/* Menus: the Run menu and the context menu share one look */
+.run-menu { position: relative; }
+.menu {
+    position: absolute; left: 0; top: calc(100% + 6px); z-index: 20; min-width: 260px; padding: 5px; display: grid; gap: 1px;
+    border-radius: 8px; background: var(--x-raised); border: 1px solid var(--x-line-strong); box-shadow: var(--x-shadow);
+}
+.menu.context { position: fixed; top: auto; left: auto; min-width: 230px; }
+.menu button {
+    display: flex; align-items: center; gap: 10px; height: 30px; padding: 0 8px; border: 0; border-radius: 5px;
+    background: transparent; color: var(--x-ink); cursor: pointer; text-align: left;
+}
+.menu button > .text { flex: 1; }
+.menu button .icon { color: var(--x-ink-3); }
+.menu button:hover:not(:disabled), .menu button:focus-visible { background: var(--x-select); outline: none; }
+.menu button:disabled { color: var(--x-ink-3); cursor: default; }
+.menu .count { color: var(--x-ink-3); font-variant-numeric: tabular-nums; }
+.menu hr { border: 0; border-top: 1px solid var(--x-line); margin: 4px 2px; }
+
+/* Verdict: one line and a bar with every test in order */
+.verdict { background: var(--x-pane); border-bottom: 1px solid var(--x-line); }
+.runbar { display: flex; gap: 1px; height: 4px; background: var(--x-pane); }
+.runbar button { flex: 1 1 0; min-width: 0; height: 100%; padding: 0; border: 0; border-radius: 0; background: var(--x-idle); cursor: pointer; }
+.runbar .passed { background: var(--x-pass); } .runbar .failed { background: var(--x-fail); } .runbar .skipped { background: var(--x-skip); }
+.runbar .queued { background: var(--x-busy); animation: pulse 1.1s ease-in-out infinite; }
+.runbar .stale { opacity: .45; }
+.runbar .proportional { cursor: default; }
+.runbar.revealing { animation: reveal .55s cubic-bezier(.16, 1, .3, 1) both; }
+@keyframes reveal { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+@keyframes pulse { 50% { opacity: .35; } }
+.verdict-line { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; min-height: 36px; padding: 4px 14px; }
+.verdict-line .headline { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 14px; }
+.verdict-line .counts { display: flex; gap: 14px; color: var(--x-ink-2); font-variant-numeric: tabular-nums; }
+.verdict-line .counts span { display: inline-flex; align-items: center; gap: 5px; }
+.verdict-line .counts .dot { width: 7px; height: 7px; border-radius: 50%; }
+.verdict-line .meta { margin-left: auto; color: var(--x-ink-3); font-variant-numeric: tabular-nums; }
+.verdict-line .meta a { color: var(--x-focus); }
+.verdict-line .meta a:hover { text-decoration: underline; text-underline-offset: 3px; }
+/* During a run, last run's numbers stay visible but read as last run's. */
+body.is-running .verdict-line .counts, body.is-running .segmented .count, body.is-running .row .badge { opacity: .5; }
+
+/* Status glyphs */
+.status { display: block; width: 16px; height: 16px; flex: none; }
+.status.passed { color: var(--x-pass); } .status.failed { color: var(--x-fail); } .status.skipped { color: var(--x-skip); }
+.status.notrun { color: var(--x-ink-3); } .status.queued { color: var(--x-busy); }
+.status.running { color: var(--x-busy); animation: spin .9s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Panes */
+.panes { display: grid; grid-template-columns: var(--tree-width, 380px) 5px minmax(0, 1fr); min-height: 0; }
+.panes.is-empty { grid-template-columns: minmax(0, 1fr); }
+.panes.is-empty .tree-pane, .panes.is-empty .splitter { display: none; }
+.tree-pane { display: flex; flex-direction: column; min-height: 0; background: var(--x-pane); }
+.pane-head {
+    display: flex; align-items: center; gap: 8px; height: 34px; padding: 0 8px 0 14px; flex: none;
+    border-bottom: 1px solid var(--x-line); color: var(--x-ink-2); font-weight: 700;
+}
+.pane-head .spacer { flex: 1; }
+.tool {
+    display: grid; place-items: center; width: 26px; height: 26px; padding: 0; border: 0; border-radius: 5px;
+    background: transparent; color: var(--x-ink-3); cursor: pointer;
+}
+.tool:hover { background: var(--x-hover); color: var(--x-ink); }
+.tool[aria-pressed="true"] { background: var(--x-select); color: var(--x-ink); }
+.splitter { background: var(--x-line); background-clip: content-box; padding: 0 2px; cursor: col-resize; }
+.splitter:hover, .splitter.dragging, .splitter:focus-visible { background-color: var(--x-focus); outline: none; }
+.tree { overflow: auto; flex: 1; padding: 4px 0 24px; outline: none; }
+
+/* Tree rows: every level steps exactly 20px (a 16px toggle slot plus 4px); each guide line runs
+   down from the centre of its parent's toggle. */
+.row {
+    position: relative; display: flex; align-items: center; width: 100%; height: 26px; padding: 0 12px 0 8px;
+    color: var(--x-ink); cursor: default; user-select: none;
+}
+.row:hover { background: var(--x-hover); }
+.row:focus-visible { outline: none; }
+.row .indent { display: flex; align-self: stretch; flex: none; }
+.row .indent i { position: relative; width: 20px; flex: none; }
+.row .indent i::before { content: ""; position: absolute; top: 0; bottom: 0; left: 7.5px; border-left: 1px solid var(--x-line); }
+.row .toggle { display: grid; place-items: center; width: 16px; height: 16px; margin-right: 4px; flex: none; color: var(--x-ink-3); cursor: pointer; border-radius: 3px; }
+.row .toggle:hover { color: var(--x-ink); background: var(--x-press); }
+.row .toggle .icon { transition: transform .12s cubic-bezier(.16, 1, .3, 1); }
+.row[aria-expanded="false"] .toggle .icon { transform: rotate(-90deg); }
+.row .toggle.none { visibility: hidden; }
+.row .status { margin-right: 8px; }
+.row .name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.row.suite .name { font-weight: 700; }
+.row.group .name { color: var(--x-ink-2); }
+.row .side { display: flex; align-items: center; gap: 8px; flex: none; margin-left: 8px; color: var(--x-ink-3); font-variant-numeric: tabular-nums; }
+.row .badge { padding: 1px 7px; border-radius: 9px; font-weight: 700; font-size: 11px; }
+.badge.failed { color: var(--x-fail); background: var(--x-fail-tint); }
+.row.stale .name, .row.stale .side { color: var(--x-ink-3); }
+.row.stale .status { opacity: .6; }
+.row.marked { background: var(--x-marked); }
+/* Selection is bright while the list has focus and quiet when it does not, as in an IDE. */
+.row[aria-selected="true"] { background: var(--x-select-idle); }
+.tree:focus-within .row[aria-selected="true"] { background: var(--x-select); }
+.row.marked[aria-selected="true"], .tree:focus-within .row.marked[aria-selected="true"] { background: var(--x-select-marked); }
+.tree:focus-within .row[aria-selected="true"]:focus-visible { box-shadow: inset 0 0 0 1px var(--x-focus); }
+.row .run-node {
+    position: absolute; right: 8px; top: 3px; display: none; place-items: center; width: 20px; height: 20px; padding: 0;
+    border: 0; border-radius: 4px; background: var(--x-raised); color: var(--x-pass); cursor: pointer;
+}
+.row:hover .run-node { display: grid; }
+.row:hover .side { visibility: hidden; }
+.row .run-node:hover { background: var(--x-press); }
+.row .run-node:disabled { display: none; }
+@media (hover: none) { .row .run-node { display: none; } .row:hover .side { visibility: visible; } }
+.tree .note { padding: 18px 16px; margin: 0; color: var(--x-ink-3); }
+
+/* Detail pane */
+.detail { overflow: auto; min-height: 0; background: var(--x-ground); }
+.detail-inner { max-width: 1060px; padding: 22px 28px 56px; }
+.detail-head { display: flex; align-items: flex-start; gap: 12px; flex-wrap: wrap; }
+.detail-head > .status { width: 22px; height: 22px; margin-top: 3px; }
+.detail-head .titles { flex: 1; min-width: 240px; }
+.detail-head h1 { margin: 0; font: 700 19px/1.3 var(--font-ui); letter-spacing: -.01em; overflow-wrap: anywhere; }
+.detail-head .path { margin-top: 4px; color: var(--x-ink-3); display: flex; flex-wrap: wrap; gap: 4px 14px; align-items: center; }
+.detail-head .path a { color: var(--x-ink-2); font: 12px/1.4 var(--font-code); border-bottom: 1px dashed var(--x-line-strong); }
+.detail-head .path a:hover { color: var(--x-focus); border-bottom-color: var(--x-focus); }
+.detail-head .actions { margin-left: auto; }
+.chip { display: inline-flex; align-items: center; height: 22px; padding: 0 9px; border-radius: 11px; font-weight: 700; font-size: 12px; margin-left: 10px; vertical-align: 3px; }
+.chip.failed { color: var(--x-fail); background: var(--x-fail-tint); } .chip.passed { color: var(--x-pass); background: var(--x-pass-tint); }
+.chip.skipped { color: var(--x-skip); background: var(--x-skip-tint); } .chip.notrun { color: var(--x-ink-3); background: var(--x-raised); }
+.chip.queued, .chip.running { color: var(--x-busy); background: color-mix(in srgb, var(--x-busy) 14%, transparent); }
+.notice { margin: 16px 0 0; padding: 9px 12px; border-radius: 6px; border: 1px solid var(--x-line); background: var(--x-pane); color: var(--x-ink-2); }
+.detail.is-running .block-area { opacity: .55; }
+.block-area { margin-top: 22px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 22px; }
+.block h2 { margin: 0 0 8px; font: 700 13px/1.3 var(--font-ui); color: var(--x-ink-2); display: flex; align-items: center; gap: 8px; min-height: 26px; }
+.block h2 .copy { margin-left: auto; }
+.message { font: 700 14px/1.5 var(--font-ui); color: var(--x-fail); white-space: pre-wrap; overflow-wrap: anywhere; }
+.custom-message { font: 700 14px/1.5 var(--font-ui); color: var(--x-ink); margin-bottom: 4px; white-space: pre-wrap; }
+.code {
+    margin: 0; border-radius: 7px; background: var(--x-code); border: 1px solid var(--x-line);
+    font: 12.5px/1.6 var(--font-code); color: var(--x-ink); overflow: auto; max-height: 520px;
+}
+.code.plain { padding: 10px 14px; white-space: pre-wrap; overflow-wrap: anywhere; }
+.diff { display: block; padding: 6px 0; min-width: max-content; }
+.diff span { display: grid; grid-template-columns: 26px 1fr; padding-right: 16px; white-space: pre; }
+.diff span::before { content: attr(data-sign); color: var(--x-ink-3); text-align: center; user-select: none; }
+.diff .expected { background: var(--x-fail-tint); } .diff .expected::before { color: var(--x-fail); }
+.diff .actual { background: var(--x-pass-tint); } .diff .actual::before { color: var(--x-pass); }
+.diff .head, .diff .fold { color: var(--x-ink-3); }
+.values { display: grid; gap: 10px; }
+.values .caption { color: var(--x-ink-3); margin-bottom: 4px; }
+.trace { padding: 8px 0; }
+.trace .frames { display: block; min-width: max-content; }
+.trace span { display: block; padding: 0 14px; white-space: pre; }
+.trace a { border-bottom: 1px dashed var(--x-line-strong); }
+.trace a:hover { color: var(--x-focus); border-bottom-color: var(--x-focus); }
+:root .trace .internal, :root .trace .internal a { color: var(--x-ink-3); }
+.trace .internal a { border-bottom-color: transparent; }
+.trace .unfold { color: var(--x-ink-3); cursor: pointer; }
+.trace .unfold:hover { color: var(--x-ink); }
+.detail .where { margin-top: 6px; }
+.detail .where a { color: var(--x-ink-2); font: 12px var(--font-code); border-bottom: 1px dashed var(--x-line-strong); }
+.detail .where a:hover { color: var(--x-focus); border-bottom-color: var(--x-focus); }
+.list { display: grid; border: 1px solid var(--x-line); border-radius: 7px; background: var(--x-pane); overflow: hidden; }
+.list button {
+    display: flex; align-items: center; gap: 8px; min-height: 30px; padding: 4px 12px; border: 0; border-top: 1px solid var(--x-line);
+    background: transparent; color: var(--x-ink); cursor: pointer; text-align: left;
+}
+.list button:first-child { border-top: 0; }
+.list button:hover { background: var(--x-hover); }
+.list .name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.list .why { color: var(--x-ink-3); flex: 2; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.list .time { color: var(--x-ink-3); font-variant-numeric: tabular-nums; }
+
+.empty { display: grid; place-items: center; min-height: 70%; padding: 40px 24px; text-align: center; }
+.empty .glyph { width: 40px; height: 40px; margin: 0 auto 16px; display: block; }
+.empty h2 { margin: 0; font: 700 20px/1.3 var(--font-ui); letter-spacing: -.01em; }
+.empty p { margin: 8px auto 18px; color: var(--x-ink-2); max-width: 44ch; }
+.empty code { font-size: 12.5px; padding: 1px 6px; border-radius: 4px; background: var(--x-raised); border: 1px solid var(--x-line); }
+
+/* Status bar and the shortcut sheet */
+.statusbar {
+    display: flex; align-items: center; gap: 16px; height: 28px; padding: 0 14px; overflow: hidden;
+    background: var(--x-pane); border-top: 1px solid var(--x-line); color: var(--x-ink-3); font-size: 12px;
+}
+.statusbar .hint { display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; }
+.statusbar .hint kbd { padding: 2px 4px; }
+.statusbar .right { margin-left: auto; display: flex; align-items: center; gap: 14px; white-space: nowrap; }
+.statusbar button { display: inline-flex; align-items: center; gap: 6px; border: 0; background: transparent; color: var(--x-ink-3); cursor: pointer; padding: 0; font-size: 12px; }
+.statusbar button:hover { color: var(--x-ink); }
+.statusbar .icon { width: 14px; height: 14px; }
+.live { display: inline-flex; align-items: center; gap: 6px; }
+.live i { width: 7px; height: 7px; border-radius: 50%; background: var(--x-pass); }
+.live.off i { background: var(--x-fail); }
+.help {
+    position: fixed; right: 14px; bottom: 38px; z-index: 30; width: min(560px, calc(100vw - 28px)); max-height: calc(100vh - 80px); overflow: auto;
+    padding: 16px 18px; border-radius: 10px; background: var(--x-raised); border: 1px solid var(--x-line-strong); box-shadow: var(--x-shadow);
+}
+.help h2 { margin: 0 0 12px; font: 700 14px/1.3 var(--font-ui); }
+.help dl { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: 7px 16px; align-items: center; }
+.help dt { display: flex; gap: 4px; justify-content: flex-end; }
+.help dd { margin: 0; color: var(--x-ink-2); }
+.help .section { grid-column: 1 / -1; margin-top: 8px; color: var(--x-ink-3); font-weight: 700; }
+
+/* Narrower windows and split screen */
+@media (max-width: 1100px) {
+    .search { width: 180px; }
+    .brand .project { display: none; }
+}
+@media (max-width: 900px) {
+    .tools { margin-left: 0; width: 100%; }
+    .search { flex: 1; width: auto; }
+    .panes { grid-template-columns: minmax(240px, 42%) 5px minmax(0, 1fr); }
+    .detail-inner { padding: 18px 18px 40px; }
+    .statusbar .hint { display: none; }
+}
+/* One column: the page scrolls once, the detail follows the list */
+@media (max-width: 720px) {
+    html, body { height: auto; }
+    body { grid-template-rows: auto; }
+    .panes { grid-template-columns: minmax(0, 1fr); }
+    .splitter { display: none; }
+    .tree-pane { border-bottom: 1px solid var(--x-line); }
+    .tree { overflow: visible; }
+    .detail { overflow: visible; }
+    .verdict-line .meta { margin-left: 0; width: 100%; }
+}
+@media (max-width: 560px) {
+    .toolbar { gap: 10px; padding: 8px 12px; }
+    .brand { width: 100%; }
+    .actions { width: 100%; }
+    .actions > .btn { flex: 1; justify-content: center; }
+    .btn kbd { display: none; }
+    .run-menu .btn-label { display: none; }
+    .run-menu .menu { left: auto; right: 0; }
+    .tools { flex-wrap: wrap; }
+    .search { flex: 1 1 100%; }
+    .segmented { width: 100%; }
+    .segmented button { flex: 1; justify-content: center; padding: 0 6px; }
+    .segmented .text { display: none; }
+    .segmented [data-status="all"] .text { display: inline; }
+    .detail-head .actions { margin-left: 0; width: 100%; }
+    .detail-head .actions .btn { flex: 1; justify-content: center; }
+}
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+</style>
+</head>
+<body>
+<header class="toolbar">
+    <div class="brand">{{MARK}}<span class="title">Test Explorer</span><span class="project" id="project"></span></div>
+    <div class="actions">
+        <button class="btn primary" id="run-all" type="button" title="Run every test (R)"><svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M4.8 3.3v9.4a.55.55 0 0 0 .85.46l7.2-4.7a.55.55 0 0 0 0-.92l-7.2-4.7a.55.55 0 0 0-.85.46z"/></svg>Run all<kbd>R</kbd></button>
+        <button class="btn" id="run-failed" type="button" title="Rerun the failed tests (F)"><svg class="icon fail" viewBox="0 0 16 16" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" d="M13 8a5 5 0 1 1-1.6-3.7M13 2.6v2.9h-2.9"/></svg>Rerun failed<kbd>F</kbd></button>
+        <div class="run-menu">
+            <button class="btn" id="run-more" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="run-options" title="More ways to run (M)" aria-label="More ways to run"><span class="btn-label">Run</span><svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" d="m4.5 6.5 3.5 3.5 3.5-3.5"/></svg><kbd>M</kbd></button>
+            <div class="menu" id="run-options" role="menu" aria-label="Run" hidden></div>
+        </div>
+    </div>
+    <div class="tools">
+        <label class="search">
+            <svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.6" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="m10.5 10.5 3.2 3.2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            <input id="filter" type="search" placeholder="Filter tests" autocomplete="off" spellcheck="false" aria-label="Filter tests by suite or name">
+            <kbd>/</kbd>
+        </label>
+        <div class="segmented" id="status-filter" role="group" aria-label="Show tests by status"></div>
+    </div>
+</header>
+
+<section class="verdict" aria-label="Results of the latest run">
+    <div class="runbar" id="runbar" role="group" aria-label="Every test, in order"></div>
+    <div class="verdict-line">
+        <span class="headline" id="headline"></span>
+        <span class="counts" id="counts"></span>
+        <span class="meta"><span id="run-meta"></span> <a id="coverage-link" href="/coverage/" target="_blank" rel="noopener" hidden></a></span>
+    </div>
+</section>
+
+<main class="panes" id="panes">
+    <nav class="tree-pane" aria-label="Tests">
+        <div class="pane-head">
+            <span>Tests</span><span class="spacer"></span>
+            <button class="tool" id="sort" type="button" aria-pressed="false" title="Slowest first" aria-label="Sort slowest first"><svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" d="M3 4h10M3 8h7M3 12h4"/></svg></button>
+            <button class="tool" id="expand-all" type="button" title="Expand all" aria-label="Expand all"><svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" d="m5 6 3 3 3-3M5 10l3 3 3-3"/></svg></button>
+            <button class="tool" id="collapse-all" type="button" title="Collapse all" aria-label="Collapse all"><svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" d="m5 10 3-3 3 3M5 6l3-3 3 3"/></svg></button>
+        </div>
+        <div class="tree" id="tree" role="tree" aria-label="Suites and tests" aria-multiselectable="true"></div>
+    </nav>
+    <div class="splitter" id="splitter" role="separator" aria-orientation="vertical" aria-label="Resize the test list (double-click to reset)" tabindex="0"></div>
+    <section class="detail" id="detail" aria-label="Details"></section>
+    <div class="sr-only" id="announce" aria-live="polite"></div>
+</main>
+
+<footer class="statusbar">
+    <span class="hint"><kbd>↑</kbd><kbd>↓</kbd> Move</span>
+    <span class="hint"><kbd>Enter</kbd> Run</span>
+    <span class="hint"><kbd>Space</kbd> Mark</span>
+    <span class="hint"><kbd>E</kbd> Editor</span>
+    <span class="hint"><kbd>/</kbd> Filter</span>
+    <span class="right">
+        <button id="shortcuts" type="button" aria-expanded="false" aria-controls="help">Shortcuts <kbd>?</kbd></button>
+        <span id="environment"></span>
+        <button id="theme" type="button" aria-label="Change theme"></button>
+        <span class="live" id="live"><i></i><span id="live-text">Live</span></span>
+    </span>
+</footer>
+
+<div class="menu context" id="context-menu" role="menu" aria-label="Actions" hidden></div>
+<section class="help" id="help" aria-label="Keyboard shortcuts" hidden>
+    <h2>Keyboard and mouse</h2>
+    <dl>
+        <span class="section">In the list</span>
+        <dt><kbd>↑</kbd><kbd>↓</kbd> <kbd>J</kbd><kbd>K</kbd></dt><dd>Move between suites, groups and tests</dd>
+        <dt><kbd>←</kbd><kbd>→</kbd></dt><dd>Collapse or go to the parent; expand or go to the first child</dd>
+        <dt><kbd>Home</kbd><kbd>End</kbd> <kbd>PgUp</kbd><kbd>PgDn</kbd></dt><dd>First, last, a page up or down</dd>
+        <dt><kbd>Enter</kbd></dt><dd>Run the selection: a test, a whole suite or group, or the marked tests</dd>
+        <dt><kbd>Space</kbd></dt><dd>Mark or unmark a test (Ctrl-click, Shift-click with the mouse)</dd>
+        <dt><kbd>E</kbd></dt><dd>Open the test in your editor (or double-click it)</dd>
+        <dt><kbd>Shift</kbd><kbd>F10</kbd></dt><dd>Actions for the selection (or right-click)</dd>
+        <span class="section">Anywhere</span>
+        <dt><kbd>R</kbd></dt><dd>Run all tests</dd>
+        <dt><kbd>F</kbd></dt><dd>Rerun the failed tests</dd>
+        <dt><kbd>L</kbd></dt><dd>Repeat the last run</dd>
+        <dt><kbd>V</kbd> <kbd>N</kbd> <kbd>P</kbd></dt><dd>Run the tests in view, the ones that did not run, the passed ones</dd>
+        <dt><kbd>M</kbd></dt><dd>Open the Run menu</dd>
+        <dt><kbd>/</kbd></dt><dd>Filter tests; <kbd>↓</kbd> goes back to the list</dd>
+        <dt><kbd>Esc</kbd></dt><dd>Close menus, clear the filter and the marks</dd>
+        <dt><kbd>?</kbd></dt><dd>Show or hide this sheet</dd>
+    </dl>
+</section>
+
+<script type="application/json" id="boot">{{BOOT}}</script>
+<script>
+(() => {
+    'use strict';
+
+    const boot = JSON.parse(document.getElementById('boot').textContent);
+    const $ = (id) => document.getElementById(id);
+    const STATUSES = [['all', 'All'], ['failed', 'Failed'], ['passed', 'Passed'], ['skipped', 'Skipped'], ['notrun', 'Not run']];
+    const LABELS = { passed: 'Passed', failed: 'Failed', skipped: 'Skipped', notrun: 'Not run', queued: 'Queued', running: 'Running' };
+    const prefersReducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    // Up to this many tests, the run bar has one cell per test; above, one segment per status.
+    const RUNBAR_CELLS = 600;
+    const PAGE = 15;
+
+    // The cursor is a node: "t:<test id>", "s:<suite>" or "g:<suite>\n<group>".
+    const state = {
+        report: null, revision: 0, isRunning: false, isOnline: true,
+        node: null, filter: '', status: 'all', collapsed: new Set(), lastStartedIds: null,
+        marked: new Set(), lastRun: null, isMenuOpen: false, slowestFirst: false, contextNode: null,
+    };
+
+    // The standard ways to run, as in Visual Studio's and JetBrains' test runners. Each resolves to test ids.
+    const RUN_MODES = [
+        ['selected', 'Run selection', 'Enter'],
+        ['view', 'Run tests in view', 'V'],
+        ['notrun', 'Run tests that did not run', 'N'],
+        ['passed', 'Run passed tests', 'P'],
+        ['last', 'Repeat last run', 'L'],
+    ];
+
+    // ---- drawn glyphs -----------------------------------------------------------------------
+    const svg = (body, cls = 'icon') => `<svg class="${cls}" viewBox="0 0 16 16" aria-hidden="true">${body}</svg>`;
+    const RING = '<circle cx="8" cy="8" r="5.9" fill="none" stroke="currentColor" stroke-width="1.5"/>';
+    const GLYPHS = {
+        passed: '<circle cx="8" cy="8" r="6.6" fill="currentColor"/><path d="m5.2 8.2 1.9 1.9 3.8-4.1" fill="none" stroke="var(--x-pane)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>',
+        failed: '<circle cx="8" cy="8" r="6.6" fill="currentColor"/><path d="m5.7 5.7 4.6 4.6m0-4.6-4.6 4.6" stroke="var(--x-pane)" stroke-width="1.7" stroke-linecap="round"/>',
+        skipped: '<circle cx="8" cy="8" r="6.6" fill="currentColor"/><path d="M5.3 8h5.4" stroke="var(--x-pane)" stroke-width="1.8" stroke-linecap="round"/>',
+        notrun: RING,
+        queued: RING,
+        running: '<circle cx="8" cy="8" r="5.9" fill="none" stroke="currentColor" stroke-opacity=".25" stroke-width="1.8"/><path d="M8 2.1a5.9 5.9 0 0 1 5.9 5.9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>',
+    };
+    const glyph = (status, extra = '') => svg(GLYPHS[status] ?? GLYPHS.notrun, `status ${status} ${extra}`);
+    const ICONS = {
+        chevron: '<path d="m4.5 6.2 3.5 3.5 3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>',
+        play: '<path fill="currentColor" d="M4.8 3.3v9.4a.55.55 0 0 0 .85.46l7.2-4.7a.55.55 0 0 0 0-.92l-7.2-4.7a.55.55 0 0 0-.85.46z"/>',
+        editor: '<path d="M9.5 2.5h4v4M13.3 2.7 7.6 8.4M12 9.5v3a1 1 0 0 1-1 1H3.5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>',
+        rerun: '<path d="M13 8a5 5 0 1 1-1.6-3.7M13 2.6v2.9h-2.9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>',
+        copy: '<rect x="5.5" y="5.5" width="8" height="8" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M10.5 3.5v-.5a1 1 0 0 0-1-1H3.5a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h.5" fill="none" stroke="currentColor" stroke-width="1.4"/>',
+        copied: '<path d="m3.5 8.4 3 3 6-6.6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>',
+        mark: '<rect x="2.5" y="2.5" width="11" height="11" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="m5.3 8.2 1.9 1.9 3.5-3.8" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>',
+        fold: '<path d="m5 10 3-3 3 3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>',
+        moon: '<path d="M13.2 9.6A5.6 5.6 0 0 1 6.4 2.8a5.6 5.6 0 1 0 6.8 6.8z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>',
+        sun: '<circle cx="8" cy="8" r="2.8" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 1.6v1.6M8 12.8v1.6M1.6 8h1.6M12.8 8h1.6M3.5 3.5l1.1 1.1M11.4 11.4l1.1 1.1M3.5 12.5l1.1-1.1M11.4 4.6l1.1-1.1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>',
+        system: '<rect x="2" y="3" width="12" height="8.5" rx="1.4" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M5.5 13.5h5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>',
+    };
+
+    // ---- helpers ----------------------------------------------------------------------------
+    const escapeHtml = (value) => String(value ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const tests = () => (state.report?.suites ?? []).flatMap((suite) => suite.tests);
+    const duration = (seconds) => {
+        if (seconds === null || seconds === undefined) return '';
+        if (seconds >= 1) return seconds.toFixed(2) + ' s';
+        const ms = seconds * 1000;
+        return (ms < 0.01 ? '<0.01' : ms.toFixed(ms < 10 ? 2 : 0)) + ' ms';
+    };
+    const editorUrl = (file, line) => {
+        if (!file || !state.report) return null;
+        const template = state.report.editorTemplate;
+        const isQuery = template.indexOf('?') !== -1 && template.indexOf('?') < template.indexOf('{file}');
+        const path = file.replace(/\\/g, '/');
+        return template.replace('{file}', isQuery ? encodeURIComponent(file) : encodeURI(path)).replace('{line}', String(line ?? 1));
+    };
+    const projectRoot = (boot.project ?? '').replace(/\\/g, '/').replace(/\/$/, '');
+    const isInProject = (file) => {
+        const path = String(file).replace(/\\/g, '/');
+        return projectRoot !== '' && path.toLowerCase().startsWith(projectRoot.toLowerCase() + '/') && !path.includes('/vendor/');
+    };
+    const shortPath = (file) => {
+        const path = String(file).replace(/\\/g, '/');
+        return projectRoot !== '' && path.toLowerCase().startsWith(projectRoot.toLowerCase() + '/') ? path.slice(projectRoot.length + 1) : path;
+    };
+    const statusOf = (test) => (state.isRunning && state.lastStartedIds?.has(test.id)) ? 'queued' : test.status;
+    const labelOf = (test) => test.status === 'failed' && test.failure?.kind === 'error' && statusOf(test) === 'failed' ? 'Error' : LABELS[statusOf(test)];
+    const groupKey = (suite, group) => suite + '\n' + group;
+    const displayName = (test) => (!state.slowestFirst && test.group && test.name.startsWith(test.group + '_')) ? test.name.slice(test.group.length + 1) : test.name;
+    const aggregate = (list) => {
+        if (state.isRunning && list.some((t) => state.lastStartedIds?.has(t.id))) return 'queued';
+        if (list.some((t) => t.status === 'failed')) return 'failed';
+        if (list.every((t) => t.status === 'notrun')) return 'notrun';
+        if (list.every((t) => t.status === 'skipped' || t.status === 'notrun')) return 'skipped';
+        return 'passed';
+    };
+    const totalTime = (list) => list.reduce((sum, t) => sum + (t.timeInSeconds ?? 0), 0);
+    const orderedTests = (suite) => state.slowestFirst ? [...suite.tests].sort((a, b) => (b.timeInSeconds ?? -1) - (a.timeInSeconds ?? -1)) : suite.tests;
+    const isOpen = (node) => !state.collapsed.has(node) || state.filter !== '';
+    const selectedTest = () => state.node?.startsWith('t:') ? tests().find((t) => 't:' + t.id === state.node) ?? null : null;
+
+    // The tests behind a node, and the suite/group a node lives in.
+    function testsOf(node) {
+        if (!node) return [];
+        if (node.startsWith('t:')) return tests().filter((t) => 't:' + t.id === node);
+        if (node.startsWith('s:')) return (state.report?.suites ?? []).find((s) => 's:' + s.name === node)?.tests ?? [];
+        const [suite, group] = node.slice(2).split('\n');
+        return tests().filter((t) => t.suite === suite && t.group === group);
+    }
+    function parentOf(node) {
+        if (node.startsWith('g:')) return 's:' + node.slice(2).split('\n')[0];
+        if (!node.startsWith('t:')) return null;
+        const test = testsOf(node)[0];
+        return test.group && !state.slowestFirst ? 'g:' + groupKey(test.suite, test.group) : 's:' + test.suite;
+    }
+
+    // ---- data -------------------------------------------------------------------------------
+    async function request(path, options = {}) {
+        const response = await fetch(path, { cache: 'no-store', ...options, headers: { 'X-MicroUnit-Token': boot.token, 'Content-Type': 'application/json', ...(options.headers ?? {}) } });
+        if (!response.ok && response.status !== 202) throw new Error(response.status + ' ' + path);
+        return response.json();
+    }
+
+    async function poll() {
+        try {
+            const current = await request('/api/state');
+            setOnline(true);
+            const wasRunning = state.isRunning;
+            state.isRunning = current.isRunning;
+            if (current.revision !== state.revision) {
+                state.revision = current.revision;
+                await loadReport(wasRunning || state.report !== null);
+            } else if (wasRunning !== state.isRunning) {
+                renderAll();
+            }
+        } catch {
+            setOnline(false);
+        }
+        setTimeout(poll, state.isRunning ? 400 : 1000);
+    }
+
+    async function loadReport(animate) {
+        const report = await request('/api/report');
+        if (!report.suites) { state.report = null; renderAll(); return; }
+        const previousRunId = state.report?.runId;
+        state.report = report;
+        state.lastStartedIds = null;
+        if (!state.node || testsOf(state.node).length === 0 || (previousRunId !== report.runId && state.node.startsWith('t:'))) {
+            const first = tests().find((t) => t.status === 'failed') ?? tests()[0];
+            state.node = first ? 't:' + first.id : null;
+        }
+        renderAll();
+        if (animate && previousRunId !== report.runId) reveal();
+    }
+
+    function idsFor(mode) {
+        const where = (predicate) => tests().filter(predicate).map((t) => t.id);
+        switch (mode) {
+            case 'selected': return state.marked.size ? [...state.marked] : testsOf(state.node).map((t) => t.id);
+            case 'view': return where(isVisible);
+            case 'notrun': return where((t) => t.status === 'notrun');
+            case 'passed': return where((t) => t.status === 'passed');
+            default: return [];
+        }
+    }
+
+    function runMode(mode) {
+        closeMenus();
+        if (mode === 'last') return state.lastRun && run(state.lastRun);
+        const ids = idsFor(mode);
+        if (ids.length) run({ ids });
+    }
+
+    async function run(options) {
+        if (state.isRunning || !state.isOnline) return;
+        state.lastRun = options;
+        state.isRunning = true;
+        state.lastStartedIds = new Set(options.ids ?? (options.failedOnly ? tests().filter((t) => t.status === 'failed').map((t) => t.id) : tests().map((t) => t.id)));
+        renderAll();
+        try {
+            await request('/api/run', { method: 'POST', body: JSON.stringify(options) });
+        } catch {
+            state.isRunning = false;
+            renderAll();
+        }
+    }
+
+    // ---- rendering --------------------------------------------------------------------------
+    function renderAll() {
+        document.body.classList.toggle('is-running', state.isRunning);
+        renderVerdict();
+        renderStatusFilter();
+        renderTree();
+        renderDetail();
+        renderChrome();
+    }
+
+    function renderVerdict() {
+        const report = state.report;
+        const all = tests();
+        $('runbar').innerHTML = !report ? '' : all.length <= RUNBAR_CELLS
+            ? all.map((test) => `<button type="button" tabindex="-1" class="${statusOf(test)}${test.isStale ? ' stale' : ''}" data-select="t:${escapeHtml(test.id)}" title="${escapeHtml(test.suite)} › ${escapeHtml(test.name)}: ${labelOf(test)}" aria-label="${escapeHtml(test.name)}: ${labelOf(test)}"></button>`).join('')
+            : ['failed', 'skipped', 'passed', 'notrun'].map((status) => {
+                const count = all.filter((t) => t.status === status).length;
+                return count ? `<button type="button" tabindex="-1" class="proportional ${status}" style="flex-grow:${count}" aria-label="${count} ${LABELS[status].toLowerCase()}"></button>` : '';
+            }).join('');
+
+        const summary = report?.summary;
+        const [status, text] = !state.isOnline ? ['notrun', 'Explorer stopped']
+            : state.isRunning ? ['running', 'Running']
+            : !summary ? ['notrun', 'No results yet']
+            : summary.failed ? ['failed', `${summary.failed} failed`]
+            : summary.total === 0 ? ['notrun', 'No tests']
+            : ['passed', summary.notrun ? 'Passed' : 'All passed'];
+        $('headline').innerHTML = glyph(status) + escapeHtml(text);
+
+        // The headline names the failures; the counts list the rest (during a run, last run's, muted).
+        const colours = { passed: 'pass', failed: 'fail', skipped: 'skip', notrun: 'idle' };
+        const keys = state.isRunning ? ['failed', 'passed', 'skipped', 'notrun'] : ['passed', 'skipped', 'notrun'];
+        $('counts').innerHTML = !summary ? '' : keys
+            .filter((key) => summary[key] || key === 'passed')
+            .map((key) => `<span><i class="dot" style="background:var(--x-${colours[key]})"></i>${summary[key]} ${LABELS[key].toLowerCase()}</span>`).join('');
+
+        const finished = report ? new Date(report.finishedAt) : null;
+        $('run-meta').textContent = !report ? '' : `${summary.total} tests · ${duration(report.durationSeconds)} · ${finished.toLocaleTimeString()}${report.isPartialRun ? ' · partial run' : ''}`;
+        const coverage = report?.coverage;
+        $('coverage-link').hidden = !coverage;
+        if (coverage) {
+            $('coverage-link').textContent = `Coverage ${coverage.lineRate.toFixed(1)} %`;
+            coverage.htmlReport ? $('coverage-link').setAttribute('href', '/coverage/') : $('coverage-link').removeAttribute('href');
+        }
+    }
+
+    function renderStatusFilter() {
+        const counts = { all: tests().length };
+        for (const test of tests()) counts[test.status] = (counts[test.status] ?? 0) + 1;
+        if (state.status !== 'all' && !counts[state.status]) state.status = 'all';
+        $('status-filter').hidden = !state.report;
+        $('status-filter').innerHTML = STATUSES
+            .filter(([key]) => key === 'all' || counts[key])
+            .map(([key, label]) => `<button type="button" data-status="${key}" aria-pressed="${state.status === key}" aria-label="${label}: ${counts[key] ?? 0}">${key === 'all' ? '' : glyph(key)}<span class="text">${label}</span><span class="count">${counts[key] ?? 0}</span></button>`)
+            .join('');
+    }
+
+    function isVisible(test) {
+        const matchesText = state.filter === '' || test.id.toLowerCase().includes(state.filter);
+        return matchesText && (state.status === 'all' || test.status === state.status);
+    }
+
+    // The rows of the tree in display order: the one source for drawing it and for moving in it.
+    function treeRows() {
+        const rows = [];
+        for (const suite of state.report?.suites ?? []) {
+            const shown = orderedTests(suite).filter(isVisible);
+            if (shown.length === 0) continue;
+            const suiteNode = 's:' + suite.name;
+            rows.push({ node: suiteNode, kind: 'suite', level: 0, name: suite.name, tests: suite.tests, open: isOpen(suiteNode) });
+            if (!isOpen(suiteNode)) continue;
+            let currentGroup = null;
+            let groupOpen = true;
+            for (const test of shown) {
+                const group = state.slowestFirst ? null : test.group;
+                if (group !== currentGroup) {
+                    currentGroup = group;
+                    if (group) {
+                        const groupNode = 'g:' + groupKey(suite.name, group);
+                        groupOpen = isOpen(groupNode);
+                        rows.push({ node: groupNode, kind: 'group', level: 1, name: group, tests: suite.tests.filter((t) => t.group === group), open: groupOpen });
+                    }
+                }
+                if (group && !groupOpen) continue;
+                rows.push({ node: 't:' + test.id, kind: 'test', level: group ? 2 : 1, name: displayName(test), test });
+            }
+        }
+        return rows;
+    }
+
+    function renderTree() {
+        const rows = treeRows();
+        const tabStop = rows.some((row) => row.node === state.node) ? state.node : rows[0]?.node;
+        $('tree').innerHTML = rows.map((row) => renderRow(row, row.node === tabStop)).join('')
+            || (state.report ? '<p class="note">No test matches the filter.</p>' : '');
+    }
+
+    function renderRow(row, isTabStop) {
+        const indent = `<span class="indent" aria-hidden="true">${'<i></i>'.repeat(row.level)}</span>`;
+        const common = `role="treeitem" data-node="${escapeHtml(row.node)}" aria-level="${row.level + 1}" aria-selected="${row.node === state.node}" tabindex="${isTabStop ? 0 : -1}"`;
+        if (row.kind === 'test') {
+            const test = row.test;
+            const status = statusOf(test);
+            return `<div class="row test${test.isStale ? ' stale' : ''}${state.marked.has(test.id) ? ' marked' : ''}" ${common} aria-label="${escapeHtml(test.name)}, ${labelOf(test)}${state.marked.has(test.id) ? ', marked' : ''}">
+                ${indent}<span class="toggle none"></span>${glyph(status)}
+                <span class="name">${escapeHtml(row.name)}</span>
+                <span class="side">${duration(test.timeInSeconds)}</span>
+                ${runNode(row.node, `Run ${test.name}`)}</div>`;
+        }
+        const failed = row.tests.filter((t) => t.status === 'failed').length;
+        return `<div class="row ${row.kind}" ${common} aria-expanded="${row.open}" aria-label="${escapeHtml(row.name)}, ${row.tests.length} tests${failed ? `, ${failed} failed` : ''}">
+            ${indent}<span class="toggle" data-toggle="${escapeHtml(row.node)}">${svg(ICONS.chevron)}</span>${glyph(aggregate(row.tests))}
+            <span class="name">${escapeHtml(row.name)}</span>
+            <span class="side">${failed && row.kind === 'suite' ? `<span class="badge failed">${failed} failed</span>` : ''}<span>${row.tests.length}</span><span>${duration(totalTime(row.tests))}</span></span>
+            ${runNode(row.node, `Run every test in ${row.name}`)}</div>`;
+    }
+
+    function runNode(node, label) {
+        return `<button type="button" class="run-node" tabindex="-1" data-run-node="${escapeHtml(node)}" title="${escapeHtml(label)}" aria-label="${escapeHtml(label)}"${state.isRunning || !state.isOnline ? ' disabled' : ''}>${svg(ICONS.play)}</button>`;
+    }
+
+    function renderMenu() {
+        const isIdle = !state.isRunning && state.isOnline;
+        $('run-more').disabled = !isIdle;
+        $('run-more').setAttribute('aria-expanded', String(state.isMenuOpen));
+        $('run-options').hidden = !state.isMenuOpen;
+        if (!state.isMenuOpen) return;
+        $('run-options').innerHTML = RUN_MODES.map(([mode, label, key]) => {
+            const count = mode === 'last' ? (state.lastRun ? (state.lastRun.ids?.length ?? (state.lastRun.failedOnly ? 'failed' : 'all')) : 0) : idsFor(mode).length;
+            return `<button type="button" role="menuitem" data-run-mode="${mode}"${count && isIdle ? '' : ' disabled'}><span class="text">${label}</span><span class="count">${count || ''}</span><kbd>${key}</kbd></button>`;
+        }).join('');
+    }
+
+    function openMenu() {
+        if (state.isRunning || !state.isOnline) return;
+        closeMenus();
+        state.isMenuOpen = true;
+        renderMenu();
+        $('run-options').querySelector('button:not(:disabled)')?.focus();
+    }
+
+    // Right-click or Shift+F10: what can be done with this node.
+    function openContextMenu(node, x, y) {
+        closeMenus();
+        state.contextNode = node;
+        const list = testsOf(node);
+        const test = node.startsWith('t:') ? list[0] : null;
+        const failed = list.filter((t) => t.status === 'failed').length;
+        const isIdle = !state.isRunning && state.isOnline;
+        const item = (action, icon, label, key = '', enabled = true) => `<button type="button" role="menuitem" data-action="${action}"${enabled ? '' : ' disabled'}>${svg(ICONS[icon])}<span class="text">${label}</span>${key ? `<kbd>${key}</kbd>` : ''}</button>`;
+        const items = test
+            ? [item('run', 'play', 'Run', 'Enter', isIdle), item('editor', 'editor', 'Open in editor', 'E', !!test.file),
+                item('mark', 'mark', state.marked.has(test.id) ? 'Unmark' : 'Mark', 'Space'), '<hr>',
+                item('copy-name', 'copy', 'Copy name'), item('copy-id', 'copy', 'Copy test ID')]
+            : [item('run', 'play', `Run ${list.length} tests`, 'Enter', isIdle), item('run-failed', 'rerun', `Rerun ${failed} failed`, '', isIdle && failed > 0),
+                item('toggle', 'chevron', isOpen(node) ? 'Collapse' : 'Expand', isOpen(node) ? '←' : '→'), '<hr>', item('copy-name', 'copy', 'Copy name')];
+        const menu = $('context-menu');
+        menu.innerHTML = items.join('');
+        menu.hidden = false;
+        const box = menu.getBoundingClientRect();
+        menu.style.left = Math.max(8, Math.min(x, window.innerWidth - box.width - 8)) + 'px';
+        menu.style.top = Math.max(8, Math.min(y, window.innerHeight - box.height - 8)) + 'px';
+        menu.querySelector('button:not(:disabled)')?.focus();
+    }
+
+    function contextAction(action) {
+        const node = state.contextNode;
+        const list = testsOf(node);
+        closeMenus();
+        focusRow();
+        if (action === 'run') run({ ids: list.map((t) => t.id) });
+        else if (action === 'run-failed') run({ ids: list.filter((t) => t.status === 'failed').map((t) => t.id) });
+        else if (action === 'editor') openInEditor(list[0]);
+        else if (action === 'mark') { toggleMark(list[0].id); renderTree(); }
+        else if (action === 'toggle') toggle(node);
+        else if (action === 'copy-name') navigator.clipboard?.writeText(node.startsWith('t:') ? list[0].name : node.slice(2).split('\n').pop());
+        else if (action === 'copy-id') navigator.clipboard?.writeText(list[0].id);
+    }
+
+    function closeMenus() {
+        if (state.isMenuOpen) { state.isMenuOpen = false; renderMenu(); }
+        $('context-menu').hidden = true;
+    }
+
+    function renderDetail() {
+        const detail = $('detail');
+        detail.classList.toggle('is-running', state.isRunning);
+        $('panes').classList.toggle('is-empty', !state.report);
+        if (!state.report) {
+            detail.innerHTML = `<div class="empty"><div>${glyph('notrun', 'glyph')}<h2>No results yet</h2>
+                <p>Run the tests from here, or in your terminal with <code>microunit --explorer</code>. The results appear as soon as the run finishes.</p>
+                <button class="btn primary" type="button" data-run-all${state.isOnline ? '' : ' disabled'}>${svg(ICONS.play)}Run all</button></div></div>`;
+            return;
+        }
+        const test = selectedTest();
+        if (test) { detail.innerHTML = testDetail(test); return; }
+        if (state.node && testsOf(state.node).length) { detail.innerHTML = nodeDetail(state.node); return; }
+        const summary = state.report.summary;
+        detail.innerHTML = summary.failed === 0 && summary.total > 0
+            ? `<div class="empty"><div>${glyph('passed', 'glyph')}<h2>All ${summary.passed} tests passed</h2><p>In ${duration(state.report.durationSeconds)}. Pick a test on the left for its details.</p></div></div>`
+            : '<div class="empty"><div><h2>Select a test</h2><p>Pick a test on the left to see its details.</p></div></div>';
+    }
+
+    function testDetail(test) {
+        const status = statusOf(test);
+        const line = test.failureLine ?? test.line;
+        const link = editorUrl(test.file, line);
+        const crumbs = [test.suite, test.group].filter(Boolean).map(escapeHtml).join(' › ');
+        const parts = [`<div class="detail-inner">
+            <div class="detail-head">
+                ${glyph(status)}
+                <div class="titles">
+                    <h1>${escapeHtml(test.name)}<span class="chip ${status}">${labelOf(test)}</span></h1>
+                    <div class="path"><span>${crumbs}</span>${test.file ? `<a href="${escapeHtml(link)}" title="Open in your editor (E)">${escapeHtml(shortPath(test.file))}:${line}</a>` : ''}<span>${duration(test.timeInSeconds)}</span></div>
+                </div>
+                <div class="actions">
+                    ${link ? `<a class="btn" href="${escapeHtml(link)}">${svg(ICONS.editor)}Open in editor<kbd>E</kbd></a>` : ''}
+                    <button class="btn" type="button" data-run-node="t:${escapeHtml(test.id)}"${state.isRunning ? ' disabled' : ''}>${svg(ICONS.rerun)}Rerun<kbd>↵</kbd></button>
+                </div>
+            </div>
+            ${status === 'queued' ? '<p class="notice">Running. Below is the previous result.</p>' : test.isStale ? '<p class="notice">Not part of the latest run; this is the previous result.</p>' : ''}
+            <div class="block-area">`];
+
+        if (test.status === 'skipped') parts.push(block('Skip reason', `<pre class="code plain">${escapeHtml(test.skipReason)}</pre>`, test.skipReason));
+        if (test.failure) parts.push(failureBlocks(test.failure));
+        if (test.output) parts.push(block('Output', `<pre class="code plain">${escapeHtml(test.output)}</pre>`, test.output));
+        if (test.returnValue) parts.push(block('Return value', `<pre class="code plain">${escapeHtml(test.returnValue)}</pre>`, test.returnValue));
+        if (!test.failure && !test.output && !test.returnValue && test.status !== 'skipped') {
+            parts.push(`<p class="notice">${test.status === 'passed' ? 'Passed. Nothing else to report.' : 'This test has not run yet.'}</p>`);
+        }
+        parts.push('</div></div>');
+        return parts.join('');
+    }
+
+    // A suite or a data-set group: what is in it, failures first.
+    function nodeDetail(node) {
+        const list = testsOf(node);
+        const [suite, group] = node.slice(2).split('\n');
+        const name = group ?? suite;
+        const status = aggregate(list);
+        const failed = list.filter((t) => t.status === 'failed');
+        const others = list.filter((t) => t.status !== 'failed');
+        const counts = ['passed', 'failed', 'skipped', 'notrun'].map((key) => [key, list.filter((t) => t.status === key).length]).filter(([, n]) => n);
+        const row = (test, why) => `<button type="button" data-select="t:${escapeHtml(test.id)}">${glyph(statusOf(test))}<span class="name">${escapeHtml(group && test.name.startsWith(group + '_') ? test.name.slice(group.length + 1) : test.name)}</span>${why ? `<span class="why">${escapeHtml(why)}</span>` : ''}<span class="time">${duration(test.timeInSeconds)}</span></button>`;
+        return `<div class="detail-inner">
+            <div class="detail-head">
+                ${glyph(status)}
+                <div class="titles">
+                    <h1>${escapeHtml(name)}<span class="chip ${status}">${status === 'queued' ? 'Running' : failed.length ? `${failed.length} failed` : LABELS[status]}</span></h1>
+                    <div class="path">${group ? `<span>${escapeHtml(suite)} › data sets</span>` : '<span>Suite</span>'}<span>${list.length} tests</span><span>${duration(totalTime(list))}</span>${counts.map(([key, n]) => `<span>${n} ${LABELS[key].toLowerCase()}</span>`).join('')}</div>
+                </div>
+                <div class="actions">
+                    ${failed.length ? `<button class="btn" type="button" data-run-ids="${escapeHtml(failed.map((t) => t.id).join('\n'))}"${state.isRunning ? ' disabled' : ''}>${svg(ICONS.rerun)}Rerun failed</button>` : ''}
+                    <button class="btn" type="button" data-run-node="${escapeHtml(node)}"${state.isRunning ? ' disabled' : ''}>${svg(ICONS.play)}Run ${list.length}<kbd>↵</kbd></button>
+                </div>
+            </div>
+            <div class="block-area">
+                ${failed.length ? block('Failed', `<div class="list">${failed.map((t) => row(t, (t.failure?.message ?? '').split('\n')[0])).join('')}</div>`) : ''}
+                ${others.length ? block(failed.length ? 'Other tests' : 'Tests', `<div class="list">${others.map((t) => row(t, '')).join('')}</div>`) : ''}
+            </div>
+        </div>`;
+    }
+
+    // A titled block; with copyText, a copy button.
+    const block = (title, body, copyText = null) => `<section class="block"><h2>${title}${copyText === null ? '' : `<button class="tool copy" type="button" data-copy="${escapeHtml(copyText)}" title="Copy" aria-label="Copy ${title.toLowerCase()}">${svg(ICONS.copy)}</button>`}</h2>${body}</section>`;
+
+    function failureBlocks(failure) {
+        if (failure.kind === 'error') {
+            const link = editorUrl(failure.file, failure.line);
+            return block('Error', `<div class="message">${escapeHtml(failure.class)}: ${escapeHtml(failure.message)}</div>
+                    <div class="where"><a href="${escapeHtml(link)}">${escapeHtml(shortPath(failure.file))}:${failure.line}</a></div>`, `${failure.class}: ${failure.message}`)
+                + block('Stack trace', `<pre class="code trace"><span class="frames">${traceLines(failure.trace)}</span></pre>`, failure.trace);
+        }
+
+        const message = (failure.customMessage ? `<div class="custom-message">${escapeHtml(failure.customMessage)}</div>` : '')
+            + `<div class="message">${escapeHtml(failure.message)}</div>`;
+        const parts = [block('Failure', message, [failure.customMessage, failure.message].filter(Boolean).join('\n'))];
+        if (failure.diff && failure.diff.length > 2) {
+            const plain = failure.diff.map(([type, text]) => (type === 'expected' ? '- ' : type === 'actual' ? '+ ' : '  ') + text).join('\n');
+            parts.push(block('Difference', `<pre class="code"><span class="diff">${diffLines(failure.diff)}</span></pre>`, plain));
+        } else if (failure.expected !== null || failure.actual !== null) {
+            parts.push(block('Values', '<div class="values">'
+                + (failure.expected !== null ? `<div><div class="caption">Expected</div><pre class="code plain">${escapeHtml(failure.expected)}</pre></div>` : '')
+                + (failure.actual !== null ? `<div><div class="caption">Actual</div><pre class="code plain">${escapeHtml(failure.actual)}</pre></div>` : '')
+                + '</div>'));
+        }
+        return parts.join('');
+    }
+
+    function diffLines(lines) {
+        const keep = new Set();
+        lines.forEach(([type], index) => {
+            if (type !== 'same') for (let near = index - 3; near <= index + 3; near++) keep.add(near);
+        });
+        const out = ['<span class="head" data-sign="">--- Expected   +++ Actual</span>'];
+        let last = -1;
+        lines.forEach(([type, text], index) => {
+            if (!keep.has(index)) return;
+            if (index > last + 1) out.push('<span class="fold" data-sign="">⋯</span>');
+            const sign = type === 'expected' ? '−' : type === 'actual' ? '+' : '';
+            out.push(`<span class="${type === 'same' ? '' : type}" data-sign="${sign}">${escapeHtml(text)}</span>`);
+            last = index;
+        });
+        return out.join('');
+    }
+
+    // "#0 /path/File.php(12): call()": frames open in the editor. Runs of frames outside the project
+    // (vendor/, MicroUnit itself) fold into one line, so the project's own frames stand out.
+    function traceLines(trace) {
+        const frames = String(trace ?? '').split('\n').filter((frame) => frame !== '').map((frame) => {
+            const match = frame.match(/^(#\d+\s+)(.+?)\((\d+)\)(.*)$/);
+            // Lines without a file ("#7 {main}") are PHP's own bookkeeping: they fold with the outside frames.
+            if (!match) return { html: escapeHtml(frame), isInternal: true };
+            const [, number, file, line, rest] = match;
+            return {
+                html: `${escapeHtml(number)}<a href="${escapeHtml(editorUrl(file, Number(line)))}">${escapeHtml(shortPath(file))}(${line})</a>${escapeHtml(rest)}`,
+                isInternal: !isInProject(file),
+            };
+        });
+        const out = [];
+        for (let index = 0; index < frames.length;) {
+            if (!frames[index].isInternal) { out.push(`<span>${frames[index].html}</span>`); index++; continue; }
+            let end = index;
+            while (end < frames.length && frames[end].isInternal) end++;
+            const run = frames.slice(index, end);
+            if (run.length === 1) {
+                out.push(`<span class="internal">${run[0].html}</span>`);
+            } else {
+                out.push(`<span class="unfold" data-unfold role="button" tabindex="0">⋯ ${run.length} frames outside your project</span>`);
+                out.push(...run.map((frame) => `<span class="internal" hidden>${frame.html}</span>`));
+            }
+            index = end;
+        }
+        return out.join('');
+    }
+
+    function renderChrome() {
+        const summary = state.report?.summary;
+        const failed = summary?.failed ?? 0;
+        $('run-all').disabled = state.isRunning || !state.isOnline;
+        $('run-failed').disabled = state.isRunning || !state.isOnline || failed === 0;
+        renderMenu();
+
+        const env = state.report?.environment;
+        $('environment').textContent = env ? `MicroUnit ${env.microunit} · PHP ${env.php}${env.framework ? ' · ' + env.framework : ''}` : `MicroUnit ${boot.version}`;
+        $('project').textContent = projectRoot.split('/').pop();
+
+        const colour = state.isRunning ? '#3FC6F3' : !summary ? '#8D929B' : failed ? '#F2545B' : '#5FB865';
+        const favicon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect fill="#0A17A8" width="64" height="64" rx="14"/><g transform="translate(9.6 9.6) scale(.7)"><path fill="#fff" d="M7 12H33a3 3 0 0 1 3 3V28H49a3 3 0 0 1 3 3V57a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3V15a3 3 0 0 1 3-3z"/><rect fill="${colour}" x="44" y="4" width="16" height="16" rx="3"/></g></svg>`;
+        $('favicon').href = 'data:image/svg+xml,' + encodeURIComponent(favicon);
+        document.title = (state.isRunning ? 'Running · ' : summary ? (failed ? `${failed} failed · ` : `${summary.passed} passed · `) : '') + 'Test Explorer · microunit';
+    }
+
+    function setOnline(isOnline) {
+        if (state.isOnline === isOnline) return;
+        state.isOnline = isOnline;
+        $('live').classList.toggle('off', !isOnline);
+        $('live-text').textContent = isOnline ? 'Live' : 'Stopped · run microunit explorer to restart';
+        renderAll();
+    }
+
+    // When a run lands, the bar fills from the first test to the last.
+    function reveal() {
+        if (prefersReducedMotion) return;
+        const bar = $('runbar');
+        bar.classList.remove('revealing');
+        void bar.offsetWidth;
+        bar.classList.add('revealing');
+    }
+
+    // ---- interaction ------------------------------------------------------------------------
+    const focusRow = () => document.querySelector('.row[aria-selected="true"]')?.focus({ preventScroll: true });
+
+    function setCursor(node, { scroll = false, focus = null } = {}) {
+        const keepFocus = focus ?? document.activeElement?.matches('.row') ?? false;
+        // A test inside a collapsed suite or group: open the way to it.
+        for (let parent = node.startsWith('t:') || node.startsWith('g:') ? parentOf(node) : null; parent; parent = parentOf(parent)) state.collapsed.delete(parent);
+        state.node = node;
+        renderTree();
+        renderDetail();
+        renderVerdict();
+        const row = document.querySelector('.row[aria-selected="true"]');
+        if (scroll) row?.scrollIntoView({ block: 'nearest' });
+        if (keepFocus) row?.focus({ preventScroll: true });
+        const list = testsOf(node);
+        $('announce').textContent = node.startsWith('t:') ? `${list[0].name}: ${labelOf(list[0])}` : `${node.slice(2).split('\n').pop()}, ${list.length} tests`;
+    }
+
+    function move(offset, absolute = null) {
+        const rows = treeRows();
+        if (rows.length === 0) return;
+        const index = rows.findIndex((row) => row.node === state.node);
+        const target = absolute ?? Math.max(0, Math.min(rows.length - 1, (index < 0 ? 0 : index) + offset));
+        setCursor(rows[target].node, { scroll: true, focus: true });
+    }
+
+    function collapseOrParent() {
+        if (!state.node) return;
+        if (!state.node.startsWith('t:') && isOpen(state.node)) return toggle(state.node);
+        const parent = parentOf(state.node);
+        if (parent) setCursor(parent, { scroll: true, focus: true });
+    }
+
+    function expandOrChild() {
+        if (!state.node || state.node.startsWith('t:')) return;
+        if (!isOpen(state.node)) return toggle(state.node);
+        move(1);
+    }
+
+    function toggleMark(id) {
+        state.marked.has(id) ? state.marked.delete(id) : state.marked.add(id);
+    }
+
+    function markRange(toNode) {
+        const order = treeRows().map((row) => row.node);
+        const [from, to] = [order.indexOf(state.node), order.indexOf(toNode)].sort((a, b) => a - b);
+        if (from < 0) return;
+        order.slice(from, to + 1).filter((node) => node.startsWith('t:')).forEach((node) => state.marked.add(node.slice(2)));
+    }
+
+    function toggle(node) {
+        state.collapsed.has(node) ? state.collapsed.delete(node) : state.collapsed.add(node);
+        renderTree();
+        focusRow();
+    }
+
+    function openInEditor(test) {
+        const link = test && editorUrl(test.file, test.failureLine ?? test.line);
+        if (link) location.href = link;
+    }
+
+    async function copy(button) {
+        try {
+            await navigator.clipboard.writeText(button.dataset.copy);
+            button.innerHTML = svg(ICONS.copied);
+            setTimeout(() => { button.innerHTML = svg(ICONS.copy); }, 1200);
+        } catch {}
+    }
+
+    function toggleHelp(force) {
+        const isOpenNow = force ?? $('help').hidden;
+        $('help').hidden = !isOpenNow;
+        $('shortcuts').setAttribute('aria-expanded', String(isOpenNow));
+    }
+
+    document.addEventListener('click', (event) => {
+        if (!event.target.closest('.menu, #run-more')) closeMenus();
+        if (!event.target.closest('#help, #shortcuts')) toggleHelp(false);
+        const target = event.target.closest('[data-action], [data-run-mode], [data-run-node], [data-run-ids], [data-copy], [data-run-all], [data-status], [data-toggle], [data-unfold], [data-select], [data-node]');
+        if (!target) return;
+        const data = target.dataset;
+        if (data.action) return contextAction(data.action);
+        if (data.runMode) return runMode(data.runMode);
+        if (data.runNode) return run({ ids: testsOf(data.runNode).map((t) => t.id) });
+        if (data.runIds) return run({ ids: data.runIds.split('\n') });
+        if (data.copy !== undefined) return copy(target);
+        if (data.runAll !== undefined) return run({});
+        if (data.status) { state.status = data.status; return renderAll(); }
+        if (data.toggle) return toggle(data.toggle);
+        if (data.unfold !== undefined) {
+            let next = target.nextElementSibling;
+            while (next?.classList.contains('internal')) { next.hidden = false; next = next.nextElementSibling; }
+            return target.remove();
+        }
+        if (data.select) return setCursor(data.select, { scroll: true });
+        const node = data.node;
+        if (node.startsWith('t:') && (event.ctrlKey || event.metaKey)) { toggleMark(node.slice(2)); return renderTree(); }
+        if (node.startsWith('t:') && event.shiftKey) { markRange(node); return renderTree(); }
+        state.marked.clear();
+        setCursor(node, { focus: true });
+        // One column: the details are below the list, so bring them into view.
+        if (matchMedia('(max-width: 720px)').matches) $('detail').scrollIntoView({ block: 'start' });
+    });
+
+    document.addEventListener('dblclick', (event) => {
+        const row = event.target.closest('.row');
+        if (row && !event.target.closest('.run-node, .toggle')) {
+            row.dataset.node.startsWith('t:') ? openInEditor(testsOf(row.dataset.node)[0]) : toggle(row.dataset.node);
+        }
+        if (event.target === $('splitter')) {
+            $('panes').style.removeProperty('--tree-width');
+            try { localStorage.removeItem('microunit-tree-width'); } catch {}
+        }
+    });
+
+    document.addEventListener('contextmenu', (event) => {
+        const row = event.target.closest('.row');
+        if (!row) return;
+        event.preventDefault();
+        if (row.dataset.node !== state.node) setCursor(row.dataset.node, { focus: true });
+        openContextMenu(row.dataset.node, event.clientX, event.clientY);
+    });
+
+    $('run-more').addEventListener('click', () => (state.isMenuOpen ? closeMenus() : openMenu()));
+    $('run-all').addEventListener('click', () => run({}));
+    $('run-failed').addEventListener('click', () => run({ failedOnly: true }));
+    $('shortcuts').addEventListener('click', () => toggleHelp());
+    $('filter').addEventListener('input', (event) => { state.filter = event.target.value.trim().toLowerCase(); renderTree(); });
+    $('filter').addEventListener('keydown', (event) => {
+        if (event.key === 'ArrowDown' || event.key === 'Enter') { event.preventDefault(); const rows = treeRows(); if (rows.length) setCursor(rows.some((r) => r.node === state.node) ? state.node : rows[0].node, { scroll: true, focus: true }); }
+    });
+    $('sort').addEventListener('click', () => { state.slowestFirst = !state.slowestFirst; $('sort').setAttribute('aria-pressed', String(state.slowestFirst)); renderTree(); });
+    $('expand-all').addEventListener('click', () => { state.collapsed.clear(); renderTree(); });
+    $('collapse-all').addEventListener('click', () => {
+        for (const suite of state.report?.suites ?? []) state.collapsed.add('s:' + suite.name);
+        if (state.node && !state.node.startsWith('s:')) state.node = 's:' + testsOf(state.node)[0]?.suite;
+        renderTree();
+        renderDetail();
+    });
+
+    // Menus: arrows move, Enter and Space choose, Esc returns to where you were.
+    function menuKeys(event, menu) {
+        const items = [...menu.querySelectorAll('button:not(:disabled)')];
+        const index = items.indexOf(document.activeElement);
+        if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+            event.preventDefault();
+            items[(index + (event.key === 'ArrowDown' ? 1 : items.length - 1)) % items.length]?.focus();
+        } else if (event.key === 'Home' || event.key === 'End') {
+            event.preventDefault();
+            items[event.key === 'Home' ? 0 : items.length - 1]?.focus();
+        } else if (event.key === 'Escape' || event.key === 'Tab') {
+            event.preventDefault();
+            const wasContext = !$('context-menu').hidden;
+            closeMenus();
+            wasContext ? focusRow() : $('run-more').focus();
+        }
+    }
+
+    document.addEventListener('keydown', (event) => {
+        const openMenuElement = !$('context-menu').hidden ? $('context-menu') : state.isMenuOpen ? $('run-options') : null;
+        if (openMenuElement) return menuKeys(event, openMenuElement);
+        if (event.target.closest('[data-unfold]') && (event.key === 'Enter' || event.key === ' ')) { event.preventDefault(); return event.target.click(); }
+        if (event.key === 'Escape') {
+            if (!$('help').hidden) return toggleHelp(false);
+            $('filter').value = ''; state.filter = ''; state.marked.clear(); $('filter').blur(); renderTree(); return focusRow();
+        }
+        if (event.target.matches('input, textarea') || event.target === $('splitter')) return;
+        if (event.ctrlKey || event.metaKey || event.altKey) return;
+        const key = event.key.length === 1 ? event.key.toLowerCase() : event.key;
+        const inList = event.target.matches('.row') || !event.target.matches('button, a, [role="button"]');
+        const actions = {
+            '/': () => $('filter').focus(),
+            '?': () => toggleHelp(),
+            j: () => move(1), ArrowDown: () => move(1),
+            k: () => move(-1), ArrowUp: () => move(-1),
+            Home: () => move(0, 0), End: () => move(0, treeRows().length - 1),
+            PageDown: () => move(PAGE), PageUp: () => move(-PAGE),
+            ArrowLeft: collapseOrParent, ArrowRight: expandOrChild,
+            r: () => run({}), f: () => run({ failedOnly: true }), l: () => runMode('last'),
+            v: () => runMode('view'), n: () => runMode('notrun'), p: () => runMode('passed'), m: () => openMenu(),
+            e: () => openInEditor(selectedTest()),
+        };
+        if (inList && event.key === 'Enter') { event.preventDefault(); return runMode('selected'); }
+        if (inList && event.key === ' ' && selectedTest()) { event.preventDefault(); toggleMark(selectedTest().id); return renderTree(), focusRow(); }
+        if ((event.key === 'ContextMenu' || (event.shiftKey && event.key === 'F10')) && state.node) {
+            event.preventDefault();
+            const box = document.querySelector('.row[aria-selected="true"]')?.getBoundingClientRect();
+            return openContextMenu(state.node, box ? box.left + 40 : 40, box ? box.bottom : 40);
+        }
+        const action = actions[key];
+        if (action && (inList || key.length === 1 || key === '?')) { event.preventDefault(); action(); }
+    });
+
+    // The list is resizable (dragged, or with the arrow keys on the divider; double-click resets);
+    // the width is remembered per browser.
+    const setTreeWidth = (width) => {
+        const clamped = Math.max(240, Math.min(width, window.innerWidth - 360));
+        $('panes').style.setProperty('--tree-width', clamped + 'px');
+        try { localStorage.setItem('microunit-tree-width', String(clamped)); } catch {}
+    };
+    try { const saved = Number(localStorage.getItem('microunit-tree-width')); if (saved) $('panes').style.setProperty('--tree-width', saved + 'px'); } catch {}
+    $('splitter').addEventListener('pointerdown', (event) => {
+        const splitter = $('splitter');
+        splitter.setPointerCapture(event.pointerId);
+        splitter.classList.add('dragging');
+        const left = $('panes').getBoundingClientRect().left;
+        const onMove = (e) => setTreeWidth(e.clientX - left);
+        splitter.addEventListener('pointermove', onMove);
+        splitter.addEventListener('pointerup', () => { splitter.classList.remove('dragging'); splitter.removeEventListener('pointermove', onMove); }, { once: true });
+    });
+    $('splitter').addEventListener('keydown', (event) => {
+        if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+        event.preventDefault();
+        setTreeWidth(document.querySelector('.tree-pane').getBoundingClientRect().width + (event.key === 'ArrowLeft' ? -24 : 24));
+    });
+
+    // Theme: dark by default; light, or following the system, when chosen (remembered per browser).
+    const THEMES = { dark: ['moon', 'Dark'], light: ['sun', 'Light'], system: ['system', 'System'] };
+    const THEME_ORDER = ['dark', 'light', 'system'];
+    const systemDark = matchMedia('(prefers-color-scheme: dark)');
+    let theme = 'dark';
+    try { const saved = localStorage.getItem('microunit-theme'); if (THEME_ORDER.includes(saved)) theme = saved; } catch {}
+    const applyTheme = () => {
+        document.documentElement.dataset.theme = theme === 'system' ? (systemDark.matches ? 'dark' : 'light') : theme;
+        $('theme').innerHTML = svg(ICONS[THEMES[theme][0]]) + THEMES[theme][1];
+        $('theme').title = `Theme: ${THEMES[theme][1]} (click to change)`;
+    };
+    systemDark.addEventListener('change', () => theme === 'system' && applyTheme());
+    applyTheme();
+    $('theme').addEventListener('click', () => {
+        theme = THEME_ORDER[(THEME_ORDER.indexOf(theme) + 1) % THEME_ORDER.length];
+        try { localStorage.setItem('microunit-theme', theme); } catch {}
+        applyTheme();
+    });
+
+    renderAll();
+    poll();
+})();
+</script>
+</body>
+</html>
