@@ -2,9 +2,9 @@
 
 namespace MicroUnit\Helpers;
 
-enum DiffLineType
+enum DiffLineType: string
 {
-    case Same;
-    case ExpectedDifferent;
-    case ActualDifferent;
+    case Same = 'same';
+    case ExpectedOnly = 'expected';
+    case ActualOnly = 'actual';
 }

@@ -2,87 +2,146 @@
 
 namespace MicroUnit\Helpers;
 
-/** Exports a value of any kind into a human readable format */
-class ValueExporter
+/** Renders any PHP value as readable, multi-line text for failure messages and diffs. */
+final class ValueExporter
 {
-    private const SPACING_UNIT = '   ';
+    private const string INDENT = '    ';
 
-    public static function export($var, int $indent = 0): string
+    private const string OMITTED = '…';
+
+    private function __construct() {}
+
+    /**
+     * @param int $maxLength stop exporting at about this many bytes and mark the rest with "…": for
+     *                       displays, where a big object graph would otherwise cost seconds and gigabytes
+     *                       (an object referenced a thousand times is exported a thousand times)
+     */
+    public static function export(mixed $value, int $maxLength = PHP_INT_MAX): string
     {
+        $budget = $maxLength;
+
+        return self::exportValue($value, 0, [], $budget);
+    }
+
+    /** @param array<int, true> $objectsOnPath ids of the objects currently being exported (cycle guard) */
+    private static function exportValue(mixed $value, int $depth, array $objectsOnPath, int &$budget): string
+    {
+        if ($budget <= 0) {
+            return self::OMITTED;
+        }
+
         return match (true) {
-            is_array($var) => self::exportArray($var, $indent),
-            $var instanceof Diff => self::exportDiff($var, $indent),
-            is_object($var) => self::exportObject($var, $indent),
-            default => self::exportScalar($var),
+            $value instanceof ExportedValue => $value->representation,
+            is_array($value) => self::exportArray($value, $depth, $objectsOnPath, $budget),
+            $value instanceof \UnitEnum => $value::class . '::' . $value->name,
+            $value instanceof \Closure => 'Closure',
+            $value instanceof \DateTimeInterface => $value::class . '(' . $value->format('Y-m-d\TH:i:s.uP') . ')',
+            is_object($value) => self::exportObject($value, $depth, $objectsOnPath, $budget),
+            is_string($value) => self::exportString($value, $budget),
+            default => self::exportScalar($value),
         };
     }
 
-
-    private static function exportScalar(mixed $val): string
+    private static function exportScalar(mixed $value): string
     {
-        $exported = var_export($val, true);
-        $type = gettype($val);
-        return "$exported ($type)";
+        return match (true) {
+            $value === null => 'null',
+            is_bool($value) => ($value ? 'true' : 'false') . ' (bool)',
+            is_int($value) => $value . ' (int)',
+            is_float($value) => var_export($value, true) . ' (float)',
+            default => get_debug_type($value),
+        };
     }
 
-    private static function exportArray(array $vals, int $indent = 0): string
+    /** A string longer than the budget is cut (never inside a UTF-8 character) and its full length named. */
+    private static function exportString(string $value, int $budget): string
     {
-        $spacing = self::getSpacing($indent);
-        $innerSpacing = self::getSpacing($indent + 1);
-
-        $output = "Array (" . PHP_EOL;
-        foreach ($vals as $key => $value) {
-            $output .= $innerSpacing . "[$key] => ";
-            $output .= self::export($value, $indent + 1);
-            $output .= PHP_EOL;
-        }
-        $output .= $spacing . ')';
-
-        return $output;
-    }
-
-    private static function exportObject(object $obj, int $indent = 0): string
-    {
-        $spacing = self::getSpacing($indent);
-        $innerSpacing = self::getSpacing($indent + 1);
-        $class = get_class($obj);
-
-        $output = "Object of class $class (" . PHP_EOL;
-
-        foreach (get_object_vars($obj) as $prop => $value) {
-            $output .= $innerSpacing . "[$prop] => ";
-            $output .= self::export($value, $indent + 1);
-            $output .= PHP_EOL;
-        }
-        $output .= $spacing . ')';
-
-        return $output;
-    }
-
-    private static function exportDiff(Diff $diff, int $indent = 0)
-    {
-        $innerSpacing = self::getSpacing($indent + 1);
-
-        $output = '--- Expected' . PHP_EOL;
-        $output .= '+++ Actual' . PHP_EOL;
-        $output .= 'Diff: ' . PHP_EOL;
-
-        foreach ($diff->diffLines as $diffLine) {
-            $prefix = match ($diffLine->type) {
-                DiffLineType::Same => '',
-                DiffLineType::ExpectedDifferent => '-',
-                DiffLineType::AcutalDifferent => '+'
-            };
-            $line = $diffLine->line;
-            $output .= $innerSpacing . "$prefix $line";
-            $output .= PHP_EOL;
+        $length = strlen($value);
+        if ($length <= $budget) {
+            return var_export($value, true) . ' (string)';
         }
 
-        return trim($output);
+        $cut = $budget;
+        while ($cut > 0 && (ord($value[$cut]) & 0xC0) === 0x80) {
+            $cut--;
+        }
+
+        return var_export(substr($value, 0, $cut), true) . self::OMITTED . " (string, $length bytes)";
     }
 
-    private static function getSpacing(int $indent): string
+    /** @param array<int, true> $objectsOnPath */
+    private static function exportArray(array $array, int $depth, array $objectsOnPath, int &$budget): string
     {
-        return str_repeat(self::SPACING_UNIT, $indent);
+        if ($array === []) {
+            return '[]';
+        }
+
+        $innerIndent = str_repeat(self::INDENT, $depth + 1);
+        $lines = [];
+        $remaining = count($array);
+        foreach ($array as $key => $value) {
+            $lines[] = self::entry($innerIndent . var_export($key, true) . ' => ', $value, $depth, $objectsOnPath, $budget);
+            if (--$remaining > 0 && $budget <= 0) {
+                $lines[] = $innerIndent . self::OMITTED;
+                break;
+            }
+        }
+
+        return "[\n" . implode("\n", $lines) . "\n" . str_repeat(self::INDENT, $depth) . ']';
+    }
+
+    /** @param array<int, true> $objectsOnPath */
+    private static function exportObject(object $object, int $depth, array $objectsOnPath, int &$budget): string
+    {
+        $id = spl_object_id($object);
+        if (isset($objectsOnPath[$id])) {
+            return $object::class . ' { *RECURSION* }';
+        }
+        $objectsOnPath[$id] = true;
+
+        // Mangled vars include private and protected properties, which matter for equality.
+        $properties = get_mangled_object_vars($object);
+        if ($properties === []) {
+            return $object::class . ' {}';
+        }
+
+        $innerIndent = str_repeat(self::INDENT, $depth + 1);
+        $lines = [];
+        $remaining = count($properties);
+        foreach ($properties as $mangledName => $value) {
+            $lines[] = self::entry($innerIndent . self::unmangle((string) $mangledName) . ': ', $value, $depth, $objectsOnPath, $budget);
+            if (--$remaining > 0 && $budget <= 0) {
+                $lines[] = $innerIndent . self::OMITTED;
+                break;
+            }
+        }
+
+        return $object::class . " {\n" . implode("\n", $lines) . "\n" . str_repeat(self::INDENT, $depth) . '}';
+    }
+
+    /**
+     * One line of an array or object, "$prefix<value>,", paid from the budget.
+     *
+     * @param array<int, true> $objectsOnPath
+     */
+    private static function entry(string $prefix, mixed $value, int $depth, array $objectsOnPath, int &$budget): string
+    {
+        $budget -= strlen($prefix) + 2;
+        $exported = self::exportValue($value, $depth + 1, $objectsOnPath, $budget);
+        if (!is_array($value) && !is_object($value)) {
+            $budget -= strlen($exported);
+        }
+
+        return $prefix . $exported . ',';
+    }
+
+    /** "\0Class\0name" (private) and "\0*\0name" (protected) become "name". */
+    private static function unmangle(string $name): string
+    {
+        if (!str_starts_with($name, "\0")) {
+            return $name;
+        }
+
+        return substr($name, strrpos($name, "\0") + 1);
     }
 }

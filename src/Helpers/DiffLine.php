@@ -2,10 +2,10 @@
 
 namespace MicroUnit\Helpers;
 
-class DiffLine
+final readonly class DiffLine
 {
     public function __construct(
-        public readonly DiffLineType $type,
-        public readonly string $line
+        public DiffLineType $type,
+        public string $line,
     ) {}
 }
