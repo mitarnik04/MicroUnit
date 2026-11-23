@@ -3,11 +3,11 @@
 All notable changes to MicroUnit. The format follows [Keep a Changelog](https://keepachangelog.com/),
 and MicroUnit uses [semantic versioning](https://semver.org/).
 
-## [1.0.0] - 2026-11-19
+## [1.0.0] - 2026-11-23
 
 The first stable release. MicroUnit started as a side project in May 2025 and got as far as a public
 beta that summer; building the rest next to a day job was more than one person could do. With AI as my
-tool I finally had the capacity to bring it to this release: to test every part of it properly,
+tool I finally had the capacity to bring it to this release: to test it thoroughly,
 down to running the real test suites of well-known PHP projects through it, and to build every
 feature I had imagined for it.
 
@@ -40,9 +40,9 @@ feature I had imagined for it.
   `multiple` (soft assertions), `matchesSnapshot`, plus `stringStartsWith`, `stringEndsWith`,
   `matchesRegex`, `equalsWithDelta`, `isGreaterThanOrEqual`, `isLessThanOrEqual`, `fail`, and an
   optional failure message on every assertion. `AssertResponse` for HTTP responses.
-- Fluent assertions for every kind of value: `AssertNumeric`, `AssertArray`, `AssertString` and
-  `AssertFile` next to `AssertSingle`, each with the checks that fit its type and the same failures
-  as their `Assert` twins.
+- Fluent assertions for every kind of value: `AssertString` and `AssertFile` join `AssertSingle`,
+  `AssertNumeric` and `AssertArray`, and all five offer every check that fits their type, with the
+  same failures as their `Assert` twins.
 - Snapshot testing with `--update-snapshots`; snapshots are never created in CI.
 - Mocks: per-instance call logs (next to the all-instances log), `MicroMock::of($instance)`,
   changing return values after `build()`, `returnsMap`, partial mocks with `interceptOnly`.
@@ -76,6 +76,9 @@ feature I had imagined for it.
 - `Assert::throws()` returns the caught exception and can check its message;
   `Assert::contains()` accepts any iterable and its third parameter is called `$strict`;
   `Assert::empty()`/`notEmpty()` accept any value.
+- The fluent classes name their parameters like `Assert` does: `begin($actual)`, `$minimum` and
+  `$maximum` in `AssertNumeric`, `$needle` and `$strict` in `AssertArray::contains()`, and
+  `$expectedClass` in `AssertSingle::instanceOf()`. This only affects calls with named arguments.
 - Coloured console output is the default (`NO_COLOR`, `FORCE_COLOR` and `--no-colors` are honoured).
 - The run time in the summary is wall-clock time (it used to be the sum of the test bodies).
 - The command is `vendor/bin/microunit`; `bin/run-tests.php` remains as a shim.
@@ -83,6 +86,6 @@ feature I had imagined for it.
 - Internal classes were reorganised; `ConfigProvider`, `TesterHub`, the old cache classes and the
   string helpers are gone.
 
-## [0.x] - beta
+## [1.0.0-beta.1] to [1.0.0-beta.6] - 2025-06-17 to 2025-12-16
 
 The public beta: closures-based tests, the first assertions, mocking and output writers.

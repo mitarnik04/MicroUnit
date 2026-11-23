@@ -162,7 +162,7 @@ A release needs the whole CI pipeline green, and one more gate that is too slow 
 
 ## Reporting bugs
 
-Found something broken? Please [open an issue](https://github.com/mitarnik04/MicroUnit/issues/new?template=bug_report.md). The fastest way to get it fixed:
+Found something broken? Please [open an issue](https://github.com/mitarnik04/MicroUnit/issues/new?template=bug_report.yml). The fastest way to get it fixed:
 
 - the smallest test file and config that reproduce the problem
 - what you expected and what happened instead (paste the output)
@@ -173,7 +173,7 @@ Found something broken? Please [open an issue](https://github.com/mitarnik04/Mic
 
 ## Suggesting features
 
-[Open an issue](https://github.com/mitarnik04/MicroUnit/issues/new?template=feature_request.md) and describe the problem you're trying to solve before the solution you have in mind. "My tests need a database and I want it set up once" is easier to design for than "add a `beforeAll` annotation". If another tool solves it well, link it, that helps.
+[Open an issue](https://github.com/mitarnik04/MicroUnit/issues/new?template=feature_request.yml) and describe the problem you're trying to solve before the solution you have in mind. "My tests need a database and I want it set up once" is easier to design for than "add a `beforeAll` annotation". If another tool solves it well, link it, that helps.
 
 ## Questions
 

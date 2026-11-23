@@ -70,7 +70,6 @@ not the headline. "Modern" hints at it; the docs show it.
   PHP-CS-Fixer and PHPStan run as PHARs.
 - Configuration lives in PHP (`MicroUnitConfigBuilder`); CLI flags only override a single run.
 - `microunit migrate` translates PHPUnit suites and leaves the originals untouched.
-- 1.0 is not released yet; the README and docs show a pre-release notice until it is on Packagist.
 
 ## Brand Commitments
 

@@ -1,7 +1,7 @@
 ---
 layout: default
 title: MicroUnit
-description: The PHP testing framework with zero dependencies. Readable closures, real assertions, a Test Explorer, coverage without extensions, parallel runs and output made for AI agents.
+description: A new way to test PHP. Built for today. The dependency-free testing framework, with tests you can read at a glance and fast runs.
 ---
 
 # MicroUnit

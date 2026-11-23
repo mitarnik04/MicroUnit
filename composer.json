@@ -1,6 +1,6 @@
 {
   "name": "microunit/microunit",
-  "description": "Minimal. Modern. Mighty. The dependency-free PHP unit testing framework with built-in mocking, pure-PHP code coverage, parallel execution and a test explorer.",
+  "description": "A new way to test PHP. Built for today. The dependency-free testing framework, with tests you can read at a glance and fast runs.",
   "type": "library",
   "license": "Apache-2.0",
   "keywords": ["testing", "unit-testing", "tdd", "mocking", "code-coverage", "test-runner"],

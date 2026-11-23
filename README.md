@@ -1,9 +1,3 @@
-> [!IMPORTANT]
-> **MicroUnit 1.0 is not released yet.** This README and the
-> [documentation](https://mitarnik04.github.io/MicroUnit/) already describe 1.0, a substantial
-> rewrite. Until it is out, Packagist only has the 1.0 betas, which lack much of what you read here,
-> so the install command below does not work yet. Watch the repository to hear when 1.0 lands.
-
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="assets/brand/banner-dark.png">
@@ -75,8 +69,10 @@ No base classes, no annotations. A test is a closure with a name that says what 
 
 ## Built with AI
 
-I write MicroUnit with AI: the code, and also this README and the documentation. Docs are where AI
-is at its best, because it reads the complete source and describes what is actually there.
+I write MicroUnit with AI: the code, the tests, and also this README and the documentation. It is
+also one of the main reasons MicroUnit is tested as thoroughly as it is. On my own, next to a day
+job, I would not have had the time to test each feature from several sides, how it fails as well as
+how it passes. With AI, I do.
 
 The quality comes from what surrounds it. I design the APIs and review the code, and every change
 has to pass MicroUnit's own test suite on three operating systems, static analysis, a coverage floor
