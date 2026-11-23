@@ -8,10 +8,7 @@ description: The browser-based Test Explorer that opens after interactive runs, 
 
 The Test Explorer is a small web UI that MicroUnit serves on your own machine. If you have used the Test Explorer in Visual Studio, you already know the idea: every test in one list, a summary of what passed and what didn't, a detail pane for the selected test, and a handful of ways to run exactly the tests you care about right now. It is opt-in: it opens when you ask for it, it needs nothing installed (it is plain PHP plus one HTML file), and a run without it costs nothing for it.
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="{{ '/assets/img/explorer-dark.png' | relative_url }}">
-  <img alt="The MicroUnit Test Explorer: the test list on the left, a failed assertion with its diff on the right" src="{{ '/assets/img/explorer.png' | relative_url }}" width="100%">
-</picture>
+<img alt="The MicroUnit Test Explorer: the test list on the left, a failed assertion with its diff on the right" src="{{ '/assets/img/explorer-dark.png' | relative_url }}" width="100%">
 
 ## Opening it
 
@@ -172,6 +169,12 @@ A local web server that can start processes deserves a short explanation of why 
 - **Idle timeout.** The server stops after 30 minutes without a request (never during a run). An open tab polls the server, so in practice it shuts down about half an hour after you close the tab. The next interactive run starts it again.
 
 The coverage report link (shown when the run wrote an [HTML coverage report](coverage.md#reports)) serves files from that report's directory and nothing outside of it.
+
+## Light theme
+
+If you work in a light editor, the explorer comes along. The theme switch in the status bar cycles through dark, light and following your system, and your browser remembers the choice.
+
+<img alt="The MicroUnit Test Explorer in its light theme" src="{{ '/assets/img/explorer.png' | relative_url }}" width="100%">
 
 ## Related pages
 

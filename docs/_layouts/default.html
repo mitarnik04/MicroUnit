@@ -78,10 +78,10 @@
         </div>
     </main>
 
-    <aside class="toc" aria-label="On this page" hidden>
-        <span class="label">On this page</span>
+    <nav class="toc" aria-labelledby="toc-label" hidden>
+        <span class="label" id="toc-label">On this page</span>
         <ul></ul>
-    </aside>
+    </nav>
 </div>
 
 <script>
@@ -92,6 +92,25 @@
         const isOpen = document.body.classList.toggle('menu-open');
         button.setAttribute('aria-expanded', String(isOpen));
         button.textContent = isOpen ? 'Close' : 'Menu';
+    });
+
+    // Every table gets a wrapper that scrolls on narrow screens, so the table itself can span the column.
+    document.querySelectorAll('.content table').forEach((table) => {
+        const wrap = document.createElement('div');
+        wrap.className = 'table-wrap';
+        table.before(wrap);
+        wrap.append(table);
+    });
+
+    // Code in table cells may wrap, but never inside a name: offer a break before every "->", as a
+    // method chain is written, after "::" and before an argument list. The arrow stays in one piece.
+    // <wbr> adds no character, so copying the code stays exact.
+    document.querySelectorAll('.content td code').forEach((code) => {
+        code.innerHTML = code.innerHTML
+            .replaceAll('-&gt;', '<span class="arrow">-&gt;</span>')
+            .replace(/(?<=.)<span class="arrow">/gs, '<wbr><span class="arrow">')
+            .replace(/::(?=\w)/g, '::<wbr>')
+            .replace(/(?<=\w)\((?!\))/g, '<wbr>(');
     });
 
     // "On this page": every h2/h3 gets an anchor link and an entry; the visible one is highlighted.
@@ -110,16 +129,48 @@
         anchor.textContent = '#';
         heading.append(anchor);
     });
+    // The section being read is the last heading above a reading line in the upper part of the
+    // window. At the end of the page the last heading wins: a short final section never scrolls up
+    // to that line. A link that was just followed wins until the reader scrolls on.
     const links = new Map([...toc.querySelectorAll('a')].map((link) => [link.hash.slice(1), link]));
-    const observer = new IntersectionObserver((entries) => {
-        for (const entry of entries) {
-            if (entry.isIntersecting) {
-                links.forEach((link) => link.classList.remove('active'));
-                links.get(entry.target.id)?.classList.add('active');
+    const mark = (id) => {
+        // The highlight is mirrored in aria-current, so screen readers hear where the reader is too.
+        links.forEach((link, key) => {
+            link.classList.toggle('active', key === id);
+            key === id ? link.setAttribute('aria-current', 'true') : link.removeAttribute('aria-current');
+        });
+        // Keep the current entry visible when the list is taller than the window (scrolls the list only).
+        const link = links.get(id);
+        if (link && toc.scrollHeight > toc.clientHeight) {
+            const top = link.getBoundingClientRect().top - toc.getBoundingClientRect().top + toc.scrollTop;
+            if (top < toc.scrollTop + 40 || top > toc.scrollTop + toc.clientHeight - 60) {
+                toc.scrollTop = top - toc.clientHeight / 3;
             }
         }
-    }, { rootMargin: '-70px 0px -70% 0px' });
-    headings.forEach((heading) => observer.observe(heading));
+    };
+    let followed = null;
+    const update = () => {
+        if (followed !== null) {
+            mark(followed);
+            return;
+        }
+        const isAtEnd = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2;
+        const readingLine = window.innerHeight * 0.3;
+        const current = isAtEnd ? headings.at(-1) : headings.findLast((heading) => heading.getBoundingClientRect().top <= readingLine);
+        mark(current?.id ?? null);
+    };
+    let isScheduled = false;
+    addEventListener('scroll', () => {
+        if (!isScheduled) {
+            isScheduled = true;
+            requestAnimationFrame(() => { isScheduled = false; update(); });
+        }
+    }, { passive: true });
+    // Smooth or instant, following a link scrolls; only a scroll the reader starts releases it.
+    ['wheel', 'touchstart', 'keydown'].forEach((type) => addEventListener(type, () => { followed = null; }, { passive: true }));
+    addEventListener('hashchange', () => { followed = decodeURIComponent(location.hash.slice(1)) || null; update(); });
+    followed = links.has(decodeURIComponent(location.hash.slice(1))) ? decodeURIComponent(location.hash.slice(1)) : null;
+    update();
 })();
 </script>
 </body>

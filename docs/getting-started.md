@@ -44,6 +44,8 @@ return MicroUnitConfigBuilder::create()
     ->build();
 ```
 
+You could even skip it: without a config file, MicroUnit runs the `*-tests.php` files in `tests/` with its defaults. The file is where your project's own setup goes once it needs one, and there is a lot to set: test groups, parallel runs, coverage reports, output formats, the Test Explorer, framework integration and more, all with autocompletion. Every option is on the [configuration](configuration.md) page.
+
 ### Framework detection
 
 `init` reads your `composer.json` (both `require` and `require-dev`) and sets the config up for the framework it finds:

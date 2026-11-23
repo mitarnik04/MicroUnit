@@ -13,10 +13,12 @@ feature I had imagined for it.
 
 ### Highlights
 
-- **Faster than PHPUnit** in all 24 comparisons on the test suites of six popular projects (up to 5×
-  on a full suite), with reproducible benchmarks in `benchmarks/` (method, raw data and every
-  exclusion published).
-- **Built for AI coding agents:** compact JSON output with only the failures, a test integrity check
+- **Fast on real projects:** measured on the test suites of six popular projects, with reproducible
+  benchmarks in `benchmarks/` (method, raw data and every exclusion published).
+- **Works without setup, configurable in plain PHP:** no config file needed to start, and one
+  `microunit.config.php` with autocompletion for test groups, parallel runs, coverage, reports, the
+  Test Explorer, framework integration and more.
+- **Ready for AI coding agents:** compact JSON output with only the failures, a test integrity check
   that catches weakened tests, and an installable agent skill.
 - **`microunit migrate`** converts PHPUnit suites, including mocks, data providers, base classes and
   expected exceptions.
@@ -60,7 +62,8 @@ feature I had imagined for it.
   `--group`, `--filter` with substrings or regular expressions.
 - Configuration: test groups, bootstrap file, runtime directory, and every new feature above.
 - A benchmark harness and its published results in `benchmarks/`.
-- Documentation rewritten from scratch, one page per feature.
+- Documentation rewritten from scratch, one page per feature, plus a page on how MicroUnit keeps its
+  quality high while AI writes the code.
 
 ### Changed (breaking)
 

@@ -4,9 +4,9 @@ title: MicroUnit
 description: The PHP testing framework with zero dependencies. Readable closures, real assertions, a Test Explorer, coverage without extensions, parallel runs and output made for AI agents.
 ---
 
-# Tests you can read at a glance
+# MicroUnit
 
-MicroUnit is a PHP testing framework with zero dependencies. A test is a closure with a name that
+**A new way to test PHP. Built for today.** MicroUnit is a PHP testing framework with zero dependencies. A test is a closure with a name that
 says what it checks, the assertions read like sentences, and runs are fast enough that you never
 wait for them. Everything else you need is in the box.
 
@@ -59,7 +59,7 @@ vendor/bin/microunit
 
 **Easy to write, easy to scan.** Tests are read far more often than they are written, by you, by
 your colleagues and by AI agents. MicroUnit keeps them plain: a name, a closure, assertions with the
-expected value first. No base classes to inherit, no annotations to remember, no XML.
+expected value first. No base classes to inherit, no annotations to remember.
 
 **Zero dependencies.** MicroUnit does not install a single Composer package, not even for its own
 development. Nothing to conflict with your project, nothing to audit, nothing that breaks when you
@@ -69,8 +69,14 @@ upgrade something else.
 change. MicroUnit keeps the cost of each run small, and the [benchmarks](benchmarks.md) show it on
 real projects.
 
-**Configured in PHP.** One `microunit.config.php`, with autocompletion and comments. Command-line
-flags only change a single run. See [configuration](configuration.md).
+**Works without setup, configurable in plain PHP.** Install it, write a test, run it: no config file
+needed. When your project needs its own setup, one `microunit.config.php` holds a lot of options,
+with autocompletion and comments. Command-line flags only change a single run. See
+[configuration](configuration.md).
+
+**Built with AI, checked at every step.** I write MicroUnit with AI and review what it writes, and
+every change has to pass its own tests on three operating systems, static analysis and a coverage
+floor. [Ensuring high quality with AI](quality-with-ai.md) walks through the whole process.
 
 ## Sponsors
 

@@ -12,8 +12,8 @@
 </p>
 
 <p align="center">
-  <strong>The PHP testing framework with zero dependencies.</strong><br>
-  Tests you can read at a glance, and runs fast enough that you never wait for them.
+  <strong>A new way to test PHP. Built for today.</strong><br>
+  Zero dependencies, tests you can read at a glance, and runs fast enough that you never wait for them.
 </p>
 
 <p align="center">
@@ -28,7 +28,8 @@
   <a href="https://mitarnik04.github.io/MicroUnit/">Documentation</a> ·
   <a href="https://mitarnik04.github.io/MicroUnit/getting-started/">Getting started</a> ·
   <a href="https://mitarnik04.github.io/MicroUnit/migrating-from-phpunit/">Migrating from PHPUnit</a> ·
-  <a href="https://mitarnik04.github.io/MicroUnit/benchmarks/">Benchmarks</a>
+  <a href="https://mitarnik04.github.io/MicroUnit/benchmarks/">Benchmarks</a> ·
+  <a href="https://mitarnik04.github.io/MicroUnit/quality-with-ai/">Quality with AI</a>
 </p>
 
 ---
@@ -70,42 +71,50 @@ $ vendor/bin/microunit
 Summary: 3/3 passed, 0 failed in 14.37ms
 ```
 
-No base classes, no annotations, no XML. A test is a closure with a name that says what it checks.
+No base classes, no annotations. A test is a closure with a name that says what it checks.
+
+## Built with AI
+
+I write MicroUnit with AI: the code, and also this README and the documentation. Docs are where AI
+is at its best, because it reads the complete source and describes what is actually there.
+
+The quality comes from what surrounds it. I design the APIs and review the code, and every change
+has to pass MicroUnit's own test suite on three operating systems, static analysis, a coverage floor
+and a check that no test got weaker. Before a release, the test suites of six real projects run
+through it as well. [Ensuring high quality with AI](https://mitarnik04.github.io/MicroUnit/quality-with-ai/)
+walks through every step and links to the proof.
 
 ## Why MicroUnit
 
-- **Fast where it counts.** On the real test suites of six popular PHP projects, MicroUnit beat PHPUnit
-  in all 24 comparisons: up to 5× faster on a full suite, and typically 2.6× faster when you re-run
-  a single file, which is what you and your AI agent do all day. Method, raw data and every
-  exclusion are published: [benchmarks](https://mitarnik04.github.io/MicroUnit/benchmarks/).
+- **Fast where it counts.** Startup and the cost of each test are kept small, which matters most
+  when you re-run a single file: what you and your AI agent do all day. Measured on the real test
+  suites of six popular PHP projects, with the method, raw data and every exclusion published:
+  [benchmarks](https://mitarnik04.github.io/MicroUnit/benchmarks/).
 - **Zero dependencies.** Not one Composer package, not even for development. Nothing to conflict
   with, nothing to audit, nothing that breaks when you upgrade something else.
-- **Built for AI-assisted development.** Agents get compact JSON with only the failures (a fraction
-  of the tokens), and MicroUnit warns when tests were weakened to make them pass.
+- **Ready for AI coding agents.** Agents get compact JSON with only the failures (a fraction of the
+  tokens), and MicroUnit warns when tests were weakened to make them pass.
   [More](https://mitarnik04.github.io/MicroUnit/ai-agents/)
 - **Everything in the box.** Mocks, snapshots, data sets, fixtures, code coverage without Xdebug or
   PCOV, parallel runs, a browser Test Explorer, JUnit/HTML/log reports, and Laravel, Symfony and
   CodeIgniter integrations.
-- **Configured in PHP.** One `microunit.config.php` with autocompletion instead of XML.
-- **Switching takes one command.** `microunit migrate` translates your PHPUnit suite, mocks and data
-  providers included, and tells you exactly what it could not.
-
-<p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="assets/brand/benchmarks/suite-dark.png">
-    <img alt="Full test suite: MicroUnit is 1.03 to 5.14 times faster than PHPUnit on the test suites of six popular PHP projects" src="assets/brand/benchmarks/suite-light.png" width="100%">
-  </picture>
-</p>
+- **Works without setup, configurable in plain PHP.** Install MicroUnit, write a test and run it. No
+  config file needed. When your project needs a specific setup, there are lots of options: test
+  groups, parallel runs, coverage reports, output formats, the Test Explorer, framework integration
+  and more. They all go in one PHP file, `microunit.config.php`, so your editor autocompletes them.
+- **Easy to bring your tests along.** If MicroUnit suits your project, `microunit migrate` translates
+  your PHPUnit suite, mocks and data providers included, and tells you exactly what it could not.
 
 ## Install
 
 ```bash
 composer require --dev microunit/microunit
-vendor/bin/microunit init
+vendor/bin/microunit
 ```
 
-`init` writes a config and a first test, set up for Laravel, Symfony or CodeIgniter if your project
-uses one. Then run `vendor/bin/microunit`. Requires PHP 8.5 or newer; tested on 8.5 and 8.6.
+That is all if your tests live in `tests/` and their file names end in `-tests.php`.
+`vendor/bin/microunit init` writes a config and a first test, set up for Laravel, Symfony or
+CodeIgniter if your project uses one. Requires PHP 8.5 or newer; tested on 8.5 and 8.6.
 
 Coming from PHPUnit? `vendor/bin/microunit migrate` converts your tests into `tests-microunit/` and
 leaves the originals alone, so both suites run side by side until you are happy.
@@ -162,10 +171,7 @@ test, a suite, only the failures, jump to the line in your editor. Opt-in, so it
 when you don't use it.
 
 <p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="assets/brand/explorer-dark.png">
-    <img alt="The MicroUnit Test Explorer showing a failed assertion with its diff" src="assets/brand/explorer.png" width="100%">
-  </picture>
+  <img alt="The MicroUnit Test Explorer showing a failed assertion with its diff" src="assets/brand/explorer-dark.png" width="100%">
 </p>
 
 [Test Explorer](https://mitarnik04.github.io/MicroUnit/test-explorer/)
@@ -177,10 +183,9 @@ HTTP server and HTTP client in the toolkit, [reports](https://mitarnik04.github.
 for JUnit, HTML, GitHub Actions and logs, and a [CLI](https://mitarnik04.github.io/MicroUnit/cli/)
 where `microunit help <command>` explains everything.
 
-## Built for AI coding agents
+## Working with AI coding agents
 
-AI agents run tests constantly, often after every small change. Three things make MicroUnit a better
-partner for that loop:
+AI agents run tests constantly, often after every small change. Three things help in that loop:
 
 - **Speed.** Less waiting per run adds up across hundreds of runs a day.
 - **Token-cheap output.** In an agent session (Claude Code is detected automatically, others set
@@ -199,9 +204,7 @@ I started MicroUnit as a side project in May 2025, because I wanted PHP tests th
 write and quick to read. It got to a public beta that summer, and then it stalled: building coverage, parallel
 runs, framework integrations and a proper explorer next to a day job was more than one person could
 do. AI changed that. With it as my tool, I finally had the capacity to bring MicroUnit to its first
-official release: to test every part of it properly, all the way down to running the real test suites
-of the projects in the benchmark, and to build every feature I had imagined for it. MicroUnit is
-made for the way software gets written now, so it is fitting that it was made that way too.
+official release and to build every feature I had imagined for it.
 
 ## Contributing
 

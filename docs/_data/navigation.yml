@@ -27,4 +27,5 @@
     - { title: Configuration, url: /configuration/ }
     - { title: Command line, url: /cli/ }
     - { title: Benchmarks, url: /benchmarks/ }
+    - { title: Quality with AI, url: /quality-with-ai/ }
     - { title: Troubleshooting, url: /troubleshooting/ }

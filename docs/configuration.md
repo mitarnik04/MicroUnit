@@ -6,7 +6,7 @@ description: Every option of microunit.config.php and MicroUnitConfigBuilder, gr
 
 # Configuration
 
-MicroUnit is configured in PHP, in a file called `microunit.config.php` that returns a `MicroUnitConfig`. You build that object with `MicroUnitConfigBuilder`. No XML, no YAML, no schema to look up: your editor autocompletes the options, and because it is code, you can read environment variables or branch on them. Command line flags exist only to change a single run; anything you want every time belongs here. This page lists every builder method, grouped by what it controls.
+MicroUnit is configured in PHP, in a file called `microunit.config.php` that returns a `MicroUnitConfig`. You build that object with `MicroUnitConfigBuilder`. Your editor autocompletes the options, and because it is code, you can read environment variables or branch on them. Command line flags exist only to change a single run; anything you want every time belongs here. This page lists every builder method, grouped by what it controls.
 
 ## A complete example
 
