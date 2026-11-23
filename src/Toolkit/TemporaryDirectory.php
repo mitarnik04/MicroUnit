@@ -65,13 +65,16 @@ final readonly class TemporaryDirectory
     private static function remove(string $path): void
     {
         // is_link() reads the link itself (lstat), so a link whose target is gone is no problem.
-        if (is_link($path) || !is_dir($path)) {
-            unlink($path);
+        if (!is_link($path) && is_dir($path)) {
+            foreach (array_diff(scandir($path) ?: [], ['.', '..']) as $entry) {
+                self::remove($path . DIRECTORY_SEPARATOR . $entry);
+            }
+            rmdir($path);
             return;
         }
-        foreach (array_diff(scandir($path) ?: [], ['.', '..']) as $entry) {
-            self::remove($path . DIRECTORY_SEPARATOR . $entry);
+        // A file or a link. Windows removes a link to a directory, and a junction, with rmdir().
+        if (!@unlink($path)) {
+            rmdir($path);
         }
-        rmdir($path);
     }
 }
