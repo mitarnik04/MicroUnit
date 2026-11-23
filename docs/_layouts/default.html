@@ -8,7 +8,8 @@
     <meta name="description" content="{{ page.description | default: site.description | escape }}">
     <meta property="og:title" content="{{ page_title | escape }}">
     <meta property="og:description" content="{{ page.description | default: site.description | escape }}">
-    <meta property="og:image" content="{{ '/assets/img/social-preview.png' | absolute_url }}">
+    {%- comment -%} The build time in the URL makes link previews (Discord, Slack, X) fetch the image again after every deploy instead of showing a cached copy. {%- endcomment %}
+    <meta property="og:image" content="{{ '/assets/img/social-preview.png' | absolute_url }}?v={{ site.time | date: '%Y%m%d%H%M' }}">
     <meta property="og:url" content="{{ page.url | absolute_url }}">
     <meta name="twitter:card" content="summary_large_image">
     <link rel="canonical" href="{{ page.url | absolute_url }}">
