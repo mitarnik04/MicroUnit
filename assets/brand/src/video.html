@@ -7,6 +7,9 @@
 <!--
   The 1.0 product video, 1920 x 1080. The timeline is deterministic: render(seconds) draws the frame for
   that moment, so a renderer can capture any frame exactly. Open the page in a browser to watch it play.
+  Scenes start on a 2.4-second grid (one bar at 100 BPM), so the cuts land on the soundtrack's bars.
+  ?vertical renders the 1080 x 1920 cut for TikTok and Reels: a hook instead of the logo opener, and
+  everything inside the area the apps leave free of their buttons and captions.
   The benchmark numbers are read from the published results.
 -->
 <style>
@@ -17,6 +20,7 @@
   .headline { font-family: "Archivo Wide"; font-weight: 800; letter-spacing: -.035em; line-height: .98; font-size: 92px; margin: 0; }
   .headline em { font-style: normal; color: var(--cyan); }
   .sub { margin: 28px 0 0; font-size: 32px; line-height: 1.4; color: var(--muted); max-width: 1300px; }
+  .sub em { font-style: normal; color: var(--cyan); }
   .label { font-size: 22px; color: var(--cyan); }
 
   /* 1: opener */
@@ -29,17 +33,37 @@
   .opener .sub { margin: 40px auto 0; text-align: center; }
 
   /* Code and terminal cards */
-  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 34px 40px; font-family: var(--font-code, ui-monospace, "Cascadia Mono", Consolas, monospace); font-size: 27px; line-height: 1.55; white-space: pre; color: #E6ECFF; font-variant-ligatures: none; }
-  .card .bar { display: flex; gap: 10px; margin-bottom: 22px; }
+  .card { position: relative; background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 34px 40px; font-family: var(--font-code, ui-monospace, "Cascadia Mono", Consolas, monospace); font-size: 27px; line-height: 1.55; white-space: pre; color: #E6ECFF; font-variant-ligatures: none; }
+  .card .bar { display: flex; align-items: center; gap: 10px; margin-bottom: 22px; height: 14px; }
   .card .bar i { width: 14px; height: 14px; border-radius: 50%; background: rgba(255, 255, 255, .18); }
+  .card .bar .tag { margin-left: auto; font-family: "Archivo Condensed"; font-weight: 600; font-size: 18px; letter-spacing: .13em; text-transform: uppercase; color: var(--muted); }
   .k { color: #C79BFF; } .s { color: #7FE0A4; } .n { color: #FFB86B; } .v { color: #8CC8FF; } .f { color: #6FD6FA; } .c { color: #FF9BC9; }
   .ok { color: #3DCB7B; } .dim { color: #8E9BCF; } .warn { color: #FFBE3D; } .bad { color: #FF6A6F; }
+  .pending { visibility: hidden; } /* lines not written yet still take their space, so nothing around them moves */
   .caret { display: inline-block; width: .55em; height: 1.1em; margin-bottom: -.2em; background: var(--cyan); }
 
   .write { display: grid; grid-template-columns: auto 1fr; gap: 40px; margin-top: 56px; align-items: start; }
   .write .card { font-size: 23px; min-height: 600px; }
 
-  /* 3: benchmark */
+  /* Two columns: a card on the left, the points on the right (configuration, agents) */
+  .split { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; margin-top: 64px; align-items: start; }
+  .split .card { font-size: 24px; min-height: 600px; }
+  .split.config { margin-top: 44px; }
+  .split.config .card { min-height: 560px; }
+  .points { display: grid; gap: 38px; padding-top: 18px; }
+  .points div { position: relative; padding-left: 44px; font-size: 36px; line-height: 1.3; }
+  .points div small { display: block; margin-top: 8px; font-size: 26px; color: var(--muted); }
+  /* A bullet on the first line, centred on it */
+  .points div::before { content: ""; position: absolute; left: 0; top: calc((1.3em - 18px) / 2); width: 18px; height: 18px; background: var(--cyan); }
+
+  /* 3: the autocomplete list that opens while the config is typed */
+  .suggest { position: absolute; left: calc(40px + 6ch); top: calc(70px + 8 * 1.55em); width: max-content; padding: 8px 0; border-radius: 10px;
+    background: #0E1B66; border: 1px solid rgba(255, 255, 255, .22); box-shadow: 0 18px 40px rgba(0, 0, 0, .45); line-height: 1.5; opacity: 0; }
+  .suggest span { display: block; padding: 0 22px 0 16px; color: #C9D3F5; }
+  .suggest span.on { background: rgba(63, 198, 243, .2); color: #FFFFFF; }
+  .suggest span::before { content: "m"; display: inline-block; width: 1.4em; color: var(--cyan); font-weight: 700; }
+
+  /* 4: benchmark */
   .bench-rows { margin-top: 48px; display: grid; gap: 12px; }
   .bench-rows .row { display: grid; grid-template-columns: 330px 1fr; align-items: center; height: 54px; }
   .bench-rows .name { font-family: "Archivo Condensed"; font-weight: 600; font-size: 32px; }
@@ -51,111 +75,169 @@
   .bench-foot .won span { color: var(--cyan); }
   .bench-foot .note { font-family: "Archivo Condensed"; font-size: 24px; color: var(--muted); text-align: right; line-height: 1.5; }
 
-  /* 4: agents */
-  .agents { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; margin-top: 64px; align-items: start; }
-  .agents .card { font-size: 24px; min-height: 560px; }
-  .points { display: grid; gap: 38px; padding-top: 18px; }
-  .points div { font-size: 36px; line-height: 1.3; }
-  .points div small { display: block; margin-top: 8px; font-size: 26px; color: var(--muted); }
-  .points div::before { content: ""; display: block; width: 18px; height: 18px; background: var(--cyan); margin-bottom: 18px; }
-
-  /* 5: features */
+  /* 6: features */
   .chips { margin-top: 80px; display: flex; flex-wrap: wrap; gap: 26px; max-width: 1560px; }
   .chips span { font-family: "Archivo Condensed"; font-weight: 600; font-size: 40px; padding: 22px 34px; border-radius: 12px; background: var(--panel); border: 1px solid var(--line); }
   .chips span::before { content: ""; display: inline-block; width: 14px; height: 14px; margin-right: 18px; background: var(--cyan); vertical-align: .14em; }
 
-  /* 6: explorer */
+  /* 7: explorer */
   .shot { position: absolute; left: 150px; right: 150px; top: 330px; border-radius: 14px; overflow: hidden; border: 1px solid var(--line); box-shadow: 0 30px 80px rgba(0, 0, 0, .45); }
   .shot img { display: block; width: 100%; }
 
-  /* 7: migrate and closing card */
+  /* 8: migrate and closing card */
   .migrate .card { margin-top: 64px; font-size: 30px; max-width: 1300px; }
   .closer { display: grid; place-items: center; text-align: center; }
   .closer .h-lock { font-size: 130px; justify-content: center; }
   .closer .h-lock .word { color: #FFFFFF; }
-  .closer .install { margin: 64px auto 0; display: inline-block; font-size: 38px; padding: 26px 44px; }
+  .closer .sub { margin: 40px auto 0; text-align: center; font-size: 40px; color: #FFFFFF; }
+  .closer .install { margin: 56px auto 0; display: inline-block; font-size: 38px; padding: 26px 44px; }
   .closer .url { margin-top: 44px; font-family: "Archivo Condensed"; font-weight: 600; font-size: 36px; color: var(--cyan); letter-spacing: .02em; }
+
+  /* Which scenes a format shows */
+  html.vertical [data-format="landscape"], html:not(.vertical) [data-format="vertical"] { display: none; }
+
+  /* Vertical, 1080 x 1920: content stays clear of the apps' buttons (right) and caption (bottom) */
+  html.vertical { --w: 1080px; --h: 1920px; }
+  .vertical .scene { padding: 210px 140px 460px 70px; }
+  .vertical .headline { font-size: 76px; }
+  .vertical .label { font-size: 24px; }
+  .vertical .write, .vertical .split { grid-template-columns: 1fr; gap: 34px; margin-top: 46px; }
+  .vertical .write .card { font-size: 20px; min-height: 0; }
+  .vertical .split .card { font-size: 21px; min-height: 0; }
+  .vertical .points { gap: 26px; padding-top: 0; }
+  .vertical .points div { font-size: 31px; }
+  .vertical .points div small { font-size: 23px; }
+  .vertical .points div { padding-left: 34px; }
+  .vertical .points div::before { top: calc((1.3em - 14px) / 2); width: 14px; height: 14px; }
+  .vertical .split .card:has(.suggest) { min-height: 520px; }
+  .vertical .sub { font-size: 30px; }
+  .vertical .split.config { margin-top: 36px; }
+  .vertical .bench-rows .row { grid-template-columns: 250px 1fr; height: 50px; }
+  .vertical .bench-rows .name { font-size: 26px; }
+  .vertical .bench-rows .track b { font-size: 28px; }
+  .vertical .bench-foot { left: 70px; right: 140px; bottom: 470px; flex-direction: column; align-items: start; gap: 22px; }
+  .vertical .bench-foot .won { font-size: 50px; }
+  .vertical .bench-foot .note { text-align: left; font-size: 23px; }
+  .vertical .chips { margin-top: 56px; gap: 18px; }
+  .vertical .chips span { font-size: 32px; padding: 18px 26px; }
+  .vertical .shot { left: 70px; right: 70px; top: 560px; }
+  .vertical .migrate .card { font-size: 21px; max-width: none; }
+  .vertical .closer { padding: 210px 140px 460px 140px; }
+  .vertical .closer .h-lock { font-size: 104px; }
+  .vertical .closer .sub { font-size: 36px; }
+  .vertical .closer .install { font-size: 25px; padding: 22px 30px; }
+  .vertical .closer .url { font-size: 30px; }
+
+  /* Line breaks only the vertical format uses */
+  .v-br { display: none; }
+  .vertical .v-br { display: inline; }
+
+  /* The vertical hook: the slogan and a test run turning green, centred in the free area */
+  .vertical .hook { display: grid; align-content: center; }
+  .vertical .hook .headline { font-size: 104px; }
+  .hook .card { margin-top: 72px; font-size: 25px; }
 </style>
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="mk" viewBox="0 0 64 64"><path d="M7 12H33a3 3 0 0 1 3 3V28H49a3 3 0 0 1 3 3V57a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3V15a3 3 0 0 1 3-3z" fill="var(--block)"/><rect x="44" y="4" width="16" height="16" rx="3" fill="var(--unit)"/></symbol></svg>
 <main class="canvas">
-  <section class="scene opener" data-scene="0 4.6">
+  <section class="scene hook" data-scene="0 4.8" data-format="vertical">
+    <h1 class="headline" data-in="0.15">A new way to<br>test PHP.<br><em>Built for today.</em></h1>
+    <div class="card" data-in="0.9"><div class="bar"><i></i><i></i><i></i></div><div data-lines="terminal" data-from="1.2" data-step="0.22"></div></div>
+  </section>
+
+  <section class="scene opener" data-scene="0 4.8" data-format="landscape">
     <div>
       <div class="h-lock" data-in="0.3"><svg class="mk"><use href="#mk"/></svg><span class="word">microunit</span></div>
-      <div class="tag label"><span data-in="1.3">Minimal</span><span data-in="1.7">Modern</span><span data-in="2.1">Mighty</span></div>
-      <p class="sub" data-in="2.7">The dependency-free testing framework for PHP. Version 1.0.</p>
+      <div class="tag label"><span data-in="1.1">Minimal</span><span data-in="1.4">Modern</span><span data-in="1.7">Mighty</span></div>
+      <p class="sub" data-in="2.2">The dependency-free testing framework for PHP. Version 1.0.</p>
     </div>
   </section>
 
-  <section class="scene" data-scene="4.6 13.4">
-    <div class="label" data-in="4.8">Writing tests</div>
-    <h1 class="headline" data-in="5.0" style="margin-top:22px">Tests that read like <em>a description.</em></h1>
+  <section class="scene" data-scene="4.8 14.4">
+    <div class="label" data-in="5.0">Writing tests</div>
+    <h1 class="headline" data-in="5.2" style="margin-top:22px">Tests that read like<br class="v-br"> <em>a description.</em></h1>
     <div class="write">
-      <div class="card" data-in="5.6"><div class="bar"><i></i><i></i><i></i></div><div data-type="code" data-from="6.0" data-to="10.2"></div></div>
-      <div class="card" data-in="10.0"><div class="bar"><i></i><i></i><i></i></div><div data-lines="terminal" data-from="10.4" data-step="0.32"></div></div>
+      <div class="card" data-in="5.8"><div class="bar"><i></i><i></i><i></i></div><div data-type="test" data-from="6.2" data-to="10.0"></div></div>
+      <div class="card" data-in="10.0"><div class="bar"><i></i><i></i><i></i></div><div data-lines="terminal" data-from="10.4" data-step="0.3"></div></div>
     </div>
   </section>
 
-  <section class="scene" data-scene="13.4 21.6">
-    <div class="label" data-in="13.6">Benchmark · full test suite</div>
-    <h1 class="headline" data-in="13.8" style="margin-top:22px">Faster than PHPUnit. <em>On real projects.</em></h1>
-    <div class="bench-rows" id="bench-rows"></div>
-    <div class="bench-foot">
-      <div class="won" data-in="18.2" id="score"></div>
-      <div class="note" data-in="18.6" id="bench-note"></div>
-    </div>
-  </section>
-
-  <section class="scene" data-scene="21.6 29.2">
-    <div class="label" data-in="21.8">AI coding agents</div>
-    <h1 class="headline" data-in="22.0" style="margin-top:22px">Built for the agents <em>writing your tests.</em></h1>
-    <div class="agents">
-      <div class="card" data-in="22.6"><div class="bar"><i></i><i></i><i></i></div><div data-lines="agent" data-from="23.0" data-step="0.16"></div></div>
+  <section class="scene" data-scene="14.4 24.0">
+    <div class="label" data-in="14.6">Configuration</div>
+    <h1 class="headline" data-in="14.8" style="margin-top:22px">Every detail, <em>configurable.</em></h1>
+    <p class="sub" data-in="15.2">It runs out of the box. When your test pipeline needs more, it all goes in one PHP file.</p>
+    <div class="split config">
+      <div class="card" data-in="15.4"><div class="bar"><i></i><i></i><i></i><span class="tag">microunit.config.php</span></div><div data-type="config" data-from="15.8" data-to="21.6"></div><div class="suggest" id="suggest"><span>withTestDir</span><span>withTestGroup</span><span>withBootstrapFile</span><span>withCoverage</span><span>withTestExplorer</span></div></div>
       <div class="points">
-        <div data-in="24.6">Only the failures, as compact JSON.<small>A fraction of the tokens a full report costs.</small></div>
-        <div data-in="25.8">Catches tests weakened to pass.<small>Removed assertions, new skips, changed expectations.</small></div>
+        <div data-in="16.6">Shape the whole pipeline.<small>Groups, parallel runs, coverage gates, reports, the Explorer, your framework.</small></div>
+        <div data-in="18.2">Every option, autocompleted.<small>Methods your editor knows, with named arguments.</small></div>
+        <div data-in="19.8">Plain PHP, so it can branch.<small>Read the environment, add CI-only settings.</small></div>
       </div>
     </div>
   </section>
 
-  <section class="scene" data-scene="29.2 35.4">
-    <div class="label" data-in="29.4">Everything in the box</div>
-    <h1 class="headline" data-in="29.6" style="margin-top:22px">Zero dependencies. <em>Nothing missing.</em></h1>
-    <div class="chips">
-      <span data-in="30.3">Mocks and spies</span><span data-in="30.55">Snapshots</span><span data-in="30.8">Data sets and fixtures</span>
-      <span data-in="31.05">Coverage without Xdebug</span><span data-in="31.3">Parallel runs</span><span data-in="31.55">Test Explorer</span>
-      <span data-in="31.8">JUnit, HTML, GitHub annotations</span><span data-in="32.05">Laravel · Symfony · CodeIgniter</span>
+  <section class="scene" data-scene="24.0 33.6">
+    <div class="label" data-in="24.2">Benchmark · full test suite</div>
+    <h1 class="headline" data-in="24.4" style="margin-top:22px">Faster than PHPUnit.<br><em>On real projects.</em></h1>
+    <div class="bench-rows" id="bench-rows"></div>
+    <div class="bench-foot">
+      <div class="won" data-in="29.0"><span>6</span> real projects, the same tests</div>
+      <div class="note" data-in="29.4" id="bench-note"></div>
     </div>
   </section>
 
-  <section class="scene" data-scene="35.4 41.6">
-    <div class="label" data-in="35.6">Test Explorer</div>
-    <h1 class="headline" data-in="35.8" style="margin-top:22px">Every test, <em>one click away.</em></h1>
-    <div class="shot" data-in="36.4" data-rise="60"><img src="../explorer-dark.png" alt=""></div>
+  <section class="scene" data-scene="33.6 43.2">
+    <div class="label" data-in="33.8">AI coding agents</div>
+    <h1 class="headline" data-in="34.0" style="margin-top:22px">Works with<br class="v-br"> the agents<br><em>writing your tests.</em></h1>
+    <div class="split">
+      <div class="card" data-in="34.6"><div class="bar"><i></i><i></i><i></i><span class="tag">In an agent session</span></div><div data-lines="agent" data-from="35.0" data-step="0.16"></div></div>
+      <div class="points">
+        <div data-in="36.2">Readable for you, compact for agents.<small>Agents get only the failures, as JSON.</small></div>
+        <div data-in="37.6">Catches tests weakened to pass.<small>Removed assertions, new skips, changed expectations.</small></div>
+        <div data-in="39.0">Teaches your agent MicroUnit.<small>init --skill installs a skill file.</small></div>
+      </div>
+    </div>
   </section>
 
-  <section class="scene migrate" data-scene="41.6 46.4">
-    <div class="label" data-in="41.8">Coming from PHPUnit</div>
-    <h1 class="headline" data-in="42.0" style="margin-top:22px">Switching takes <em>one command.</em></h1>
-    <div class="card" data-in="42.6"><div class="bar"><i></i><i></i><i></i></div><div data-lines="migrate" data-from="43.0" data-step="0.45"></div></div>
+  <section class="scene" data-scene="43.2 50.4">
+    <div class="label" data-in="43.4">Everything in the box</div>
+    <h1 class="headline" data-in="43.6" style="margin-top:22px">Zero dependencies.<br><em>Batteries included.</em></h1>
+    <div class="chips">
+      <span data-in="44.3">Mocks and spies</span><span data-in="44.55">Snapshots</span><span data-in="44.8">Data sets and fixtures</span>
+      <span data-in="45.05">Coverage without Xdebug</span><span data-in="45.3">Parallel runs</span><span data-in="45.55">Test Explorer</span>
+      <span data-in="45.8">JUnit, HTML, GitHub annotations</span><span data-in="46.05">Laravel · Symfony · CodeIgniter</span>
+    </div>
   </section>
 
-  <section class="scene closer" data-scene="46.4 52">
+  <section class="scene" data-scene="50.4 57.6">
+    <div class="label" data-in="50.6">Test Explorer</div>
+    <h1 class="headline" data-in="50.8" style="margin-top:22px">Every test,<br class="v-br"> <em>one click away.</em></h1>
+    <div class="shot" data-in="51.4" data-rise="60"><img src="../explorer-dark.png" alt="" data-format="landscape"><img src="../explorer-dark-portrait.png" alt="" data-format="vertical"></div>
+  </section>
+
+  <section class="scene migrate" data-scene="57.6 64.8">
+    <div class="label" data-in="57.8">Coming from PHPUnit</div>
+    <h1 class="headline" data-in="58.0" style="margin-top:22px">Bring your tests <em>along.</em></h1>
+    <div class="card" data-in="58.6"><div class="bar"><i></i><i></i><i></i></div><div data-lines="migrate" data-from="59.0" data-step="0.45"></div></div>
+  </section>
+
+  <section class="scene closer" data-scene="64.8 74">
     <div>
-      <div class="h-lock" data-in="46.6"><svg class="mk"><use href="#mk"/></svg><span class="word">microunit</span></div>
-      <div class="card install" data-in="47.4">composer require --dev microunit/microunit</div>
-      <div class="url" data-in="48.2">mitarnik04.github.io/MicroUnit</div>
+      <div class="h-lock" data-in="65.0"><svg class="mk"><use href="#mk"/></svg><span class="word">microunit</span></div>
+      <p class="sub" data-in="65.8">A new way to test PHP. <em>Built for today.</em></p>
+      <div class="card install" data-in="66.6">composer require --dev microunit/microunit</div>
+      <div class="url" data-in="67.4">mitarnik04.github.io/MicroUnit</div>
     </div>
   </section>
 </main>
 <script>
 const RESULTS = '../../../benchmarks/results/2026-11-19/';
-// The timeline below is written in story seconds; PACE stretches it evenly into real seconds.
-const PACE = 1.12;
-const DURATION = 52 * PACE;
+document.documentElement.classList.toggle('vertical', new URLSearchParams(location.search).has('vertical'));
+const DURATION = 74;
 
-const CODE = `$tester = TestSetup::getTester('Cart');
+const CODES = {
+  test: `$tester = TestSetup::getTester('Cart');
 
 $tester->fixture('cart', fn() => new Cart());
 
@@ -168,7 +250,18 @@ $tester->define('totals_the_items', function (Cart $cart): void {
 
 $tester->define('starts_empty', function (Cart $cart): void {
     Assert::empty($cart->items());
-});`;
+});`,
+  config: `<?php
+
+use MicroUnit\\Config\\MicroUnitConfigBuilder;
+
+return MicroUnitConfigBuilder::create()
+    ->withTestGroup('unit', 'tests/Unit')
+    ->runInParallel()
+    ->withCoverage(include: 'src', minimum: 80)
+    ->withTestExplorer(editor: 'phpstorm')
+    ->build();`,
+};
 
 const LINES = {
   terminal: [
@@ -195,7 +288,7 @@ const ease = value => 1 - Math.pow(1 - value, 3);
 const progress = (t, start, length) => clamp((t - start) / length);
 
 function highlight(code) {
-  const pattern = /('[^']*')|(\$\w+)|\b(fn|function|new|void|use)\b|\b(\d+)\b|\b([A-Z]\w*)\b|(\w+)(?=\()/g;
+  const pattern = /('[^']*')|(\$\w+)|\b(fn|function|new|void|use|return)\b|\b(\d+)\b|\b([A-Z]\w*)\b|(\w+)(?=\()/g;
   return code.replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]))
     .replace(pattern, (match, string, variable, keyword, number, type, call) =>
       string ? `<span class="s">${string}</span>` : variable ? `<span class="v">${variable}</span>`
@@ -203,8 +296,31 @@ function highlight(code) {
       : type ? `<span class="c">${type}</span>` : `<span class="f">${call}</span>`);
 }
 
-function render(seconds) {
-  const t = seconds / PACE;
+// Where typing pauses for the editor's autocomplete: after the first `typed` characters of `text`, the list
+// stays open for `seconds`, then accepting it completes the next `accept` characters at once.
+const AUTOCOMPLETE = { config: { text: '->withCoverage', typed: 6, accept: 14, seconds: 1.3, choice: 3 } };
+
+// How many characters of the code are visible at $t, and how far into the autocomplete pause (0..1, or null).
+function typing(node, t) {
+  const code = CODES[node.dataset.type];
+  const from = Number(node.dataset.from);
+  const pause = AUTOCOMPLETE[node.dataset.type];
+  const rate = code.length / (Number(node.dataset.to) - from - (pause?.seconds ?? 0));
+  if (!pause) {
+    return { visible: Math.round(clamp((t - from) * rate / code.length) * code.length), pause: null };
+  }
+  const start = code.indexOf(pause.text);
+  const opensAt = from + (start + pause.typed) / rate;
+  if (t < opensAt) {
+    return { visible: Math.max(0, Math.round((t - from) * rate)), pause: null };
+  }
+  if (t < opensAt + pause.seconds) {
+    return { visible: start + pause.typed, pause: (t - opensAt) / pause.seconds };
+  }
+  return { visible: Math.min(code.length, Math.max(start + pause.accept, Math.round((t - from - pause.seconds) * rate))), pause: null };
+}
+
+function render(t) {
   for (const scene of document.querySelectorAll('[data-scene]')) {
     const [start, end] = scene.dataset.scene.split(' ').map(Number);
     scene.style.opacity = t < start || t > end ? 0 : Math.min(progress(t, start, 0.35), 1 - progress(t, end - 0.45, 0.45));
@@ -215,13 +331,23 @@ function render(seconds) {
     node.style.transform = `translateY(${(1 - shown) * Number(node.dataset.rise ?? 26)}px)`;
   }
   for (const node of document.querySelectorAll('[data-type]')) {
-    const visible = Math.round(CODE.length * progress(t, Number(node.dataset.from), Number(node.dataset.to) - Number(node.dataset.from)));
-    const typing = visible < CODE.length && t >= Number(node.dataset.from);
-    node.innerHTML = highlight(CODE.slice(0, visible)) + (typing || Math.floor(seconds * 2) % 2 === 0 ? '<span class="caret"></span>' : '');
+    const code = CODES[node.dataset.type];
+    const { visible, pause } = typing(node, t);
+    const isTyping = visible < code.length && t >= Number(node.dataset.from) && pause === null;
+    node.innerHTML = highlight(code.slice(0, visible)) + (isTyping || Math.floor(t * 2) % 2 === 0 ? '<span class="caret"></span>' : '');
+    // The autocomplete list: open during the pause, the highlight walking down to the chosen method.
+    const suggest = node.parentElement.querySelector('.suggest');
+    if (suggest) {
+      suggest.style.opacity = pause === null ? 0 : Math.min(1, pause * 8);
+      suggest.style.transform = `translateY(${pause === null ? 8 : (1 - ease(Math.min(1, pause * 8))) * 8}px)`;
+      const chosen = AUTOCOMPLETE[node.dataset.type].choice;
+      const active = pause === null ? -1 : Math.min(chosen, Math.floor(pause / 0.62 * (chosen + 1)));
+      suggest.querySelectorAll('span').forEach((option, index) => option.classList.toggle('on', index === active));
+    }
   }
   for (const node of document.querySelectorAll('[data-lines]')) {
     const count = Math.floor((t - Number(node.dataset.from)) / Number(node.dataset.step)) + 1;
-    node.innerHTML = LINES[node.dataset.lines].slice(0, Math.max(0, count)).join('\n');
+    node.innerHTML = LINES[node.dataset.lines].map((line, index) => index < count ? line : `<span class="pending">${line || ' '}</span>`).join('\n');
   }
   for (const row of document.querySelectorAll('#bench-rows .row')) {
     const grown = ease(progress(t, Number(row.dataset.at), 0.9));
@@ -235,24 +361,17 @@ function render(seconds) {
 
 Promise.all([load('summary.json'), load('environment.json'), document.fonts.ready]).then(([summary, environment]) => {
   const rows = document.getElementById('bench-rows');
-  const results = Object.values(summary.results);
-  results.forEach(({ project, summary: s }, index) => {
+  Object.values(summary.results).forEach(({ project, summary: s }, index) => {
     const speedup = s.suite.tools.phpunit.seconds.median / s.suite.tools.microunit.seconds.median;
     const row = document.createElement('div');
     row.className = 'row';
     row.dataset.speedup = speedup;
-    row.dataset.at = 14.5 + index * 0.35;
+    row.dataset.at = 25.3 + index * 0.35;
     row.innerHTML = `<span class="name">${project.name}</span><div class="track"><i></i><b>${speedup.toFixed(2)}×</b></div>`;
     rows.append(row);
   });
-  // Each scenario against its rival: ParaTest for the parallel run, PHPUnit for the rest.
-  const won = results.flatMap(({ summary: s }) => ['suite', 'parallel', 'file', 'startup'].map(key => {
-    const tools = s[key].tools;
-    return tools.microunit.seconds.median < tools[key === 'parallel' ? 'paratest' : 'phpunit'].seconds.median;
-  }));
   const ranDate = new Date(environment.capturedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
-  document.getElementById('score').innerHTML = `<span>${won.filter(Boolean).length}/${won.length}</span> comparisons won`;
-  document.getElementById('bench-note').innerHTML = `Six popular PHP projects, the same tests<br>Median of ${summary.options.runs} runs · PHP ${environment.php.version} · ${ranDate}`;
+  document.getElementById('bench-note').innerHTML = `Speed-up over PHPUnit · median of ${summary.options.runs} runs<br>PHP ${environment.php.version} · ${ranDate} · every number in benchmarks/`;
   window.ready = true;
   render(0);
   // Watching in a browser: play in real time. A renderer calls render(t) itself.

@@ -32,10 +32,10 @@ document.documentElement.className = `bench-page ${THEME}`;
 <script>
 // Each scenario in summary.json and the tool MicroUnit is compared with there.
 const SCENARIOS = {
-  suite: { rival: 'phpunit', title: 'Full test suite', lede: 'All tests in one process, the way CI runs them.' },
-  parallel: { rival: 'paratest', title: 'Full test suite, 4 workers', lede: 'MicroUnit’s built-in parallel runner against ParaTest, both with 4 worker processes.' },
-  file: { rival: 'phpunit', title: 'One test file', lede: 'The edit-and-rerun loop that you and your AI agent repeat all day.' },
-  startup: { rival: 'phpunit', title: 'Startup', lede: 'The fixed cost of every run: start, load the suite, select no test.' },
+  suite: { rival: 'phpunit', title: 'Full test suite', lede: 'All tests in one process, the way CI runs them.', measured: 'runs the same tests' },
+  parallel: { rival: 'paratest', title: 'Full test suite, 4 workers', lede: 'MicroUnit’s built-in parallel runner against ParaTest, both with 4 worker processes.', measured: 'runs the same tests' },
+  file: { rival: 'phpunit', title: 'One test file', lede: 'The edit-and-rerun loop that you and your AI agent repeat all day.', measured: 'runs the same test file' },
+  startup: { rival: 'phpunit', title: 'Startup', lede: 'The fixed cost of every run: start, load the suite, select no test.', measured: 'gets ready to run the same suite' },
 };
 const TOOL_NAMES = { microunit: 'MicroUnit', phpunit: 'PHPUnit', paratest: 'ParaTest' };
 const SIX_PROJECTS = 'the real test suites of six popular PHP projects';
@@ -48,6 +48,12 @@ function element(tag, className, text) {
   if (className) node.className = className;
   if (text !== undefined) node.textContent = text;
   return node;
+}
+
+/** The scenario as the page title, with the tool it is measured against highlighted after it. */
+function titleWithRival(heading, scenario) {
+  heading.textContent = `${SCENARIOS[scenario].title} `;
+  heading.append(element('em', '', `vs. ${TOOL_NAMES[SCENARIOS[scenario].rival]}`));
 }
 
 /** [{name, mine, theirs, speedup}] for one scenario, in the corpus order. */
@@ -191,17 +197,17 @@ Promise.all(['summary.json', 'environment.json'].map(file => fetch(RESULTS + fil
     document.getElementById('kicker').textContent = `MicroUnit ${microunit} · ${ranDate}`;
     if (ASSET === 'overview') {
       title.textContent = 'Same tests, less waiting.';
-      lede.textContent = `How many times faster MicroUnit runs the same tests, on ${SIX_PROJECTS}. Same machine, same PHP.`;
+      lede.textContent = `How many times faster MicroUnit is with the same tests, on ${SIX_PROJECTS}. Same machine, same PHP.`;
       content.className = 'overview';
       Object.keys(SCENARIOS).forEach(key => content.append(speedupChart(results, key, axisMax, true)));
       content.append(scoreBand(results));
     } else if (isTable) {
-      title.textContent = SCENARIOS[scenario].title;
+      titleWithRival(title, scenario);
       lede.textContent = `${SCENARIOS[scenario].lede} Ratio: time or memory relative to ${TOOL_NAMES[SCENARIOS[scenario].rival]} (1.00 = the same, 0.25 = a quarter).`;
       content.append(table(results, scenario));
     } else {
-      title.textContent = SCENARIOS[scenario].title;
-      lede.textContent = `${SCENARIOS[scenario].lede} How many times faster MicroUnit runs the same tests than ${TOOL_NAMES[SCENARIOS[scenario].rival]}, on ${SIX_PROJECTS}.`;
+      titleWithRival(title, scenario);
+      lede.textContent = `${SCENARIOS[scenario].lede} How many times faster MicroUnit ${SCENARIOS[scenario].measured}, on ${SIX_PROJECTS}.`;
       content.append(speedupChart(results, scenario, axisMax, false));
     }
 

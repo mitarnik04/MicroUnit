@@ -112,6 +112,7 @@ body {
 .dark .bench header .h-lock .word { color: #FFFFFF; }
 .bench .kicker { font-size: 15px; color: var(--accent); }
 .bench h1 { margin: 48px 0 0; font-size: 58px; color: var(--ink); }
+.bench h1 em { font-style: normal; color: var(--accent); }
 .bench .lede { margin: 16px 0 0; max-width: 1080px; min-height: 3em; text-wrap: pretty; font-size: 19px; line-height: 1.5; color: var(--muted); }
 .bench #content { margin-top: 44px; }
 .bench footer { margin-top: 48px; padding-top: 18px; border-top: 1px solid var(--line); display: flex; flex-direction: column; gap: 6px; font-family: "Archivo Condensed"; font-size: 14.5px; color: var(--muted); }

@@ -69,7 +69,7 @@ foreach ([...ASSETS, ...benchmarkAssets()] as $source => [$output, $width, $heig
 
 /**
  * The benchmark charts and tables, each light and dark, rendered from src/benchmark.html with the numbers of
- * the published results. Heights are the pages' content heights.
+ * the published results into assets/benchmarks/ (data, not brand). Heights are the pages' content heights.
  *
  * @return array<string, array{string, int, int, int, bool}>
  */
@@ -83,7 +83,7 @@ function benchmarkAssets(): array
     $assets = [];
     foreach ($heights as $asset => $height) {
         foreach (['light', 'dark'] as $theme) {
-            $assets["src/benchmark.html#$asset-$theme"] = ["benchmarks/$asset-$theme.png", 1280, $height, 2, false];
+            $assets["src/benchmark.html#$asset-$theme"] = ["../benchmarks/$asset-$theme.png", 1280, $height, 2, false];
         }
     }
 

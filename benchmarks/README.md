@@ -139,4 +139,4 @@ We would rather list them than have someone else discover them:
 |---|---|---|
 | 2026-11-19 | Intel Core i7-1355U, Windows 11, PHP 8.6.0 | [summary](results/2026-11-19/summary.md): MicroUnit faster in 24 of 24 comparisons; median across projects 2.05× (full suite), 2.91× (4 workers, against ParaTest), 2.62× (one test file), 2.93× (startup) |
 
-The charts and tables on the [benchmarks page](https://mitarnik04.github.io/MicroUnit/benchmarks/) and in `assets/brand/benchmarks/` are rendered from `summary.json` and `environment.json` of a run (`php assets/brand/build.php benchmarks`, with the run date set in `assets/brand/src/benchmark.html`). The numbers live only in the results, never in the images.
+The charts and tables on the [benchmarks page](https://mitarnik04.github.io/MicroUnit/benchmarks/) and in `assets/benchmarks/` are rendered from `summary.json` and `environment.json` of a run (`php assets/brand/build.php benchmarks`, with the run date set in `assets/brand/src/benchmark.html`). The numbers live only in the results, never in the images.
