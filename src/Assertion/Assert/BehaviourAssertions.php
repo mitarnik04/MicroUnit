@@ -171,6 +171,7 @@ trait BehaviourAssertions
     {
         $deadline = microtime(true) + $timeoutInSeconds;
         $attempts = 0;
+        $isLastAttempt = false;
         while (true) {
             $attempts++;
             try {
@@ -187,9 +188,12 @@ trait BehaviourAssertions
                 $lastFailure = $throwable::class . ': ' . $throwable->getMessage();
             }
             $remainingSeconds = $deadline - microtime(true);
-            if ($remainingSeconds <= 0) {
+            if ($isLastAttempt || $remainingSeconds <= 0) {
                 break;
             }
+            // Sleeping up to the deadline makes the next attempt the last one, even when a coarse
+            // clock (Windows) still shows a sliver of time left after waking up.
+            $isLastAttempt = $intervalInSeconds >= $remainingSeconds;
             usleep((int) (min($intervalInSeconds, $remainingSeconds) * 1_000_000));
         }
 

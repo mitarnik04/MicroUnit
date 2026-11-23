@@ -3,6 +3,13 @@
 All notable changes to MicroUnit. The format follows [Keep a Changelog](https://keepachangelog.com/),
 and MicroUnit uses [semantic versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Fixed
+
+- `Assert::eventually()` no longer makes an extra attempt past the deadline on Windows, where the
+  coarse clock could leave a sliver of time after sleeping until the deadline.
+
 ## [1.0.0] - 2026-11-23
 
 The first stable release. MicroUnit started as a side project in May 2025 and got as far as a public
