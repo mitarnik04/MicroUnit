@@ -48,7 +48,8 @@ final readonly class CliOptions
     {
         $values = [];
         $paths = [];
-        $worker = ['index' => null, 'count' => null, 'output' => null];
+        $workerSlot = null;
+        $workerOutput = null;
 
         if (in_array($arguments[0] ?? '', ['init', 'migrate', 'integrity', 'explorer', 'help', 'version'], true)) {
             $values['command'] = array_shift($arguments);
@@ -89,8 +90,8 @@ final readonly class CliOptions
                 '--colors' => $values['colors'] = true,
                 '--no-colors' => $values['colors'] = false,
                 // Internal options used by MicroUnit's own subprocesses.
-                '--worker' => [$worker['index'], $worker['count']] = self::workerSlot(self::requireValue($name, $value)),
-                '--worker-output' => $worker['output'] = self::requireValue($name, $value),
+                '--worker' => $workerSlot = self::workerSlot(self::requireValue($name, $value)),
+                '--worker-output' => $workerOutput = self::requireValue($name, $value),
                 '--explorer-run' => $values['isExplorerTriggered'] = true,
                 '--explorer-server' => $values['command'] = 'explorer-server',
                 '--port' => $values['explorerPort'] = self::positiveInt($name, self::requireValue($name, $value)),
@@ -100,10 +101,17 @@ final readonly class CliOptions
             };
         }
 
-        if ($worker['index'] !== null) {
-            $values['worker'] = new WorkerAssignment($worker['index'], $worker['count'], $worker['output'] ?? throw new UsageException('--worker requires --worker-output.'));
+        if ($workerSlot !== null) {
+            $values['worker'] = new WorkerAssignment($workerSlot[0], $workerSlot[1], $workerOutput ?? throw new UsageException('--worker requires --worker-output.'));
         }
 
+        /**
+         * @var array{command?: string, filter?: string, configFile?: string, coverage?: bool, parallelWorkers?: int, explorer?: bool,
+         *     stopOnFailure?: bool, colors?: bool, worker?: WorkerAssignment, isExplorerTriggered?: bool, explorerPort?: int,
+         *     explorerProject?: string, groups?: list<string>, onlyFailed?: bool, idsFile?: string, updateSnapshots?: bool,
+         *     outputDirectory?: string, list?: string, agent?: bool, helpTopic?: string|null, installAgentSkill?: bool} $values
+         *     every key is set by its option above
+         */
         return new self(...$values, paths: $paths);
     }
 
@@ -125,13 +133,17 @@ final readonly class CliOptions
         return (int) $value;
     }
 
-    /** @return array{int, int} */
+    /** @return array{int<0, max>, int<1, max>} */
     private static function workerSlot(string $value): array
     {
         if (preg_match('~^(\d+)/(\d+)$~', $value, $match) !== 1 || (int) $match[1] >= (int) $match[2]) {
             throw new UsageException("Invalid --worker value '$value'.");
         }
+        /** @var int<0, max> $index digits only */
+        $index = (int) $match[1];
+        /** @var int<1, max> $count greater than the index, checked above */
+        $count = (int) $match[2];
 
-        return [(int) $match[1], (int) $match[2]];
+        return [$index, $count];
     }
 }

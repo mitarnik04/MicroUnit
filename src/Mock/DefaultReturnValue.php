@@ -76,12 +76,18 @@ final class DefaultReturnValue
     private static function classNames(\ReflectionType $type, \ReflectionClass $declaringClass): string|array
     {
         if ($type instanceof \ReflectionIntersectionType) {
-            return array_map(static fn(\ReflectionNamedType $member): string => $member->getName(), $type->getTypes());
+            /** @var list<\ReflectionNamedType> $members an intersection consists of class types only */
+            $members = $type->getTypes();
+
+            return array_map(static fn(\ReflectionNamedType $member): string => $member->getName(), $members);
         }
 
         /** @var \ReflectionNamedType $type */
-        return strtolower($type->getName()) === 'parent'
-            ? (string) $declaringClass->getParentClass()?->getName()
-            : $type->getName();
+        if (strtolower($type->getName()) !== 'parent') {
+            return $type->getName();
+        }
+        $parent = $declaringClass->getParentClass();
+
+        return $parent === false ? '' : $parent->getName();
     }
 }

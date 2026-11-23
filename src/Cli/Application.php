@@ -147,6 +147,7 @@ final class Application
         $onSuiteFinished = static function (string $suite, array $results) use ($writers): void {
             foreach ($writers as $writer) {
                 $writer->writeSuite($suite);
+                /** @var list<TestResult> $results as SuiteRunner and ParallelRunner pass them */
                 $writer->writeResults($results);
             }
         };

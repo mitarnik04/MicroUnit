@@ -49,8 +49,8 @@ final readonly class HttpRequest
             return null;
         }
         $body = '';
-        while (strlen($body) < $length) {
-            $chunk = fread($connection, $length - strlen($body));
+        while (($missingBytes = $length - strlen($body)) > 0) {
+            $chunk = fread($connection, $missingBytes);
             if ($chunk === false || $chunk === '') {
                 return null; // timed out or closed before the announced body arrived
             }

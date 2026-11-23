@@ -64,7 +64,11 @@ final class BodyRewriter
         private readonly bool $isTestMethod = false,
     ) {}
 
-    /** Rewrites tokens $from..$to of $tokens (all inclusive). @param list<\PhpToken> $tokens */
+    /**
+     * Rewrites tokens $from..$to of $tokens (all inclusive).
+     *
+     * @param list<\PhpToken> $tokens
+     */
     public function rewrite(array $tokens, int $from, int $to): string
     {
         $out = '';
@@ -425,7 +429,11 @@ final class BodyRewriter
         return $next !== null && (Code::char($tokens[$next]) === '(' || Code::char($tokens[$next]) === '&');
     }
 
-    /** A name used as a class: after new/instanceof, in catch, as a parameter or return type. @param list<\PhpToken> $tokens */
+    /**
+     * A name used as a class: after new/instanceof, in catch, as a parameter or return type.
+     *
+     * @param list<\PhpToken> $tokens
+     */
     private function isClassPosition(array $tokens, int $i): bool
     {
         if (in_array(strtolower($tokens[$i]->text), self::BUILTIN_TYPES, true)) {
@@ -441,7 +449,7 @@ final class BodyRewriter
         return $previousId === T_NEW || $previousId === T_INSTANCEOF || $previousId === T_EXTENDS || $previousId === T_IMPLEMENTS
             || $nextId === T_VARIABLE || $nextId === T_ELLIPSIS
             || ($nextText === '|' || $nextText === '&') && $previousText !== '->'
-            || (in_array($previousText, [':', '?', '|', '&'], true) && (in_array($nextText, ['{', '|', '&'], true) || $nextId === T_VARIABLE || $nextId === T_DOUBLE_ARROW))
+            || (in_array($previousText, [':', '?', '|', '&'], true) && (in_array($nextText, ['{', '|', '&'], true) || $nextId === T_DOUBLE_ARROW))
             || ($previousText === '(' && $previous > 0 && Code::previous($tokens, $previous) !== null && $tokens[(int) Code::previous($tokens, $previous)]->id === T_CATCH);
     }
 

@@ -4,7 +4,11 @@ namespace MicroUnit\Explorer;
 
 use MicroUnit\Helpers\Filesystem;
 
-/** The explorer's files in the runtime directory: the latest report and the running server's details. */
+/**
+ * The explorer's files in the runtime directory: the latest report and the running server's details.
+ *
+ * @phpstan-import-type Report from ExplorerReport
+ */
 final readonly class ExplorerState
 {
     public function __construct(
@@ -12,13 +16,16 @@ final readonly class ExplorerState
         public string $projectDirectory,
     ) {}
 
-    /** @return array<string, mixed>|null */
+    /** @return Report|null */
     public function readReport(): ?array
     {
-        return $this->readJson($this->directory . '/report.json');
+        /** @var Report|null $report only writeReport() writes this file */
+        $report = $this->readJson($this->directory . '/report.json');
+
+        return $report;
     }
 
-    /** @param array<string, mixed> $report */
+    /** @param Report $report */
     public function writeReport(array $report): void
     {
         Filesystem::writeAtomically($this->directory . '/report.json', self::encode($report));
@@ -32,7 +39,12 @@ final readonly class ExplorerState
     /** @return array{port: int, pid: int, token: string, project: string}|null */
     public function readServer(): ?array
     {
-        return $this->readJson($this->directory . '/server.json');
+        $server = $this->readJson($this->directory . '/server.json');
+        if (!is_int($server['port'] ?? null) || !is_int($server['pid'] ?? null) || !is_string($server['token'] ?? null) || !is_string($server['project'] ?? null)) {
+            return null; // missing, or left behind half-written or by another version
+        }
+
+        return ['port' => $server['port'], 'pid' => $server['pid'], 'token' => $server['token'], 'project' => $server['project']];
     }
 
     /**
@@ -75,7 +87,7 @@ final readonly class ExplorerState
         return $this->directory . '/server.log';
     }
 
-    /** @return array<string, mixed>|null */
+    /** @return array<mixed>|null */
     private function readJson(string $file): ?array
     {
         if (!is_file($file)) {
@@ -86,7 +98,7 @@ final readonly class ExplorerState
         return is_array($decoded) ? $decoded : null;
     }
 
-    /** @param array<string, mixed> $data */
+    /** @param array<mixed> $data */
     public static function encode(array $data): string
     {
         return json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE | JSON_THROW_ON_ERROR);

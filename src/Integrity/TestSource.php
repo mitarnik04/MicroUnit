@@ -190,7 +190,11 @@ final readonly class TestSource
         return $result;
     }
 
-    /** The arguments of an assertion that cannot fail, or null. @param list<string> $arguments */
+    /**
+     * The arguments of an assertion that cannot fail, or null.
+     *
+     * @param list<string> $arguments
+     */
     private static function trivial(string $method, array $arguments): ?string
     {
         $first = strtolower($arguments[0] ?? '');
@@ -206,7 +210,11 @@ final readonly class TestSource
         return $isTrivial ? implode(', ', $arguments) : null;
     }
 
-    /** The number of data sets of an array literal, null when they come from elsewhere. @param list<\PhpToken> $tokens */
+    /**
+     * The number of data sets of an array literal, null when they come from elsewhere.
+     *
+     * @param list<\PhpToken> $tokens
+     */
     private static function dataSetCount(array $tokens, int $from, int $to): ?int
     {
         $open = $tokens[$from]->isIgnorable() ? Code::next($tokens, $from) : $from;

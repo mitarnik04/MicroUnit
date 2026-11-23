@@ -68,7 +68,7 @@ final readonly class TestClass
 
         $current = $class;
         $seen = [];
-        while ($current !== null && !isset($seen[strtolower($current->fullName())])) {
+        while (!isset($seen[strtolower($current->fullName())])) {
             $seen[strtolower($current->fullName())] = true;
             $selfNames[] = $current->name;
             $names = Names::of($current->namespace, $current->uses);
@@ -261,7 +261,7 @@ final readonly class TestClass
                 }
                 unset($methods[$lower]);
                 [$current, $currentOwner] = $definitions[$lifecycle][0] ?? [null, null];
-                $isOwnLevel = $currentOwner !== null && $currentOwner->fullName() === $owner->fullName();
+                $isOwnLevel = $current !== null && $currentOwner !== null && $currentOwner->fullName() === $owner->fullName();
                 // A hook in a class whose parent defines the lifecycle method gets its own level that calls the parent's.
                 $before = $isOwnLevel ? substr((string) $current->body, 1, -1) : ($current === null ? '' : "parent::$name();");
                 $hookBody = substr($method->body, 1, -1);

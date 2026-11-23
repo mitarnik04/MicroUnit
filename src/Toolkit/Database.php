@@ -74,8 +74,10 @@ final readonly class Database
     {
         $statement = $this->pdo->prepare($sql);
         $statement->execute($parameters);
+        /** @var list<array<string, mixed>> $rows FETCH_ASSOC returns one column => value array per row */
+        $rows = $statement->fetchAll(\PDO::FETCH_ASSOC);
 
-        return $statement->fetchAll(\PDO::FETCH_ASSOC);
+        return $rows;
     }
 
     /**
@@ -110,7 +112,10 @@ final readonly class Database
 
     public function count(string $table): int
     {
-        return (int) $this->pdo->query("SELECT COUNT(*) FROM $table")->fetchColumn();
+        $statement = $this->pdo->prepare("SELECT COUNT(*) FROM $table");
+        $statement->execute();
+
+        return (int) $statement->fetchColumn();
     }
 
     public function beginTransaction(): self

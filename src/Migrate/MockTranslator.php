@@ -91,7 +91,11 @@ final class MockTranslator
         return $out;
     }
 
-    /** `$mock->method(` or `$mock->expects(` at the start of a statement. @param list<\PhpToken> $tokens */
+    /**
+     * `$mock->method(` or `$mock->expects(` at the start of a statement.
+     *
+     * @param list<\PhpToken> $tokens
+     */
     private function isChainStart(array $tokens, int $i): bool
     {
         if ($tokens[$i]->id !== T_VARIABLE) {
@@ -228,7 +232,11 @@ final class MockTranslator
         };
     }
 
-    /** ->will($this->returnValue(...)) and friends. @return array{string, string}|null */
+    /**
+     * ->will($this->returnValue(...)) and friends.
+     *
+     * @return array{string, string}|null
+     */
     private function willPlan(string $stub, string $variable): ?array
     {
         if (!preg_match('/^' . self::MARKER . '::(\w+)\((.*)\)$/s', $stub, $match)) {
@@ -272,13 +280,13 @@ final class MockTranslator
             'lessthan' => "$value < $inner",
             'arrayhaskey' => "array_key_exists($inner, $value)",
             'countof' => "count($value) === $inner",
-            'istype' => preg_match('/^[\'"](\w+)[\'"]$/', $inner, $type) ? "is_{$type[1]}($value)" : $this->unsupported("\$this->isType($inner)") ?? 'false',
+            'istype' => preg_match('/^[\'"](\w+)[\'"]$/', $inner, $type) ? "is_{$type[1]}($value)" : $this->unsupported("\$this->isType($inner)", 'false'),
             'logicalnot' => '!(' . $this->constraint($inner, $value) . ')',
             'logicaland', 'logicalor' => '(' . implode(strtolower($match[1]) === 'logicaland' ? ' && ' : ' || ', array_map(
                 fn(string $part): string => $this->constraint($part, $value),
                 $this->splitArguments($inner),
             )) . ')',
-            default => $this->unsupported("the constraint \$this->{$match[1]}()") ?? 'false',
+            default => $this->unsupported("the constraint \$this->{$match[1]}()", 'false'),
         };
     }
 
@@ -401,10 +409,15 @@ final class MockTranslator
         return array_map(static fn(array $range): string => trim(Code::text($tokens, $range[0], $range[1])), Code::split($tokens));
     }
 
-    private function unsupported(string $what): ?string
+    /**
+     * Records what migrate cannot translate and returns the fallback the caller writes in its place.
+     *
+     * @return ($fallback is null ? null : string)
+     */
+    private function unsupported(string $what, ?string $fallback = null): ?string
     {
         $this->issues[] = "uses $what, which migrate cannot translate.";
 
-        return null;
+        return $fallback;
     }
 }

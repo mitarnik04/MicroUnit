@@ -136,7 +136,7 @@ final readonly class Diff
         for ($i = 0, $max = max(count($expected), count($actual)); $i < $max; $i++) {
             $expectedLine = $expected[$i] ?? null;
             $actualLine = $actual[$i] ?? null;
-            if ($expectedLine === $actualLine) {
+            if ($expectedLine !== null && $expectedLine === $actualLine) {
                 $lines[] = new DiffLine(DiffLineType::Same, $expectedLine);
                 continue;
             }

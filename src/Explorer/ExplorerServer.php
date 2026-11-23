@@ -44,7 +44,7 @@ final class ExplorerServer
             return 1;
         }
 
-        $this->state->writeServer(['port' => $this->port, 'pid' => getmypid(), 'token' => $this->token, 'project' => $this->state->projectDirectory]);
+        $this->state->writeServer(['port' => $this->port, 'pid' => (int) getmypid(), 'token' => $this->token, 'project' => $this->state->projectDirectory]);
         register_shutdown_function($this->state->clearServer(...));
 
         while (!$this->isIdle()) {
@@ -119,7 +119,8 @@ final class ExplorerServer
             return [409, 'application/json', '{"error":"a run is already in progress"}'];
         }
 
-        $options = json_decode($request->body, true) ?: [];
+        $options = json_decode($request->body, true);
+        $options = is_array($options) ? $options : [];
         $arguments = ['--explorer-run', '--no-explorer'];
         if (($options['failedOnly'] ?? false) === true) {
             $arguments[] = '--failed';
@@ -136,6 +137,7 @@ final class ExplorerServer
         $this->run = proc_open(
             [...$this->runnerCommand, ...$arguments],
             // One handle for stdout and stderr: two would write over each other's output.
+            // @phpstan-ignore argument.type (PHP documents ['redirect', 1]; PHPStan's stub only knows file and pipe specs)
             [0 => ['file', PHP_OS_FAMILY === 'Windows' ? 'NUL' : '/dev/null', 'r'], 1 => ['file', $log, 'w'], 2 => ['redirect', 1]],
             $pipes,
             $this->state->projectDirectory,
@@ -179,7 +181,11 @@ final class ExplorerServer
         ]);
     }
 
-    /** Serves the HTML coverage report written by the latest run, and nothing outside of it. @return array{int, string, string} */
+    /**
+     * Serves the HTML coverage report written by the latest run, and nothing outside of it.
+     *
+     * @return array{int, string, string}
+     */
     private function coverageFile(string $path): array
     {
         $index = $this->state->readReport()['coverage']['htmlReport'] ?? null;

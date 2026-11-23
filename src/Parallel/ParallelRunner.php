@@ -30,7 +30,10 @@ final readonly class ParallelRunner
         NotProvided::class, Diff::class, DiffLine::class, DiffLineType::class, ExportedValue::class, CoverageData::class,
     ];
 
-    /** @param \Closure(int $index, int $count, string $outputFile): list<string> $workerCommand */
+    /**
+     * @param \Closure(int $index, int $count, string $outputFile): list<string> $workerCommand
+     * @param int<2, max> $workerCount a single worker runs sequentially, without this runner
+     */
     public function __construct(
         private \Closure $workerCommand,
         private int $workerCount,

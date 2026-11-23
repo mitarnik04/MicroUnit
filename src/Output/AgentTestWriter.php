@@ -33,11 +33,14 @@ final class AgentTestWriter implements ITestWriter
 
     private readonly string $projectDirectory;
 
-    private readonly ?\Closure $integrityFindings;
+    /** @var (\Closure(): list<array{test: string, file: string, line: int, finding: string}>)|null set by withIntegrityFindings() */
+    private ?\Closure $integrityFindings = null;
 
-    private readonly string $integrityRevision;
+    /** Set by withIntegrityFindings(). */
+    private string $integrityRevision = 'HEAD';
 
-    private readonly ?\Closure $runFailures;
+    /** @var (\Closure(): list<string>)|null set by withRunFailures() */
+    private ?\Closure $runFailures = null;
 
     /**
      * @param string|null $filePath write the JSON to this file instead of stdout (relative to the working directory)
@@ -48,9 +51,6 @@ final class AgentTestWriter implements ITestWriter
         ?string $projectDirectory = null,
     ) {
         $this->projectDirectory = rtrim(str_replace('\\', '/', $projectDirectory ?? (string) getcwd()), '/') . '/';
-        $this->integrityFindings = null;
-        $this->integrityRevision = 'HEAD';
-        $this->runFailures = null;
     }
 
     /**
@@ -201,7 +201,11 @@ final class AgentTestWriter implements ITestWriter
         return $entry;
     }
 
-    /** Changed lines with a little context; long runs of equal lines are folded. @return list<string> */
+    /**
+     * Changed lines with a little context; long runs of equal lines are folded.
+     *
+     * @return list<string>
+     */
     private function compactDiff(AssertionFailure $failure): array
     {
         return array_map(static fn(?DiffLine $line): string => match ($line?->type) {
@@ -212,7 +216,11 @@ final class AgentTestWriter implements ITestWriter
         }, $failure->diff?->changesWithContext(self::DIFF_CONTEXT_LINES) ?? []);
     }
 
-    /** The failing line and its neighbours, the failing one marked with ">". @return list<string> */
+    /**
+     * The failing line and its neighbours, the failing one marked with ">".
+     *
+     * @return list<string>
+     */
     private function code(string $file, int $line): array
     {
         $source = @file($file, FILE_IGNORE_NEW_LINES);
@@ -235,7 +243,11 @@ final class AgentTestWriter implements ITestWriter
         return $code;
     }
 
-    /** Stack frames in the project's own code (no vendor/, no MicroUnit internals). @return list<string> */
+    /**
+     * Stack frames in the project's own code (no vendor/, no MicroUnit internals).
+     *
+     * @return list<string>
+     */
     private function userFrames(string $trace): array
     {
         $microUnit = str_replace('\\', '/', dirname(__DIR__)) . '/';

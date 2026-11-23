@@ -82,6 +82,7 @@ final readonly class InitCommand
     /** @return array{string, string}|null [integration class, label] */
     private function detectFramework(): ?array
     {
+        /** @var array{require?: array<string, string>, require-dev?: array<string, string>}|null $composer Composer's schema */
         $composer = json_decode((string) @file_get_contents($this->projectDirectory . '/composer.json'), true);
         $packages = [...array_keys($composer['require'] ?? []), ...array_keys($composer['require-dev'] ?? [])];
 
@@ -102,7 +103,7 @@ final readonly class InitCommand
         if ($framework !== null) {
             $imports[] = $framework[0];
             $environment = PhpUnitConfiguration::read($this->projectDirectory)->environmentArgument();
-            $frameworkLine = PHP_EOL . '    ->withFramework(new ' . substr(strrchr($framework[0], '\\'), 1) . "($environment))";
+            $frameworkLine = PHP_EOL . '    ->withFramework(new ' . substr((string) strrchr($framework[0], '\\'), 1) . "($environment))";
             // Symfony loads .env.test and KERNEL_CLASS in its test bootstrap.
             if ($framework[1] === 'Symfony' && is_file($this->projectDirectory . '/tests/bootstrap.php')) {
                 $frameworkLine = PHP_EOL . "    ->withBootstrapFile('tests/bootstrap.php')" . $frameworkLine;

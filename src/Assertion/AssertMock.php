@@ -110,7 +110,11 @@ final readonly class AssertMock
 
     // ---- Arguments (compared strictly with ===) ----------------------------------------------
 
-    /** At least one call received exactly these arguments. */
+    /**
+     * At least one call received exactly these arguments.
+     *
+     * @param list<mixed> $expectedArgs
+     */
     public function isCalledWith(string $method, array $expectedArgs): self
     {
         $allCallArgs = $this->callLog->getAllCallArgs($method);
@@ -121,7 +125,10 @@ final readonly class AssertMock
         return $this;
     }
 
-    /** @param int $callNumber 1-based */
+    /**
+     * @param list<mixed> $expectedArgs
+     * @param int $callNumber 1-based
+     */
     public function isCalledWithOnSpecificCall(string $method, array $expectedArgs, int $callNumber): self
     {
         $callArgs = $this->callLog->getCallArgs($method, $callNumber);
@@ -137,7 +144,11 @@ final readonly class AssertMock
         return $this;
     }
 
-    /** Every call received exactly these arguments. */
+    /**
+     * Every call received exactly these arguments.
+     *
+     * @param list<mixed> $expectedArgs
+     */
     public function isOnlyCalledWith(string $method, array $expectedArgs): self
     {
         $allCallArgs = $this->callLog->getAllCallArgs($method);

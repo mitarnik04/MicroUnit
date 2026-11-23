@@ -125,7 +125,7 @@ trait CollectionAssertions
      *
      * Assert::each($users, fn (User $user) => Assert::isTrue($user->isActive()));
      *
-     * @param iterable<mixed> $items
+     * @param iterable<int|string, mixed> $items
      * @param callable(mixed $item, int|string $key): mixed $check
      */
     public static function each(iterable $items, callable $check, string $message = ''): void
@@ -220,6 +220,7 @@ trait CollectionAssertions
             return;
         }
 
+        /** @var int<1, max> $outOfOrder passes() failed, so an element is out of order */
         self::reject(
             sprintf('Failed asserting that the elements are sorted %s; element %d is out of order.', $descending ? 'descending' : 'ascending', $outOfOrder),
             ValueExporter::export($values[$outOfOrder - 1]) . ($descending ? ' >= ' : ' <= ') . ValueExporter::export($values[$outOfOrder]),

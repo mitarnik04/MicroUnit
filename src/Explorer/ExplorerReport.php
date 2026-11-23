@@ -12,6 +12,16 @@ use MicroUnit\MicroUnit;
 /**
  * Builds the JSON document the Test Explorer and the static HTML report render. Every defined test
  * is listed; tests that did not run in a partial run keep their previous result, marked stale.
+ *
+ * @phpstan-type AssertionDetails array{kind: 'assertion', message: string, customMessage: string|null, expected: string|null, actual: string|null, diff: list<array{string, string}>|null}
+ * @phpstan-type ErrorDetails array{kind: 'error', message: string, class: string, file: string, line: int, trace: string}
+ * @phpstan-type Failure AssertionDetails|ErrorDetails
+ * @phpstan-type TestEntry array{id: string, suite: string, name: string, status: 'passed'|'failed'|'skipped'|'notrun', isStale: bool,
+ *     timeInSeconds: float|null, file: string|null, line: int|null, failureLine: int|null, lastRunAt: string|null, skipReason: string|null,
+ *     failure: Failure|null, output: string|null, returnValue: string|null, channel: int, group: string|null}
+ * @phpstan-type Report array{version: int, runId?: string, isPartialRun?: bool, coverage?: array<string, mixed>|null, finishedAt: string,
+ *     durationSeconds: float, summary: array{total: int, passed: int, failed: int, skipped: int, notrun: int}, editorTemplate: string,
+ *     environment: array{microunit: string, php: string, framework: string|null}, suites: list<array{name: string, tests: list<TestEntry>}>}
  */
 final class ExplorerReport
 {
@@ -31,9 +41,9 @@ final class ExplorerReport
 
     /**
      * @param list<Tester> $testers
-     * @param array<string, mixed>|null $previous the previous report, merged in for partial runs
+     * @param Report|null $previous the previous report, merged in for partial runs
      * @param array<string, mixed>|null $coverage coverage summary of this run
-     * @return array<string, mixed>
+     * @return Report
      */
     public static function build(
         array $testers,
@@ -59,11 +69,9 @@ final class ExplorerReport
             foreach ($tester->getTests() as $test) {
                 $channel++;
                 $entry = isset($resultsById[$test->id])
-                    ? self::fromResult($resultsById[$test->id], $finishedAt)
-                    : self::notRun($test->id, $tester->suite, $test->name, $test->file, $test->line, $previousById[$test->id] ?? null);
-                $entry['channel'] = $channel;
-                $entry['group'] = $test->group;
-                $counts[$entry['status']] = ($counts[$entry['status']] ?? 0) + 1;
+                    ? self::fromResult($resultsById[$test->id], $finishedAt, $channel, $test->group)
+                    : self::notRun($test->id, $tester->suite, $test->name, $test->file, $test->line, $previousById[$test->id] ?? null, $channel, $test->group);
+                $counts[$entry['status']]++;
                 $tests[] = $entry;
             }
             if ($tests !== []) {
@@ -83,7 +91,7 @@ final class ExplorerReport
      * the static HTML report.
      *
      * @param list<TestResult> $results
-     * @return array<string, mixed>
+     * @return Report
      */
     public static function fromResults(array $results, string $editor): array
     {
@@ -94,10 +102,7 @@ final class ExplorerReport
         $suites = [];
         $channel = 0;
         foreach ($results as $result) {
-            $entry = self::fromResult($result, $finishedAt);
-            $entry['channel'] = ++$channel;
-            $entry['group'] = null;
-            $suites[$result->suite][] = $entry;
+            $suites[$result->suite][] = self::fromResult($result, $finishedAt, ++$channel, null);
         }
 
         return self::document(
@@ -110,10 +115,10 @@ final class ExplorerReport
     }
 
     /**
-     * @param array<string, int> $summary
-     * @param list<array<string, mixed>> $suites
-     * @param array<string, mixed> $runDetails what only the explorer's report has
-     * @return array<string, mixed>
+     * @param array{total: int, passed: int, failed: int, skipped: int, notrun: int} $summary
+     * @param list<array{name: string, tests: list<TestEntry>}> $suites
+     * @param array{runId?: string, isPartialRun?: bool, coverage?: array<string, mixed>|null} $runDetails what only the explorer's report has
+     * @return Report
      */
     private static function document(string $finishedAt, array $summary, string $editor, ?string $framework, array $suites, array $runDetails = []): array
     {
@@ -129,8 +134,8 @@ final class ExplorerReport
         ];
     }
 
-    /** @return array<string, mixed> */
-    private static function fromResult(TestResult $result, string $finishedAt): array
+    /** @return TestEntry */
+    private static function fromResult(TestResult $result, string $finishedAt, int $channel, ?string $group): array
     {
         return [
             'id' => $result->id,
@@ -147,24 +152,26 @@ final class ExplorerReport
             'failure' => self::failure($result),
             'output' => $result->output === '' ? null : self::shortened($result->output),
             'returnValue' => $result->result === null ? null : ValueExporter::export($result->result, self::MAXIMUM_VALUE_LENGTH),
+            'channel' => $channel,
+            'group' => $group,
         ];
     }
 
     /**
-     * @param array<string, mixed>|null $previous
-     * @return array<string, mixed>
+     * @param TestEntry|null $previous
+     * @return TestEntry
      */
-    private static function notRun(string $id, string $suite, string $name, ?string $file, ?int $line, ?array $previous): array
+    private static function notRun(string $id, string $suite, string $name, ?string $file, ?int $line, ?array $previous, int $channel, ?string $group): array
     {
         if ($previous !== null) {
             // Keep the previous outcome, but refresh where the test now lives.
-            return [...$previous, 'isStale' => true, 'file' => $file, 'line' => $line];
+            return [...$previous, 'isStale' => true, 'file' => $file, 'line' => $line, 'channel' => $channel, 'group' => $group];
         }
 
-        return ['id' => $id, 'suite' => $suite, 'name' => $name, 'file' => $file, 'line' => $line, ...self::NOT_RUN];
+        return ['id' => $id, 'suite' => $suite, 'name' => $name, 'file' => $file, 'line' => $line, ...self::NOT_RUN, 'channel' => $channel, 'group' => $group];
     }
 
-    /** @return array<string, mixed>|null */
+    /** @return Failure|null */
     private static function failure(TestResult $result): ?array
     {
         if ($result->assertionFailure !== null) {
@@ -184,7 +191,7 @@ final class ExplorerReport
         return null;
     }
 
-    /** @return array<string, mixed> */
+    /** @return AssertionDetails */
     private static function assertionFailure(AssertionFailure $failure): array
     {
         return [
@@ -208,8 +215,8 @@ final class ExplorerReport
     }
 
     /**
-     * @param array<string, mixed>|null $report
-     * @return array<string, array<string, mixed>>
+     * @param Report|null $report
+     * @return array<string, TestEntry>
      */
     private static function testsById(?array $report): array
     {

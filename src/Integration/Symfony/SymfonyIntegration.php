@@ -28,14 +28,12 @@ final class SymfonyIntegration extends HostedTestCaseIntegration
     #[\Override]
     public function name(): string
     {
-        $kernel = 'Symfony\Component\HttpKernel\Kernel';
-
-        return 'Symfony ' . (defined("$kernel::VERSION") ? constant("$kernel::VERSION") : '');
+        return 'Symfony ' . self::version('Symfony\Component\HttpKernel\Kernel::VERSION');
     }
 
     #[\Override]
     protected function defaultTestCase(): string
     {
-        return 'Symfony\Bundle\FrameworkBundle\Test\WebTestCase';
+        return \Symfony\Bundle\FrameworkBundle\Test\WebTestCase::class;
     }
 }

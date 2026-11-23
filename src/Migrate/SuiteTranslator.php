@@ -98,9 +98,8 @@ final class SuiteTranslator
         }
 
         $this->addDefaultValueFixtures();
-        $callsOf = fn(array $helpers): array => array_map(fn(string $helper): string => $this->helperCallCode($helper) . ';', $helpers);
-        $setUp = $this->lifecycle('setup', isShared: false, extraStatements: $callsOf($befores));
-        $tearDown = $this->lifecycle('teardown', isShared: false, extraStatements: $callsOf($afters));
+        $setUp = $this->lifecycle('setup', isShared: false, extraStatements: $this->helperCalls($befores));
+        $tearDown = $this->lifecycle('teardown', isShared: false, extraStatements: $this->helperCalls($afters));
         $setUpOnce = $this->lifecycle('setupbeforeclass', isShared: true);
         $tearDownOnce = $this->lifecycle('teardownafterclass', isShared: true);
 
@@ -141,6 +140,17 @@ final class SuiteTranslator
         ];
 
         return new MigratedSuite($suite, implode("\n\n", array_filter($sections, static fn(string $section): bool => $section !== '')) . "\n", $migrated, $skipped, $this->issues, $methods);
+    }
+
+    /**
+     * One call statement per helper, as setUp() and tearDown() run them.
+     *
+     * @param list<string> $helpers
+     * @return list<string>
+     */
+    private function helperCalls(array $helpers): array
+    {
+        return array_map(fn(string $helper): string => $this->helperCallCode($helper) . ';', $helpers);
     }
 
     /** @return array{list<array{ParsedMethod, ParsedClass}>, array<string, array{ParsedMethod, ParsedClass}>, list<string>, list<string>} */
@@ -221,7 +231,7 @@ final class SuiteTranslator
 
         foreach ($state as $lower => $properties) {
             ksort($properties);
-            $this->state[$lower] = array_map(null, array_keys($properties), array_values($properties));
+            $this->state[$lower] = array_map(static fn(string $property, bool $isSet): array => [$property, $isSet], array_keys($properties), array_values($properties));
         }
     }
 
@@ -266,7 +276,7 @@ final class SuiteTranslator
                 $expression = $this->mocks(Code::reindent(trim($rewriter->rewrite($tokens, $expressionFrom, $to - 1)), self::baseIndentation($tokens)), "$name()");
                 $this->flagExpectationHelpers($rewriter);
                 $this->addIssues($rewriter, "$name()");
-                $locals = array_diff($this->variablesIn($expression), array_keys($this->fixtures), array_keys($this->class->properties));
+                $locals = array_values(array_diff($this->variablesIn($expression), array_keys($this->fixtures), array_keys($this->class->properties)));
                 $needed = array_diff_key(self::statementsAssigning($history, $locals), array_flip($pending));
                 $isEager = $pending !== [] || $needed !== [] || !$this->isPure($tokens, $expressionFrom, $to - 1);
                 $pendingCode = array_map(static fn(int $index): string => $history[$index], $pending);
@@ -287,8 +297,9 @@ final class SuiteTranslator
             // complete a fixture created above belong to its factory.
             if ($isSetUp && $code !== '' && count($touched) === 1 && isset($factories[$touched[0]])) {
                 $property = $touched[0];
-                $locals = array_diff($this->variablesIn($code), [$property], array_keys($this->fixtures), array_keys($this->class->properties));
+                $locals = array_values(array_diff($this->variablesIn($code), [$property], array_keys($this->fixtures), array_keys($this->class->properties)));
                 $factory = $factories[$property];
+                /** @var string $return every factory ends with its return statement */
                 $return = array_pop($factory);
                 if ($return !== "return \$$property;") {
                     $factory[] = "\$$property = " . substr($return, strlen('return ')) ;
@@ -965,7 +976,7 @@ final class SuiteTranslator
     private function flagExpectationHelpers(BodyRewriter $rewriter): void
     {
         foreach (array_keys(array_intersect_key($rewriter->calledHelpers, $this->expectationHelpers)) as $helper) {
-            $name = $this->class->method($helper)?->name ?? $helper;
+            $name = $this->class->method($helper)->name ?? $helper;
             $rewriter->issues[] = "calls $name(), which only sets expectations; migrate can only expand that at the top level of a test.";
         }
     }
@@ -986,7 +997,8 @@ final class SuiteTranslator
         }
         $annotations = ['php' => 'RequiresPhp', 'extension' => 'RequiresPhpExtension', 'function' => 'RequiresFunction', 'osfamily' => 'RequiresOperatingSystemFamily', 'os' => 'RequiresOperatingSystem'];
         foreach ($method->annotation('requires') as $annotation) {
-            [$kind, $value] = preg_split('/\s+/', $annotation, 2) + [1 => ''];
+            $parts = preg_split('/\s+/', $annotation, 2) ?: [$annotation];
+            [$kind, $value] = [$parts[0], $parts[1] ?? ''];
             if (strcasecmp($kind, 'PHPUnit') !== 0) {
                 $requirements[] = [$annotations[strtolower($kind)] ?? '', var_export(trim($value), true), "@requires $annotation"];
             }
@@ -1109,7 +1121,11 @@ final class SuiteTranslator
         return $doc . 'function ' . $name . "($allParameters)$returnType\n{" . rtrim($body) . "\n}";
     }
 
-    /** A test that needs manual migration: skipped, with the reasons and the original code. @param list<string> $issues */
+    /**
+     * A test that needs manual migration: skipped, with the reasons and the original code.
+     *
+     * @param list<string> $issues
+     */
     private function skippedTest(string $name, ParsedMethod $method, array $issues): string
     {
         $reason = addslashes('Needs manual migration: ' . implode(' ', $issues));
@@ -1254,7 +1270,7 @@ final class SuiteTranslator
             $this->class,
             $names,
             $stateOf ?? fn(string $helper): array => $this->state[strtolower($helper)] ?? [],
-            $method?->bodyLine ?? $owner->line,
+            $method->bodyLine ?? $owner->line,
             $this->context->directoryOf($owner->file),
             $owner->file,
             $this->context->functions,
@@ -1314,7 +1330,7 @@ final class SuiteTranslator
         $method = $this->class->method($helper);
         $state = array_map(static fn(array $entry): string => '$' . $entry[0], $this->state[strtolower($helper)] ?? []);
 
-        return ($method?->name ?? $helper) . '(' . implode(', ', $state) . ')';
+        return ($method->name ?? $helper) . '(' . implode(', ', $state) . ')';
     }
 
     private function parameter(string $property, bool $byReference = false): string
@@ -1366,7 +1382,11 @@ final class SuiteTranslator
         return (string) preg_replace(["/\\s*&\\s*$mockType/", "/$mockType\\s*&\\s*/"], '', $code);
     }
 
-    /** Whether evaluating the expression has no side effects worth preserving (so its fixture may be lazy). @param list<\PhpToken> $tokens */
+    /**
+     * Whether evaluating the expression has no side effects worth preserving (so its fixture may be lazy).
+     *
+     * @param list<\PhpToken> $tokens
+     */
     private function isPure(array $tokens, int $from, int $to): bool
     {
         for ($i = $from; $i <= $to; $i++) {
@@ -1382,7 +1402,10 @@ final class SuiteTranslator
         return true;
     }
 
-    /** @param list<string> $code @return list<string> variable names (without $) used in the code */
+    /**
+     * @param list<string> $code
+     * @return list<string> variable names (without $) used in the code
+     */
     private function usedVariables(array $code): array
     {
         return $this->variablesIn(implode("\n", $code));
@@ -1449,7 +1472,11 @@ final class SuiteTranslator
         return $assigned[1];
     }
 
-    /** Indentation of the statements inside a "{ ... }" body. @param list<\PhpToken> $tokens */
+    /**
+     * Indentation of the statements inside a "{ ... }" body.
+     *
+     * @param list<\PhpToken> $tokens
+     */
     private static function baseIndentation(array $tokens): int
     {
         return Code::indentation(Code::text($tokens, 1, count($tokens) - 2));

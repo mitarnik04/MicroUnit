@@ -58,18 +58,21 @@ final readonly class AssertMockMethod
         return $this;
     }
 
+    /** @param list<mixed> $expectedArgs */
     public function isCalledWith(array $expectedArgs): self
     {
         $this->assertMock->isCalledWith($this->method, $expectedArgs);
         return $this;
     }
 
+    /** @param list<mixed> $expectedArgs */
     public function isCalledWithOnSpecificCall(array $expectedArgs, int $callNumber): self
     {
         $this->assertMock->isCalledWithOnSpecificCall($this->method, $expectedArgs, $callNumber);
         return $this;
     }
 
+    /** @param list<mixed> $expectedArgs */
     public function isOnlyCalledWith(array $expectedArgs): self
     {
         $this->assertMock->isOnlyCalledWith($this->method, $expectedArgs);

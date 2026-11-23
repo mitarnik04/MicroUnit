@@ -14,7 +14,7 @@ use MicroUnit\Core\TestResult;
  */
 abstract class HostedTestCaseIntegration implements IFrameworkIntegration
 {
-    private static ?object $current = null;
+    private static ?IHostedTestCase $current = null;
 
     /** PHPUnit's global assertion counter when the running test started. */
     private static int $phpUnitAssertionsBefore = 0;
@@ -37,7 +37,7 @@ abstract class HostedTestCaseIntegration implements IFrameworkIntegration
     ) {}
 
     /** The host of the running test; used by the Laravel, Symfony and CodeIgniter proxies. */
-    public static function current(): object
+    public static function current(): IHostedTestCase
     {
         return self::$current ?? throw new \LogicException(
             'No framework test is running. Configure ->withFramework(...) in microunit.config.php and use this inside a test.',
@@ -101,6 +101,7 @@ abstract class HostedTestCaseIntegration implements IFrameworkIntegration
         self::$current = null;
         $host?->tearDownForMicroUnit();
         // Static PHPUnit assertions count globally; Mockery expectations are added to the test case itself.
+        /** @var int $hostAssertions both PHPUnit methods return int */
         $hostAssertions = match (true) {
             $host !== null && method_exists($host, 'numberOfAssertionsPerformed') => $host->numberOfAssertionsPerformed(),
             $host !== null && method_exists($host, 'getNumAssertions') => $host->getNumAssertions(),
@@ -109,8 +110,20 @@ abstract class HostedTestCaseIntegration implements IFrameworkIntegration
         TestContext::countAssertions(self::phpUnitAssertionCount() - self::$phpUnitAssertionsBefore + $hostAssertions);
     }
 
+    /** The value of a framework's version constant, or '' when the framework is not installed. */
+    protected static function version(string $constant): string
+    {
+        return defined($constant) && is_string($version = constant($constant)) ? $version : '';
+    }
+
     private static function phpUnitAssertionCount(): int
     {
-        return class_exists('PHPUnit\Framework\Assert', false) ? ('PHPUnit\Framework\Assert')::getCount() : 0;
+        if (!class_exists('PHPUnit\Framework\Assert', false)) {
+            return 0;
+        }
+        /** @var int $count PHPUnit is not a dependency, so its return type is unknown here */
+        $count = ('PHPUnit\Framework\Assert')::getCount();
+
+        return $count;
     }
 }

@@ -353,7 +353,11 @@ final class ClassParser
         return $properties;
     }
 
-    /** Index of the ";" ending the statement that starts at $from. @param list<\PhpToken> $tokens */
+    /**
+     * Index of the ";" ending the statement that starts at $from.
+     *
+     * @param list<\PhpToken> $tokens
+     */
     private static function statementEnd(array $tokens, int $from): int
     {
         for ($i = $from, $count = count($tokens); $i < $count; $i++) {

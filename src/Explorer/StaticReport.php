@@ -8,6 +8,10 @@ use MicroUnit\Helpers\HtmlAssets;
  * Renders a finished run as a single, self-contained HTML document: the verdict first, then every
  * reject with its reason, then the full channel list. No JavaScript, so it works as a CI artifact,
  * in mail clients' previews and on paper.
+ *
+ * @phpstan-import-type Report from ExplorerReport
+ * @phpstan-import-type TestEntry from ExplorerReport
+ * @phpstan-import-type AssertionDetails from ExplorerReport
  */
 final class StaticReport
 {
@@ -15,7 +19,7 @@ final class StaticReport
 
     private function __construct() {}
 
-    /** @param array<string, mixed> $report as built by ExplorerReport */
+    /** @param Report $report as built by ExplorerReport */
     public static function render(array $report): string
     {
         $summary = $report['summary'];
@@ -39,7 +43,7 @@ final class StaticReport
             . "<body><main class=\"sheet\">$body</main></body></html>";
     }
 
-    /** @param array<string, mixed> $report */
+    /** @param Report $report */
     private static function head(array $report): string
     {
         $finishedAt = date('Y-m-d H:i', strtotime((string) $report['finishedAt']) ?: time());
@@ -51,7 +55,7 @@ final class StaticReport
             . ($framework === null ? '' : ' · ' . HtmlAssets::escape($framework)) . '</div></header>';
     }
 
-    /** @param array{total: int, passed: int, failed: int, skipped: int} $summary */
+    /** @param array{total: int, passed: int, failed: int, skipped: int, notrun: int} $summary */
     private static function verdict(array $summary, float $seconds): string
     {
         $isPass = $summary['failed'] === 0;
@@ -78,17 +82,17 @@ final class StaticReport
         return '<section class="block"><h2>' . HtmlAssets::escape($title) . "<span class=\"count\">$count</span></h2>$content</section>";
     }
 
-    /** @param array<string, mixed> $test */
+    /** @param TestEntry $test */
     private static function rejectCard(array $test): string
     {
-        $failure = $test['failure'] ?? [];
+        $failure = $test['failure'];
         $where = $test['file'] === null ? '' : $test['file'] . ':' . ($test['failureLine'] ?? $test['line']);
 
-        $details = match ($failure['kind'] ?? null) {
-            'error' => '<div class="message">' . HtmlAssets::escape($failure['class'] . ': ' . $failure['message']) . '</div>'
+        $details = match (true) {
+            $failure === null => '',
+            $failure['kind'] === 'error' => '<div class="message">' . HtmlAssets::escape($failure['class'] . ': ' . $failure['message']) . '</div>'
                 . '<pre class="block">' . HtmlAssets::escape($failure['file'] . ':' . $failure['line'] . "\n" . $failure['trace']) . '</pre>',
-            'assertion' => self::assertionDetails($failure),
-            default => '',
+            default => self::assertionDetails($failure),
         };
         $output = $test['output'] === null ? '' : '<pre class="block">' . HtmlAssets::escape($test['output']) . '</pre>';
 
@@ -98,7 +102,7 @@ final class StaticReport
             . $details . $output . '</article>';
     }
 
-    /** @param array<string, mixed> $failure */
+    /** @param AssertionDetails $failure */
     private static function assertionDetails(array $failure): string
     {
         $html = ($failure['customMessage'] === null ? '' : '<div class="custom">' . HtmlAssets::escape($failure['customMessage']) . '</div>')
@@ -128,7 +132,7 @@ final class StaticReport
         return $html . ($values === '' ? '' : "<div class=\"values\">$values</div>");
     }
 
-    /** @param list<array<string, mixed>> $tests */
+    /** @param list<TestEntry> $tests */
     private static function skippedList(array $tests): string
     {
         $rows = '';
@@ -140,7 +144,7 @@ final class StaticReport
         return "<table class=\"tests\">$rows</table>";
     }
 
-    /** @param array{name: string, tests: list<array<string, mixed>>} $suite */
+    /** @param array{name: string, tests: list<TestEntry>} $suite */
     private static function suiteTable(array $suite): string
     {
         $rows = '';

@@ -74,7 +74,7 @@ final readonly class MockDefinition
         return clone($this, ['callOriginalConstructor' => false]);
     }
 
-    /** @param list<mixed> $args */
+    /** @param array<mixed> $args */
     public function withConstructorArgs(array $args): self
     {
         return clone($this, ['constructorArgs' => array_values($args)]);

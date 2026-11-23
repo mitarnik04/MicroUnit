@@ -40,6 +40,9 @@ final class RunSummary
      */
     public static function elapsedSeconds(): float
     {
-        return microtime(true) - (float) $_SERVER['REQUEST_TIME_FLOAT'];
+        /** @var float $startTime PHP sets it when the process starts */
+        $startTime = $_SERVER['REQUEST_TIME_FLOAT'];
+
+        return microtime(true) - $startTime;
     }
 }

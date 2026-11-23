@@ -154,7 +154,10 @@ final class HelpText
         return implode(PHP_EOL, $lines) . PHP_EOL;
     }
 
-    /** @param list<array{string, string}> $options @return list<string> */
+    /**
+     * @param list<array{string, string}> $options
+     * @return list<string>
+     */
     private static function options(array $options): array
     {
         return array_map(static fn(array $option): string => '  ' . str_pad($option[0], 27) . $option[1], $options);

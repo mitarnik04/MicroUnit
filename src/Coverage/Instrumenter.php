@@ -67,7 +67,7 @@ final class Instrumenter
     private function __construct(string $code, string $file)
     {
         try {
-            $this->tokens = \PhpToken::tokenize($code, TOKEN_PARSE);
+            $this->tokens = array_values(\PhpToken::tokenize($code, TOKEN_PARSE));
         } catch (\ParseError $error) {
             throw new InstrumentationException("Syntax error on line {$error->getLine()}: {$error->getMessage()}", 0, $error);
         }
@@ -108,14 +108,14 @@ final class Instrumenter
         $cursorBefore = $this->cursor;
         $this->parseStatementAtCursor();
         if ($this->cursor === $cursorBefore) {
-            $token = $this->current();
+            $token = $this->requireCurrent();
             throw new InstrumentationException("Unexpected '$token->text' on line $token->line.");
         }
     }
 
     private function parseStatementAtCursor(): void
     {
-        $token = $this->current();
+        $token = $this->requireCurrent();
         $index = $this->currentIndex();
 
         switch (true) {
@@ -236,7 +236,7 @@ final class Instrumenter
     /** Attributes and modifiers can start a class, a function declaration or an expression (closure). */
     private function parseDeclarationOrExpression(): void
     {
-        $start = $this->current();
+        $start = $this->requireCurrent();
         $startIndex = $this->currentIndex();
         while ($this->isAt(T_ATTRIBUTE)) {
             $this->skipAttribute();
@@ -417,7 +417,7 @@ final class Instrumenter
         }
         $this->expect(T_DOUBLE_ARROW);
 
-        $bodyStart = $this->current();
+        $bodyStart = $this->requireCurrent();
         $bodyStartIndex = $this->currentIndex();
         $this->scanExpression(self::ARROW_BODY_TERMINATORS, isTernaryAware: true);
 
@@ -554,7 +554,7 @@ final class Instrumenter
 
             if ($this->isAt(T_DOUBLE_ARROW)) {
                 $this->advance();
-                $bodyStart = $this->current();
+                $bodyStart = $this->requireCurrent();
                 $bodyStartIndex = $this->currentIndex();
                 $this->scanExpression([';']);
                 $this->wrapExpression($bodyStart, $bodyStartIndex, $this->lastConsumed);
@@ -770,6 +770,11 @@ final class Instrumenter
         return isset($this->significant[$this->cursor]) ? $this->tokens[$this->significant[$this->cursor]] : null;
     }
 
+    private function requireCurrent(): \PhpToken
+    {
+        return $this->current() ?? throw new InstrumentationException('Unexpected end of file.');
+    }
+
     private function currentIndex(): int
     {
         return $this->significant[$this->cursor] ?? count($this->tokens);
@@ -790,7 +795,7 @@ final class Instrumenter
 
     private function advance(): \PhpToken
     {
-        $token = $this->current() ?? throw new InstrumentationException('Unexpected end of file.');
+        $token = $this->requireCurrent();
         $this->lastConsumed = $this->significant[$this->cursor];
         $this->cursor++;
 
@@ -805,7 +810,7 @@ final class Instrumenter
             throw new InstrumentationException(sprintf(
                 'Expected %s on line %d, found %s.',
                 $expected,
-                $found?->line ?? 0,
+                $found->line ?? 0,
                 $found === null ? 'the end of the file' : "'$found->text'",
             ));
         }

@@ -29,10 +29,10 @@ use MicroUnit\Integration\HostedTestCaseIntegration;
  * @method static void assertResponseHeaderSame(string $headerName, string $expectedValue, string $message = '')
  * @method static void assertResponseHasHeader(string $headerName, string $message = '')
  * @method static void assertResponseFormatSame(?string $expectedFormat, string $message = '')
- * @method static void assertRouteSame(string $expectedRoute, array $parameters = [], string $message = '')
+ * @method static void assertRouteSame(string $expectedRoute, array<string, mixed> $parameters = [], string $message = '')
  * @method static void assertBrowserCookieValueSame(string $name, string $expectedValue, bool $raw = false, string $path = '/', ?string $domain = null, string $message = '')
  * @method static void assertEmailCount(int $count, ?string $transport = null, string $message = '')
- * @method static \Symfony\Component\HttpKernel\KernelInterface bootKernel(array $options = [])
+ * @method static \Symfony\Component\HttpKernel\KernelInterface bootKernel(array<string, mixed> $options = [])
  * @method static \Symfony\Bundle\FrameworkBundle\KernelBrowser getClient(?\Symfony\Component\BrowserKit\AbstractBrowser $newClient = null)
  */
 final class Symfony
@@ -42,11 +42,16 @@ final class Symfony
     /**
      * A BrowserKit client for the running test (boots the kernel).
      *
+     * @param array<string, mixed> $options kernel options
+     * @param array<string, mixed> $server server parameters for every request
      * @return \Symfony\Bundle\FrameworkBundle\KernelBrowser
      */
     public static function client(array $options = [], array $server = []): object
     {
-        return HostedTestCaseIntegration::forward('createClient', [$options, $server]);
+        /** @var \Symfony\Bundle\FrameworkBundle\KernelBrowser $client */
+        $client = HostedTestCaseIntegration::forward('createClient', [$options, $server]);
+
+        return $client;
     }
 
     /**
@@ -56,6 +61,9 @@ final class Symfony
      */
     public static function container(): object
     {
-        return HostedTestCaseIntegration::forward('getContainer', []);
+        /** @var \Symfony\Component\DependencyInjection\ContainerInterface $container */
+        $container = HostedTestCaseIntegration::forward('getContainer', []);
+
+        return $container;
     }
 }

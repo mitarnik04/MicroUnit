@@ -74,7 +74,7 @@ final class MicroMock
         return $this->instantiate($this->definition->constructorArgs);
     }
 
-    /** @param list<mixed> $constructorArgs used instead of the ones configured on the builder */
+    /** @param array<mixed> $constructorArgs used instead of the ones configured on the builder */
     public function newAlternateInstance(array $constructorArgs): object
     {
         return $this->instantiate(array_values($constructorArgs));

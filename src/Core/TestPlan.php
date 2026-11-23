@@ -29,6 +29,8 @@ final readonly class TestPlan
      * The share of one parallel worker. Whole suites are the unit of distribution, so a suite's
      * setUpOnce, shared fixtures and any resources its tests share stay in one process. Suites are
      * dealt largest first to the least loaded worker; every process computes the same split.
+     *
+     * @param int<1, max> $workerCount
      */
     public function partition(int $workerIndex, int $workerCount): self
     {

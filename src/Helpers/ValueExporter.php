@@ -69,7 +69,10 @@ final class ValueExporter
         return var_export(substr($value, 0, $cut), true) . self::OMITTED . " (string, $length bytes)";
     }
 
-    /** @param array<int, true> $objectsOnPath */
+    /**
+     * @param array<mixed> $array
+     * @param array<int, true> $objectsOnPath
+     */
     private static function exportArray(array $array, int $depth, array $objectsOnPath, int &$budget): string
     {
         if ($array === []) {

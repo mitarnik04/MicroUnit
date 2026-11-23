@@ -17,9 +17,9 @@ use MicroUnit\Integration\HostedTestCaseIntegration;
  */
 final class LaravelIntegration extends HostedTestCaseIntegration
 {
-    private const string PROJECT_TEST_CASE = 'Tests\TestCase';
+    private const string PROJECT_TEST_CASE = \Tests\TestCase::class;
 
-    private const string FRAMEWORK_TEST_CASE = 'Illuminate\Foundation\Testing\TestCase';
+    private const string FRAMEWORK_TEST_CASE = \Illuminate\Foundation\Testing\TestCase::class;
 
     /**
      * @param class-string|null $testCase default: the project's Tests\TestCase, else Laravel's base test case
@@ -35,9 +35,7 @@ final class LaravelIntegration extends HostedTestCaseIntegration
     #[\Override]
     public function name(): string
     {
-        $application = 'Illuminate\Foundation\Application';
-
-        return 'Laravel ' . (defined("$application::VERSION") ? constant("$application::VERSION") : '');
+        return 'Laravel ' . self::version('Illuminate\Foundation\Application::VERSION');
     }
 
     /** The project's Tests\TestCase (with its helpers) when it exists, otherwise Laravel's base test case. */

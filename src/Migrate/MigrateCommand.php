@@ -105,7 +105,8 @@ final readonly class MigrateCommand
      * @param list<array{ParsedClass, TestClass, string}> $tests
      * @param array<string, list<array{kind: string, name: string, fullName: string, code: string, namespace: ?string, uses: list<string>}>> $declarations
      * @param array<string, true> $migratedClasses
-     * @return array{array<string, mixed>, list<string>} the migration report and the frameworks the classes use
+     * @return array{array{generatedAt: string, suites: list<array<string, mixed>>, failedClasses?: array<string, string>, totals: array{files: int, migrated: int, skipped: int}}, list<string>}
+     *     the migration report and the frameworks the classes use
      */
     private function writeSuites(array $tests, array $declarations, array $migratedClasses, string $output, TextStyle $style): array
     {
@@ -288,6 +289,10 @@ final readonly class MigrateCommand
      */
     private function withExternalBaseClasses(array $index): array
     {
+        /**
+         * @var array{autoload?: array{psr-4?: array<string, string|list<string>>}, autoload-dev?: array{psr-4?: array<string, string|list<string>>}}|null $composer
+         *     Composer's schema
+         */
         $composer = json_decode((string) @file_get_contents($this->projectDirectory . '/composer.json'), true);
         $prefixes = [];
         foreach ([$composer['autoload']['psr-4'] ?? [], $composer['autoload-dev']['psr-4'] ?? []] as $map) {
@@ -359,16 +364,15 @@ final readonly class MigrateCommand
         foreach ($kept as $declaration) {
             $byNamespace[(string) $declaration['namespace']][] = $declaration;
         }
-        $useLines = static fn(array $uses): string => implode("\n", array_map(static fn(string $statement): string => "$statement;", $uses));
         if (array_keys($byNamespace) === [(string) $class->namespace]) {
             $body = ($class->namespace === null ? '' : "namespace {$class->namespace};\n\n")
-                . $useLines($class->uses) . "\n\n" . implode("\n\n", array_column($kept, 'code'));
+                . self::useLines($class->uses) . "\n\n" . implode("\n\n", array_column($kept, 'code'));
         } else {
             // Declarations from several namespaces (`namespace A; ... namespace B; ...`): one block each.
             $blocks = [];
             foreach ($byNamespace as $namespace => $declarationsInNamespace) {
                 $blocks[] = 'namespace ' . ($namespace === '' ? '' : "$namespace ") . "{\n"
-                    . $useLines($declarationsInNamespace[0]['uses']) . "\n\n" . implode("\n\n", array_column($declarationsInNamespace, 'code')) . "\n}";
+                    . self::useLines($declarationsInNamespace[0]['uses']) . "\n\n" . implode("\n\n", array_column($declarationsInNamespace, 'code')) . "\n}";
             }
             $body = implode("\n\n", $blocks);
         }
@@ -429,5 +433,15 @@ final readonly class MigrateCommand
         }
 
         return $names;
+    }
+
+    /**
+     * Use statements as code, one per line.
+     *
+     * @param list<string> $uses verbatim, without the trailing ";"
+     */
+    private static function useLines(array $uses): string
+    {
+        return implode("\n", array_map(static fn(string $statement): string => "$statement;", $uses));
     }
 }

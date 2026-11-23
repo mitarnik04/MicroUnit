@@ -29,9 +29,7 @@ final class CodeIgniterIntegration extends HostedTestCaseIntegration
     #[\Override]
     public function name(): string
     {
-        $codeIgniter = 'CodeIgniter\CodeIgniter';
-
-        return 'CodeIgniter ' . (defined("$codeIgniter::CI_VERSION") ? constant("$codeIgniter::CI_VERSION") : '');
+        return 'CodeIgniter ' . self::version('CodeIgniter\CodeIgniter::CI_VERSION');
     }
 
     /** CodeIgniter needs its test bootstrap (paths, constants, services) before anything runs. */
@@ -52,6 +50,6 @@ final class CodeIgniterIntegration extends HostedTestCaseIntegration
     #[\Override]
     protected function defaultTestCase(): string
     {
-        return 'CodeIgniter\Test\CIUnitTestCase';
+        return \CodeIgniter\Test\CIUnitTestCase::class;
     }
 }

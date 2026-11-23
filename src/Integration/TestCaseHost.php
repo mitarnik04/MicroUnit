@@ -14,7 +14,7 @@ final class TestCaseHost
 {
     private const string GENERATED_NAMESPACE = 'MicroUnit\Integration\Generated';
 
-    /** @var array<string, class-string> shape => generated class */
+    /** @var array<string, class-string<IHostedTestCase>> shape => generated class */
     private static array $classes = [];
 
     /** PHPUnit's configuration is set up once per process; afterwards nothing needs checking per test. */
@@ -26,7 +26,7 @@ final class TestCaseHost
      * @param class-string $baseClass e.g. Illuminate\Foundation\Testing\TestCase or your Tests\TestCase
      * @param list<class-string> $traits
      */
-    public static function create(string $baseClass, array $traits): object
+    public static function create(string $baseClass, array $traits): IHostedTestCase
     {
         if (!class_exists($baseClass)) {
             throw new \LogicException("The test case class $baseClass does not exist. Is the framework (and phpunit/phpunit) installed?");
@@ -57,25 +57,28 @@ final class TestCaseHost
         }
         self::$isPhpUnitConfigurationChecked = true;
 
-        $registry = 'PHPUnit\TextUI\Configuration\Registry';
+        $registry = \PHPUnit\TextUI\Configuration\Registry::class;
         if (!class_exists($registry) || new \ReflectionProperty($registry, 'instance')->getValue() !== null) {
             return;
         }
 
         // PHPUnit 13 hands its event emitter to the CLI builder and the registry; 10 to 12 take none.
-        $emitter = new \ReflectionMethod($registry, 'init')->getNumberOfParameters() > 2 ? [('PHPUnit\Event\Facade')::emitter()] : [];
-        $cliArguments = new ('PHPUnit\TextUI\CliArguments\Builder')(...$emitter)->fromParameters([]);
-        $registry::init($cliArguments, ('PHPUnit\TextUI\XmlConfiguration\DefaultConfiguration')::create(), ...$emitter);
+        $emitter = new \ReflectionMethod($registry, 'init')->getNumberOfParameters() > 2 ? [\PHPUnit\Event\Facade::emitter()] : [];
+        $cliArguments = new \PHPUnit\TextUI\CliArguments\Builder(...$emitter)->fromParameters([]);
+        $registry::init($cliArguments, \PHPUnit\TextUI\XmlConfiguration\DefaultConfiguration::create(), ...$emitter);
     }
 
-    /** @param list<class-string> $traits */
+    /**
+     * @param list<class-string> $traits
+     * @return class-string<IHostedTestCase>
+     */
     private static function declare(string $baseClass, array $traits): string
     {
         $shortName = 'Host' . count(self::$classes);
         $uses = $traits === [] ? '' : 'use \\' . implode(', \\', array_map(static fn(string $trait): string => ltrim($trait, '\\'), $traits)) . ';';
 
         eval(sprintf(
-            'namespace %s; final class %s extends \\%s { %s
+            'namespace %s; final class %s extends \\%s implements \\%s { %s
                 public function setUpForMicroUnit(): void { $this->setUp(); }
                 public function tearDownForMicroUnit(): void { $this->tearDown(); }
                 public function callForMicroUnit(string $method, array $arguments): mixed {
@@ -88,9 +91,13 @@ final class TestCaseHost
             self::GENERATED_NAMESPACE,
             $shortName,
             ltrim($baseClass, '\\'),
+            IHostedTestCase::class,
             $uses,
         ));
 
-        return self::GENERATED_NAMESPACE . '\\' . $shortName;
+        /** @var class-string<IHostedTestCase> $class declared by the eval above */
+        $class = self::GENERATED_NAMESPACE . '\\' . $shortName;
+
+        return $class;
     }
 }

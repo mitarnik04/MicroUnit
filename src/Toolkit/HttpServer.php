@@ -105,7 +105,7 @@ final class HttpServer
                 fclose($connection);
                 return;
             }
-            if (!proc_get_status($this->process)['running']) {
+            if ($this->process === null || !proc_get_status($this->process)['running']) {
                 break;
             }
             usleep(25_000);

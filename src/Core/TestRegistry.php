@@ -36,7 +36,7 @@ final class TestRegistry
     {
         try {
             self::$instance = null;
-        } catch (\Throwable) {
+        } catch (\Throwable) { // @phpstan-ignore catch.neverThrown (PHPStan does not see that destructors run here)
             // Not a failure of this run: the tests that ran have reported their results already.
         }
     }

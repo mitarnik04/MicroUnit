@@ -38,7 +38,7 @@ final readonly class TestResult
         public int $assertions = 0,
     ) {
         $this->isSuccess = $status !== TestStatus::Failed;
-        $this->errorMsg = $assertionFailure?->fullMessage() ?? $error?->message ?? $skipReason;
+        $this->errorMsg = $assertionFailure?->fullMessage() ?? $error->message ?? $skipReason;
     }
 
     public static function passed(Test $test, float $time, mixed $result = null): self

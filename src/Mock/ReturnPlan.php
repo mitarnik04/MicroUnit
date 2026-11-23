@@ -18,7 +18,7 @@ final readonly class ReturnPlan
     /** @param list<mixed> $values */
     public static function sequence(array $values): self
     {
-        return new self(ReturnPlanType::Sequence, array_values($values));
+        return new self(ReturnPlanType::Sequence, $values);
     }
 
     public static function callback(callable $callback): self
@@ -30,7 +30,7 @@ final readonly class ReturnPlan
      * Rows of arguments followed by the return value; the first row whose arguments equal the
      * call's leading arguments (===) wins. Without a matching row the method returns its default.
      *
-     * @param list<list<mixed>> $map
+     * @param list<array<mixed>> $map
      */
     public static function map(array $map): self
     {
@@ -58,10 +58,10 @@ final readonly class ReturnPlan
     {
         return match ($this->type) {
             ReturnPlanType::Fixed => [$this->data],
-            ReturnPlanType::Sequence => array_key_exists($callIndex, $this->data) ? [$this->data[$callIndex]] : null,
-            ReturnPlanType::Callback => [($this->data)(...$args)],
+            ReturnPlanType::Sequence => is_array($this->data) && array_key_exists($callIndex, $this->data) ? [$this->data[$callIndex]] : null,
+            ReturnPlanType::Callback => $this->data instanceof \Closure ? [($this->data)(...$args)] : null,
             ReturnPlanType::Map => $this->mapValue($args),
-            ReturnPlanType::Throwable => throw $this->data,
+            ReturnPlanType::Throwable => $this->data instanceof \Throwable ? throw $this->data : null,
         };
     }
 
@@ -71,7 +71,9 @@ final readonly class ReturnPlan
      */
     private function mapValue(array $args): ?array
     {
-        foreach ($this->data as [$rowArgs, $value]) {
+        /** @var list<array{list<mixed>, mixed}> $rows as map() stores them */
+        $rows = $this->data;
+        foreach ($rows as [$rowArgs, $value]) {
             if ($rowArgs === array_slice($args, 0, count($rowArgs))) {
                 return [$value];
             }

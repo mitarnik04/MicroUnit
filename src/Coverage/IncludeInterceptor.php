@@ -55,8 +55,9 @@ final class IncludeInterceptor
     public function stream_open(string $path, string $mode, int $options, ?string &$openedPath): bool
     {
         $isInclude = ($options & self::OPEN_FOR_INCLUDE) !== 0;
-        if ($isInclude && self::$instrument !== null) {
-            $code = self::native(static fn() => (self::$instrument)($path));
+        $instrument = self::$instrument;
+        if ($isInclude && $instrument !== null) {
+            $code = self::native(static fn() => $instrument($path));
             if ($code !== null) {
                 $this->buffer = $code;
                 $this->path = $path;
@@ -72,6 +73,7 @@ final class IncludeInterceptor
         return $this->handle !== null;
     }
 
+    /** @param positive-int $count */
     public function stream_read(int $count): string|false
     {
         if ($this->buffer !== null) {
@@ -80,28 +82,28 @@ final class IncludeInterceptor
             return $chunk;
         }
 
-        return fread($this->handle, $count);
+        return fread($this->nativeHandle(), $count);
     }
 
     public function stream_write(string $data): int|false
     {
-        return $this->buffer === null ? fwrite($this->handle, $data) : false;
+        return $this->buffer === null ? fwrite($this->nativeHandle(), $data) : false;
     }
 
     public function stream_eof(): bool
     {
-        return $this->buffer !== null ? $this->position >= strlen($this->buffer) : feof($this->handle);
+        return $this->buffer !== null ? $this->position >= strlen($this->buffer) : feof($this->nativeHandle());
     }
 
     public function stream_tell(): int|false
     {
-        return $this->buffer !== null ? $this->position : ftell($this->handle);
+        return $this->buffer !== null ? $this->position : ftell($this->nativeHandle());
     }
 
     public function stream_seek(int $offset, int $whence = SEEK_SET): bool
     {
         if ($this->buffer === null) {
-            return @fseek($this->handle, $offset, $whence) === 0; // devices like NUL cannot seek; false says so
+            return @fseek($this->nativeHandle(), $offset, $whence) === 0; // devices like NUL cannot seek; false says so
         }
 
         $target = match ($whence) {
@@ -121,7 +123,7 @@ final class IncludeInterceptor
     public function stream_stat(): array|false
     {
         if ($this->buffer === null) {
-            return fstat($this->handle);
+            return fstat($this->nativeHandle());
         }
 
         $stat = self::native(fn() => @stat($this->path)) ?: [];
@@ -141,17 +143,19 @@ final class IncludeInterceptor
 
     public function stream_flush(): bool
     {
-        return $this->buffer !== null || fflush($this->handle);
+        return $this->buffer !== null || fflush($this->nativeHandle());
     }
 
+    /** @param int<0, 7> $operation LOCK_SH, LOCK_EX or LOCK_UN, optionally with LOCK_NB */
     public function stream_lock(int $operation): bool
     {
-        return $this->buffer !== null || flock($this->handle, $operation);
+        return $this->buffer !== null || flock($this->nativeHandle(), $operation);
     }
 
+    /** @param int<0, max> $size ftruncate() rejects negative sizes before calling the wrapper */
     public function stream_truncate(int $size): bool
     {
-        return $this->buffer === null && ftruncate($this->handle, $size);
+        return $this->buffer === null && ftruncate($this->nativeHandle(), $size);
     }
 
     public function stream_set_option(int $option, int $arg1, ?int $arg2): bool
@@ -180,11 +184,12 @@ final class IncludeInterceptor
 
     public function stream_metadata(string $path, int $option, mixed $value): bool
     {
+        // PHP passes [mtime, atime] for TOUCH, a name or an id for OWNER and GROUP, and the mode for ACCESS.
         return self::native(static fn(): bool => match ($option) {
-            STREAM_META_TOUCH => @touch($path, ...array_slice((array) $value, 0, 2)),
-            STREAM_META_OWNER_NAME, STREAM_META_OWNER => @chown($path, $value),
-            STREAM_META_GROUP_NAME, STREAM_META_GROUP => @chgrp($path, $value),
-            STREAM_META_ACCESS => @chmod($path, $value),
+            STREAM_META_TOUCH => @touch($path, ...array_filter(array_slice((array) $value, 0, 2), is_int(...))),
+            STREAM_META_OWNER_NAME, STREAM_META_OWNER => (is_string($value) || is_int($value)) && @chown($path, $value),
+            STREAM_META_GROUP_NAME, STREAM_META_GROUP => (is_string($value) || is_int($value)) && @chgrp($path, $value),
+            STREAM_META_ACCESS => is_int($value) && @chmod($path, $value),
             default => false,
         });
     }
@@ -246,7 +251,19 @@ final class IncludeInterceptor
         return true;
     }
 
-    /** Runs $operation with PHP's own file wrapper, then puts the interceptor back. */
+    /** @return resource PHP only calls the native operations on a stream that opened a native handle */
+    private function nativeHandle()
+    {
+        return $this->handle ?? throw new \LogicException('The stream has no native handle.');
+    }
+
+    /**
+     * Runs $operation with PHP's own file wrapper, then puts the interceptor back.
+     *
+     * @template T
+     * @param \Closure(): T $operation
+     * @return T
+     */
     private static function native(\Closure $operation): mixed
     {
         stream_wrapper_restore('file');

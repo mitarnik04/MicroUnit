@@ -15,7 +15,7 @@ final class Code
     /** @return list<\PhpToken> */
     public static function tokenize(string $code): array
     {
-        return \PhpToken::tokenize($code, TOKEN_PARSE);
+        return array_values(\PhpToken::tokenize($code, TOKEN_PARSE));
     }
 
     /**
@@ -40,7 +40,7 @@ final class Code
      */
     public static function tokenizeFragment(string $fragment): array
     {
-        return array_slice(\PhpToken::tokenize('<?php ' . $fragment), 1);
+        return array_values(array_slice(\PhpToken::tokenize('<?php ' . $fragment), 1));
     }
 
     /**
@@ -129,7 +129,11 @@ final class Code
         throw new \UnexpectedValueException('Unbalanced brackets.');
     }
 
-    /** Next index that is not whitespace or a comment, or null. @param list<\PhpToken> $tokens */
+    /**
+     * Next index that is not whitespace or a comment, or null.
+     *
+     * @param list<\PhpToken> $tokens
+     */
     public static function next(array $tokens, int $index): ?int
     {
         for ($i = $index + 1, $count = count($tokens); $i < $count; $i++) {
@@ -141,7 +145,11 @@ final class Code
         return null;
     }
 
-    /** Previous index that is not whitespace or a comment, or null. @param list<\PhpToken> $tokens */
+    /**
+     * Previous index that is not whitespace or a comment, or null.
+     *
+     * @param list<\PhpToken> $tokens
+     */
     public static function previous(array $tokens, int $index): ?int
     {
         for ($i = $index - 1; $i >= 0; $i--) {

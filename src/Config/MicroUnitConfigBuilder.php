@@ -13,10 +13,16 @@ use MicroUnit\Output\ITestWriter;
  *         ->withTestDir('tests')
  *         ->addTestFilePattern('*Test.php')
  *         ->build();
+ *
+ * @phpstan-type Settings array{testDirectory?: string, testWriters?: list<ITestWriter>, testFilePatterns?: list<string>,
+ *     stopOnFailure?: bool, bootstrapFile?: string, persistRunLogs?: bool, coverage?: CoverageConfig,
+ *     isTestExplorerEnabled?: bool, testExplorerPort?: int, parallelWorkers?: int, framework?: IFrameworkIntegration,
+ *     hasCiAnnotations?: bool, editor?: string, testGroups?: list<TestGroup>, runtimeDirectory?: string,
+ *     agentOutput?: bool, integrityCheck?: string, failOnWeakenedTests?: bool, failOnRiskyTests?: bool}
  */
 final class MicroUnitConfigBuilder
 {
-    /** @var array<string, mixed> named arguments for MicroUnitConfig; anything unset keeps its default */
+    /** @var Settings named arguments for MicroUnitConfig; anything unset keeps its default */
     private array $settings = [];
 
     private function __construct() {}
@@ -83,8 +89,8 @@ final class MicroUnitConfigBuilder
      *
      *     ->withCoverage(include: 'src', html: 'build/coverage', minimum: 80)
      *
-     * @param string|list<string> $include directories or files to measure. Default: "src"
-     * @param string|list<string> $exclude directories or files inside $include to skip. Default: none
+     * @param string|array<string> $include directories or files to measure. Default: "src"
+     * @param string|array<string> $exclude directories or files inside $include to skip. Default: none
      * @param string|null $html directory for the HTML report. Default: no HTML report
      * @param string|null $clover file for the Clover XML report. Default: no Clover report
      * @param string|null $cobertura file for the Cobertura XML report. Default: no Cobertura report
@@ -212,8 +218,14 @@ final class MicroUnitConfigBuilder
         return new MicroUnitConfig(...$this->settings);
     }
 
+    /**
+     * @template TSetting of key-of<Settings>
+     * @param TSetting $setting
+     * @param Settings[TSetting] $value
+     */
     private function with(string $setting, mixed $value): self
     {
+        // @phpstan-ignore assign.propertyType (PHPStan cannot tie $value to the type of the $setting key)
         $this->settings[$setting] = $value;
         return $this;
     }

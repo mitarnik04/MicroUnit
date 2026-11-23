@@ -37,7 +37,9 @@ final readonly class LastRun
     /** @return list<string> */
     public function failedTestIds(): array
     {
-        return array_values(array_filter($this->read()['failed'] ?? [], is_string(...)));
+        $failed = $this->read()['failed'] ?? [];
+
+        return is_array($failed) ? array_values(array_filter($failed, is_string(...))) : [];
     }
 
     /**
@@ -56,7 +58,7 @@ final readonly class LastRun
         return $seconds / $tests * $testCount;
     }
 
-    /** @return array<string, mixed> */
+    /** @return array<mixed> */
     private function read(): array
     {
         $decoded = is_file($this->file) ? json_decode((string) file_get_contents($this->file), true) : null;
