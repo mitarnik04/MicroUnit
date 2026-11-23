@@ -6,11 +6,13 @@ description: Run MicroUnit tests inside Laravel's, Symfony's or CodeIgniter 4's 
 
 # Laravel, Symfony and CodeIgniter
 
-Framework testing layers are big, battle-tested and built on PHPUnit. Rewriting them would be a waste of everyone's time, so MicroUnit doesn't. Instead, every test runs inside the framework's own test case: Laravel's `TestCase`, Symfony's `WebTestCase` or CodeIgniter's `CIUnitTestCase`. The framework's `setUp()` and `tearDown()` run exactly as they would under PHPUnit, and a small static proxy (`Laravel::`, `Symfony::`, `CodeIgniter::`) hands you every helper the framework offers. You keep writing tests the MicroUnit way, top to bottom, and the framework keeps doing what it's good at.
+Framework testing layers are big, battle-tested and built on PHPUnit. Rewriting them would be a waste of everyone's time, so MicroUnit doesn't. Instead, every test runs inside the framework's own test case: Laravel's `TestCase`, Symfony's `WebTestCase` or CodeIgniter's `CIUnitTestCase`.
+
+The framework's `setUp()` and `tearDown()` run exactly as they would under PHPUnit, and a small static proxy (`Laravel::`, `Symfony::`, `CodeIgniter::`) hands you every helper the framework offers. You keep writing tests the MicroUnit way, top to bottom, and the framework keeps doing what it's good at.
 
 ## Before you start: PHPUnit stays installed
 
-MicroUnit itself has zero dependencies, and that does not change here. But the frameworks' test cases extend `PHPUnit\Framework\TestCase`, so `phpunit/phpunit` has to be installed for an integration to work. Laravel, Symfony and CodeIgniter projects already ship it in `require-dev`, so in practice there is nothing to do. Just don't remove it. PHPUnit 10 through 13 are supported.
+MicroUnit itself has zero dependencies, and that does not change here. But the frameworks' test cases extend `PHPUnit\Framework\TestCase`, so `phpunit/phpunit` has to be installed for an integration to work. Laravel, Symfony and CodeIgniter projects already ship it in `require-dev`, so there is nothing to do. Just don't remove it. PHPUnit 10 through 13 are supported.
 
 If the base test case can't be loaded, the first test tells you so:
 
@@ -103,7 +105,9 @@ return MicroUnitConfigBuilder::create()
 
 The default test case is your project's `Tests\TestCase` if it exists (so its helpers are available), otherwise `Illuminate\Foundation\Testing\TestCase`.
 
-**Set the environment.** This is the one thing I'd tattoo on the back of every Laravel developer's hand. `APP_ENV` defaults to `testing`, but the database comes from your `.env` unless you say otherwise, and `RefreshDatabase` will happily migrate whatever database that is from scratch. MicroUnit does not read `phpunit.xml` at run time, so copy its `<env>` entries (`DB_CONNECTION`, `DB_DATABASE` and friends) into `environment:`. `microunit init` and `microunit migrate` both do this for you.
+**Set the environment.** This is the one thing I'd tattoo on the back of every Laravel developer's hand. `APP_ENV` defaults to `testing`, but the database comes from your `.env` unless you say otherwise, and `RefreshDatabase` will happily migrate whatever database that is from scratch.
+
+MicroUnit does not read `phpunit.xml` at run time, so copy its `<env>` entries (`DB_CONNECTION`, `DB_DATABASE` and friends) into `environment:`. `microunit init` and `microunit migrate` both do this for you.
 
 ### Symfony
 
@@ -124,7 +128,9 @@ return MicroUnitConfigBuilder::create()
 
 The default test case is `Symfony\Bundle\FrameworkBundle\Test\WebTestCase`, and `APP_ENV` defaults to `test` (anything you pass in `environment` is merged on top).
 
-Symfony needs its test bootstrap: `tests/bootstrap.php` loads `.env`, `.env.test` and friends through Dotenv. Point `withBootstrapFile()` at it. `microunit init` adds that line automatically when the file exists. `KERNEL_CLASS` usually lives in `phpunit.xml.dist` as a `<server>` entry, so pass it in `environment` unless your `.env.test` already sets it.
+Symfony needs its test bootstrap: `tests/bootstrap.php` loads `.env`, `.env.test` and friends through Dotenv. Point `withBootstrapFile()` at it. `microunit init` adds that line when the file exists.
+
+`KERNEL_CLASS` usually lives in `phpunit.xml.dist` as a `<server>` entry, so pass it in `environment` unless your `.env.test` already sets it.
 
 ### CodeIgniter 4
 
@@ -328,7 +334,7 @@ AssertResponse::begin($client->getResponse())
     ->jsonPathEquals('name', 'Hub');
 ```
 
-Create the client before you touch the container. `Symfony::container()` boots the kernel, and Symfony refuses to create a client after that: calling `Symfony::container()` first and `Symfony::client()` second throws a `LogicException` about booting the kernel before `createClient()`.
+Create the client before you touch the container. `Symfony::container()` boots the kernel, and once it is booted, `Symfony::client()` throws a `LogicException` about booting the kernel before `createClient()`.
 
 ### Acting as a user
 

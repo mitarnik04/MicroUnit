@@ -6,7 +6,9 @@ description: The browser-based Test Explorer that opens after interactive runs, 
 
 # Test Explorer
 
-The Test Explorer is a small web UI that MicroUnit serves on your own machine. If you have used the Test Explorer in Visual Studio, you already know the idea: every test in one list, a summary of what passed and what didn't, a detail pane for the selected test, and a handful of ways to run exactly the tests you care about right now. It is opt-in: it opens when you ask for it, it needs nothing installed (it is plain PHP plus one HTML file), and a run without it costs nothing for it.
+The Test Explorer is a small web UI that MicroUnit serves on your own machine. If you have used the Test Explorer in Visual Studio, you already know the idea: every test in one list, a summary of what passed and what didn't, a detail pane for the selected test, and a handful of ways to run exactly the tests you care about right now.
+
+It is opt-in: it opens when you ask for it, and it needs nothing installed (it is plain PHP plus one HTML file).
 
 <img alt="The MicroUnit Test Explorer: the test list on the left, a failed assertion with its diff on the right" src="{{ '/assets/img/explorer-dark.png' | relative_url }}" width="100%">
 
@@ -40,7 +42,9 @@ Everything about the explorer is set in that one call:
 
 With `openAfterRun: false`, the port and editor still apply when you open it with `microunit explorer`.
 
-`microunit explorer` starts the server if it isn't running and opens the browser. Before the first run there is nothing to show yet, so you get an empty page with a "Run all" button. Once it is open, it stays current: test runs in your terminal update the open tab too, and the terminal only prints the URL:
+`microunit explorer` starts the server if it isn't running and opens the browser. Before the first run there is nothing to show yet, so you get an empty page with a "Run all" button.
+
+Once it is open, it stays current: test runs in your terminal update the open tab too, and the terminal only prints the URL:
 
 ```text
 Test Explorer updated: http://127.0.0.1:7357/
@@ -69,9 +73,13 @@ The explorer is built like the test runner in an IDE: a toolbar, a list of your 
 
 **The toolbar** has the run actions (Run all, Rerun failed, the Run menu), a text filter (matches anywhere in `Suite::test`) and the status filter with counts: All, Failed, Passed, Skipped, Not run.
 
-**The run bar** under it is a thin strip with one cell per test, in the order they were defined: green passed, red failed, amber skipped, grey not run, dimmed when the result is from an earlier run. On a big suite it is the fastest way to spot the one red cell among a thousand green ones; click a cell to select that test. Above 600 tests it shows one segment per status instead. The line below it says how the run went ("2 failed", "All passed"), the counts, the number of tests, the wall-clock time and, when the run measured [coverage](coverage.md), the line coverage with a link to the HTML report.
+**The run bar** under it is a thin strip with one cell per test, in the order they were defined: green passed, red failed, amber skipped, grey not run, dimmed when the result is from an earlier run. On a big suite it is the fastest way to spot the one red cell among a thousand green ones; click a cell to select that test. Above 600 tests it shows one segment per status instead.
 
-**The list** shows your tests grouped by suite, in definition order. Data sets of a `defineGroup()` test sit under their own collapsible group. Every row has a drawn status icon (so the status never depends on colour alone), the name and the duration; suites and groups show how many tests they contain, their total time and, for suites, a "2 failed" badge. The sort button in the list's header puts the slowest tests first; the other two buttons expand or collapse everything. Drag the divider between list and details to make the list wider (double-click it to reset).
+The line below the run bar says how the run went ("2 failed", "All passed"), the counts, the number of tests, the wall-clock time and, when the run measured [coverage](coverage.md), the line coverage with a link to the HTML report.
+
+**The list** shows your tests grouped by suite, in definition order. Data sets of a `defineGroup()` test sit under their own collapsible group. Every row has a drawn status icon (so the status never depends on colour alone), the name and the duration; suites and groups show how many tests they contain, their total time and, for suites, a "2 failed" badge.
+
+The sort button in the list's header puts the slowest tests first; the other two buttons expand or collapse everything. Drag the divider between list and details to make the list wider (double-click it to reset).
 
 **The details** of a test show:
 
@@ -132,7 +140,7 @@ Marked tests get a tinted background. `Enter` then runs exactly those. `Esc` cle
 
 ### Partial runs keep earlier results
 
-When a run covers only some tests (run selected, run rejects, `--filter`, `--failed`), the tests that did not run keep their previous result instead of turning grey. They are marked as stale: dimmed in the list and the run bar, and the details say "Not part of the latest run; this is the previous result." The verdict line shows "partial run" next to the time of the last run. You keep the full picture while you work on a handful of tests, and a full run clears every stale mark.
+When a run covers only some tests (Run selection, Rerun failed, `--filter`, `--failed`), the tests that did not run keep their previous result instead of turning grey. They are marked as stale: dimmed in the list and the run bar, and the details say "Not part of the latest run; this is the previous result." The verdict line shows "partial run" next to the time of the last run. You keep the full picture while you work on a handful of tests, and a full run clears every stale mark.
 
 One caveat: this only covers tests MicroUnit loaded. When you run specific files or directories (`microunit tests/Unit`) or a `--group`, only those test files are loaded, so the explorer shows only their tests. Runs started from the explorer always load the whole suite.
 
@@ -160,19 +168,19 @@ Shortcuts are ignored while you type in the filter and while Ctrl, Cmd or Alt is
 
 ## Security model
 
-A local web server that can start processes deserves a short explanation of why it is safe to leave running:
+Here is why a local web server that can start processes is safe to leave running:
 
 - **Loopback only.** The server binds to `127.0.0.1`. Other machines on your network cannot reach it.
 - **Per-session token.** Starting a run requires a random token that the server generates when it starts and embeds in the page it serves. A malicious website open in another tab cannot read that page (the browser's same-origin policy prevents it), so it cannot start runs.
 - **Host check.** Every request must name `127.0.0.1:<port>` or `localhost:<port>` in its `Host` header, otherwise the server answers `403`. This blocks DNS rebinding, where an attacker's domain suddenly resolves to your machine.
 - **Fixed commands.** The page can only ask for "run these test ids" or "run the failed tests". It cannot pass arbitrary arguments, and the ids go through a file rather than the command line.
-- **Idle timeout.** The server stops after 30 minutes without a request (never during a run). An open tab polls the server, so in practice it shuts down about half an hour after you close the tab. The next interactive run starts it again.
+- **Idle timeout.** The server stops after 30 minutes without a request (never during a run). An open tab polls the server, so it shuts down about half an hour after you close the tab. The next interactive run starts it again.
 
 The coverage report link (shown when the run wrote an [HTML coverage report](coverage.md#reports)) serves files from that report's directory and nothing outside of it.
 
 ## Light theme
 
-If you work in a light editor, the explorer comes along. The theme switch in the status bar cycles through dark, light and following your system, and your browser remembers the choice.
+If you work in a light editor, the explorer comes along: the theme switch in the status bar cycles through dark, light and following your system, and your browser remembers the choice.
 
 <img alt="The MicroUnit Test Explorer in its light theme" src="{{ '/assets/img/explorer.png' | relative_url }}" width="100%">
 

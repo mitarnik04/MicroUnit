@@ -6,7 +6,9 @@ description: Every microunit command and option, with exit codes and examples.
 
 # Command line
 
-Everything MicroUnit does starts with `vendor/bin/microunit`. Without a command it runs your tests; a handful of commands cover setup, migration, the integrity check and the Test Explorer. Every option only changes the current run. Anything you want every time belongs in [`microunit.config.php`](configuration.md), which is why this page is short and the configuration page is not. The same information is built into the binary: `microunit help` gives the overview, `microunit help <command>` the details of one command.
+Everything MicroUnit does starts with `vendor/bin/microunit`. Without a command it runs your tests; a handful of commands cover setup, migration, the integrity check and the Test Explorer.
+
+Options only change the current run. Anything you want every time belongs in [`microunit.config.php`](configuration.md), which is why this page is short and the configuration page is not. The same information is built into the binary: `microunit help` gives the overview, `microunit help <command>` the details of one command.
 
 ```text
 microunit [command] [options] [paths...]
@@ -63,7 +65,9 @@ Quote regular expressions so your shell leaves them alone. An invalid one stops 
 
 **`--group`** takes one group name or several, separated by commas. Without it, every group runs. A name that is not configured is a usage error that lists the groups you do have. See [test groups](writing-tests.md#test-groups).
 
-**`--failed`** re-runs exactly the tests that failed last time, by id. The previous results come from a small file in the runtime directory, written after every run, with or without the Test Explorer. If nothing failed last time, MicroUnit says so and runs everything (or whatever `--filter` selects). When there are failures to re-run, `--filter` is not applied on top. Pairs well with `--stop-on-failure` while you work through a broken suite one test at a time.
+**`--failed`** re-runs exactly the tests that failed last time, by id. The previous results come from a small file in the runtime directory, written after every run, with or without the Test Explorer.
+
+If nothing failed last time, MicroUnit says so and runs everything (or whatever `--filter` selects). When there are failures to re-run, `--filter` is not applied on top. Pairs well with `--stop-on-failure` while you work through a broken suite one test at a time.
 
 **`--list`** prints the selected tests and exits with `0` without running anything. Test files, the bootstrap file and the framework are still loaded, because that is where tests get defined. Plain `--list` prints one id per line:
 
@@ -93,7 +97,9 @@ All selection options combine with each other and with `--list`, so `--list --gr
 | `--update-snapshots` | Rewrite the snapshots of the tests that run |
 | `--config=FILE, -c` | Use this config file instead of finding `microunit.config.php` |
 
-**`--parallel`** without a value starts one worker per CPU core; `--parallel=4` starts four. N must be a positive number. Whole suites are distributed across workers, and a run with fewer than two tests stays sequential. `--no-parallel` overrides `runInParallel()` from the config. See [parallel runs](parallel.md).
+**`--parallel`** without a value starts one worker per CPU core; `--parallel=4` starts four. N must be a positive number. Whole suites are distributed across workers, and a run with fewer than two suites stays sequential.
+
+Without a number, the run also stays sequential when the previous run suggests the tests finish in under a second, because starting the workers would cost more than it saves. A number forces workers even then (`--parallel=4`, or `runInParallel(4)` in the config), though for a run that short it is usually slower. `--no-parallel` overrides `runInParallel()` from the config. See [parallel runs](parallel.md).
 
 **`--stop-on-failure`** ends the run after the first failing test, on top of whatever the config says.
 
@@ -114,7 +120,7 @@ All selection options combine with each other and with `--list`, so `--list --gr
 
 **`--colors`** and **`--no-colors`** override the detection, which otherwise turns colour off when output goes to a pipe or file and honours `NO_COLOR` and `FORCE_COLOR`. The flags win over those variables: `--colors` gives colour even when `NO_COLOR` is set.
 
-**`--coverage`** measures coverage for this run. Without `withCoverage()` in the config it uses the defaults: measure `src/`, print a table. **`--no-coverage`** skips coverage that the config turns on, which is nice for a quick local run. See [code coverage](coverage.md).
+**`--coverage`** measures coverage for this run. Without `withCoverage()` in the config it uses the defaults: measure `src/`, print a table. **`--no-coverage`** skips coverage that the config turns on, handy for a quick local run. See [code coverage](coverage.md).
 
 **`--explorer`** runs the tests and then opens the Test Explorer with the results (in an interactive terminal). **`--no-explorer`** keeps it closed for this run even when the config has `withTestExplorer()`. The explorer is off by default, so scripts and agents need neither.
 
@@ -145,7 +151,9 @@ See [getting started](getting-started.md).
 microunit migrate [paths...] [--out=DIR]
 ```
 
-Translates PHPUnit test classes (default: `tests/`) into MicroUnit test files in `tests-microunit/`. The originals stay untouched, so both suites can run side by side. Properties become fixtures, helpers become functions, data providers become data sets, PHPUnit mocks become MicroUnit mocks. What needs manual work is written as a skipped test with the reason and the original code, and listed in `migration-report.json`. Creates `microunit.config.php` from `phpunit.xml` when there is none.
+Translates PHPUnit test classes (default: `tests/`) into MicroUnit test files in `tests-microunit/`. The originals stay untouched, so both suites can run side by side.
+
+Properties become fixtures, helpers become functions, data providers become data sets, PHPUnit mocks become MicroUnit mocks. What needs manual work is written as a skipped test with the reason and the original code, and listed in `migration-report.json`. It also creates `microunit.config.php` from `phpunit.xml` when there is none.
 
 | Option | Effect |
 | --- | --- |

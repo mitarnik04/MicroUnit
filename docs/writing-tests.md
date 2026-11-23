@@ -6,7 +6,9 @@ description: Suites, tests, data sets, fixtures, setUp and tearDown, skipping, o
 
 # Writing tests
 
-A MicroUnit test is a closure with a name. That is the whole model, and everything on this page builds on it: suites group tests, data sets run one closure with different inputs, fixtures hand each test the objects it needs, and lifecycle hooks cover the rest. The goal is a test file you can read from top to bottom like a description of what the code does, whether a colleague wrote it, you wrote it at 2am, or an AI agent wrote it.
+A MicroUnit test is a closure with a name. That is the whole model, and everything on this page builds on it: suites group tests, data sets run one closure with different inputs, fixtures hand each test the objects it needs, and lifecycle hooks cover the rest.
+
+The goal is a test file you can read from top to bottom like a description of what the code does, whether a colleague wrote it, you wrote it at 2am, or an AI agent wrote it.
 
 ## Test files and suites
 
@@ -29,7 +31,7 @@ The suite name is the unit under test: `Cart`, `Mailer`, `InvoiceRepository`. It
 
 The convention is **one suite per file**, with the file named after the suite (`tests/Cart/cart-tests.php`, or `tests/CartTest.php` if you configure `*Test.php` as the pattern). MicroUnit does not enforce it, but a reader should never have to grep to find where a suite's tests live.
 
-`getTester()` returns the same `Tester` for the same name, so two files that ask for `'Cart'` add to the same suite. That works, but be aware that hooks and fixtures belong to the suite, not the file: if both files call `setUp()`, the second one silently replaces the first. Another reason to stick to one file per suite.
+`getTester()` returns the same `Tester` for the same name, so two files that ask for `'Cart'` add to the same suite. That works, but hooks and fixtures belong to the suite, not the file: if both files call `setUp()`, the second one silently replaces the first. Another reason to stick to one file per suite.
 
 > Always use `TestSetup::getTester('Suite')`. A `Tester` created with `new Tester(...)` is not registered anywhere, so its tests never run.
 
@@ -56,7 +58,7 @@ $tester->define('adds_two_numbers', function (int $a, int $b): void {
 }, 1, 2);
 ```
 
-In practice you rarely need `...$args`. Data sets and fixtures (below) say the same thing more clearly.
+You rarely need `...$args`. Data sets and fixtures (below) say the same thing more clearly.
 
 ### Name tests after behaviour
 
@@ -106,7 +108,7 @@ Data sets without a string key are numbered by their position, starting at 1. Na
 
 ### Generators
 
-Any iterable works, so a generator can build the data sets. Useful when the data is computed, read from a file, or simply too long to inline:
+Any iterable works, so a generator can build the data sets. Useful when the data is computed, read from a file, or too long to inline:
 
 ```php
 function priceCases(): Generator
@@ -126,7 +128,7 @@ $tester->defineGroup('keeps_the_price', function (int $price, int $expected): vo
 
 ### `TestCase` objects
 
-Before keyed arrays, data sets were written as `TestCase` objects. They still work and mean exactly the same thing:
+Data sets can also be written as `TestCase` objects. They mean exactly the same thing as keyed arrays:
 
 ```php
 use MicroUnit\Core\TestCase;
@@ -271,7 +273,9 @@ $tester->tearDownOnce(function (PDO $pdo): void {
 
 The return value of `setUpOnce()` goes to `setUp()`. Without a `setUp()`, it goes straight to every test as the first argument.
 
-If `setUpOnce()` throws, every test of the suite fails with `setUpOnce() of suite '...' failed: ...`. Running them without their shared setup would only produce noise. If it calls `Assert::skip()`, every test of the suite is skipped instead, which is exactly what you want for integration tests that need a service:
+If `setUpOnce()` throws, every test of the suite fails with `setUpOnce() of suite '...' failed: ...`. Running them without their shared setup would only produce noise.
+
+If it calls `Assert::skip()`, every test of the suite is skipped instead, which is exactly what you want for integration tests that need a service:
 
 ```php
 $tester->setUpOnce(function (): PDO {
@@ -301,7 +305,7 @@ $tester->tearDown(function (TestResult $result, FakeMailer $mailer): void {
 });
 ```
 
-Fixture parameters can sit anywhere in the list because they are matched by name. The other parameters are filled in order from the hook's usual values (for `tearDown()`: the result, then the setUp value), and values nobody asked for are simply not used.
+Fixture parameters can sit anywhere in the list because they are matched by name. The other parameters are filled in order from the hook's usual values (for `tearDown()`: the result, then the setUp value), and values nobody asked for are not used.
 
 ### Replacing a fixture for every test
 
@@ -399,7 +403,9 @@ Cart::applies_quantity_three items
 Cart::sums_the_line_totals#2
 ```
 
-Data sets add their key to the name, and a duplicate name gets `#2`, `#3` and so on. Ids are what `--filter` matches against (a case-insensitive substring, or a regular expression between slashes), what `--failed` remembers, and what the Test Explorer and the agent output use. `--list` prints them:
+Data sets add their key to the name, and a duplicate name gets `#2`, `#3` and so on.
+
+Ids are what `--filter` matches against (a case-insensitive substring, or a regular expression between slashes), what `--failed` remembers, and what the Test Explorer and the agent output use. `--list` prints them:
 
 ```bash
 vendor/bin/microunit --list

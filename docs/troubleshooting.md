@@ -6,7 +6,9 @@ description: Fixes for the problems people actually run into, from missing tests
 
 # Troubleshooting
 
-Most problems with a test runner come down to a handful of causes: it looks for files in a different place than you think, it loads a different config than you think, or something in the environment changes its behaviour. This page goes through the common symptoms, what causes them and how to fix them. MicroUnit tries hard to say what went wrong in its error messages, so the quoted messages below are the real ones, which makes this page easy to search.
+Most problems with a test runner come down to a handful of causes: it looks for files in a different place than you think, it loads a different config than you think, or something in the environment changes its behaviour.
+
+This page goes through the common symptoms, their causes and their fixes. MicroUnit tries hard to say what went wrong in its error messages, and the messages quoted below are the real ones, so you can search this page for the one you see.
 
 ## No tests found
 
@@ -36,7 +38,7 @@ Without `withTestDir()`, MicroUnit searches `tests/` next to the config file; `m
 The test directory '/app/spec' does not exist. Check withTestDir()/withTestGroup() in your config.
 ```
 
-Note that a run that finds no test files still exits with `0`. If CI suddenly reports "0/0 passed", the patterns or the directory are the first thing to check.
+A run that finds no test files still exits with `0`. If CI suddenly reports "0/0 passed", the patterns or the directory are the first thing to check.
 
 If the files are found but a suite is empty, check that the file actually registers tests: `TestSetup::getTester('Suite')` and at least one `$tester->define(...)`. `vendor/bin/microunit --list` shows what MicroUnit sees without running anything.
 
@@ -89,7 +91,7 @@ return MicroUnitConfigBuilder::create()   // "return" is easy to forget
     ->build();                             // and so is build()
 ```
 
-"returned int" is what you get without `return` (PHP's `require` returns `1`), "returned MicroUnit\Config\MicroUnitConfigBuilder" means `->build()` is missing. MicroUnit exits with code `2` for configuration errors, so CI fails clearly instead of running nothing.
+"returned int" is what you get without `return` (PHP's `require` returns `1`); "returned MicroUnit\Config\MicroUnitConfigBuilder" means `->build()` is missing. MicroUnit exits with code `2` for configuration errors, so CI fails clearly instead of running nothing.
 
 ## No output at all
 
@@ -113,7 +115,7 @@ MicroUnit loads your Composer autoloader for you: it looks for `vendor/autoload.
 
 When a class is not found:
 
-- **Test helpers and fixtures classes** usually live in an `autoload-dev` namespace (`"Tests\\": "tests/"`). Check that the mapping exists and run `composer dump-autoload` after adding it.
+- **Test helper and fixture classes** usually live in an `autoload-dev` namespace (`"Tests\\": "tests/"`). Check that the mapping exists and run `composer dump-autoload` after adding it.
 - **Classes declared in test files** are only available once that file is loaded. Put shared helpers in their own autoloaded files instead.
 - **A missing `use` statement** for `Assert` or `TestSetup` shows up the same way. Every test file needs `use MicroUnit\Assertion\Assert;` and `use MicroUnit\Setup\TestSetup;` (or whatever it uses).
 
@@ -203,7 +205,9 @@ Workers start with the same `php.ini` and memory limit as the main process, but 
 The test case class Illuminate\Foundation\Testing\TestCase does not exist. Is the framework (and phpunit/phpunit) installed?
 ```
 
-The Laravel, Symfony and CodeIgniter integrations run your tests inside the framework's own test case class, so the framework's helpers (`actingAs()`, `assertDatabaseHas()`, the HTTP client) behave exactly as they do under PHPUnit. Those test case classes extend PHPUnit's `TestCase`. MicroUnit itself has no dependencies, but with a framework integration your project needs `phpunit/phpunit` in `require-dev`. A new Laravel project already has it; keep it there after migrating from PHPUnit. The [frameworks](frameworks.md) page has the details.
+The Laravel, Symfony and CodeIgniter integrations run your tests inside the framework's own test case class, so the framework's helpers (`actingAs()`, `assertDatabaseHas()`, the HTTP client) behave exactly as they do under PHPUnit. Those test case classes extend PHPUnit's `TestCase`.
+
+MicroUnit itself has no dependencies, but with a framework integration your project needs `phpunit/phpunit` in `require-dev`. A new Laravel project already has it; keep it there after migrating from PHPUnit. The [frameworks](frameworks.md) page has the details.
 
 ## JSON output appears when you did not ask for it
 

@@ -6,7 +6,11 @@ description: Compact JSON output for coding agents, an integrity check that catc
 
 # MicroUnit for AI agents
 
-Coding agents run tests constantly: after every edit, sometimes dozens of times per task. That changes what a test runner should optimise for. Every line of output costs tokens and context, a wall of green checkmarks is pure noise, and the agent needs the failing line, the expected and actual values and nothing else. There is also a less comfortable problem. Under pressure to turn a red test green, agents sometimes weaken the test instead of fixing the code. MicroUnit has a feature for each of these: output made for agents, an integrity check that flags weakened tests, a warning for tests that prove nothing, and a skill file that teaches the agent how MicroUnit works.
+Coding agents run tests constantly: after every edit, sometimes dozens of times per task. That changes what a test runner should optimise for. Every line of output costs tokens and context, a wall of green checkmarks is pure noise, and the agent needs the failing line, the expected and actual values and nothing else.
+
+There is also a less comfortable problem. Under pressure to turn a red test green, agents sometimes weaken the test instead of fixing the code.
+
+MicroUnit has a feature for each of these: output made for agents, an integrity check that flags weakened tests, a warning for tests that prove nothing, and a skill file that teaches the agent how MicroUnit works.
 
 ## Agent output
 
@@ -184,16 +188,18 @@ For an agent working on your code, `withIntegrityCheck()` is the setting to use:
 "weakenedTestsNote": "Compared to the last commit. Tests must not be weakened to make them pass: fix the code, or explain why the test changed."
 ```
 
-When the revision is not `HEAD`, the note names it (`Compared to origin/main.`). The note is written for the agent: it says, at the moment it matters, that this is not an acceptable way to get a green run, and what to do instead (fix the code, or explain why the test had to change). The agent skill described below says the same thing up front.
+When the revision is not `HEAD`, the note names it (`Compared to origin/main.`). The note is written for the agent: at the moment it matters, it says that this is not an acceptable way to get a green run, and what to do instead. The agent skill described below says the same thing up front.
 
-In console runs, the findings are printed below the summary. With `failOnFindings: true`, any finding makes the run exit with `1`, and so does a check that could not compare at all (no git repository, or a revision missing from a shallow clone), so a misconfigured pipeline can't pass by accident. That works well as a pull request gate: the author either fixes the code or explains the changed test in the review.
+In console runs, the findings are printed below the summary.
+
+With `failOnFindings: true`, any finding makes the run exit with `1`, and so does a check that could not compare at all (no git repository, or a revision missing from a shallow clone), so a misconfigured pipeline can't pass by accident. That works well as a pull request gate: the author either fixes the code or explains the changed test in the review.
 
 ### What it can't do
 
-These are heuristics that read your test source. They are useful precisely because they are cheap and run all the time, but you should know where they stop:
+These are heuristics that read your test source. They are useful precisely because they are cheap and run all the time. Here is where they stop:
 
 - **A finding is a question, not a verdict.** Removing an obsolete test or correcting a wrong expected value is legitimate. That is why findings don't fail the run unless you ask for it.
-- **Only modified and deleted test files are compared.** A new test file has nothing to compare against. A test moved to another file shows up as removed. A renamed test too.
+- **Only modified and deleted test files are compared.** A new test file has nothing to compare against. A test that was moved to another file or renamed shows up as removed.
 - **Production code is not checked.** An agent that "fixes" a test by special-casing the test input in the code under test will not be caught here. Code review still matters.
 - **Only recognisable assertions count**: `Assert::` and `AssertMock::` calls, chained mock checks (`->isCalled...()`) and helper functions whose name starts with `assert`. Expected-value changes are only reported between literals (numbers, strings, `true`, `false`, `null`): a literal that disappeared is paired with one that appeared, so adding or reordering assertions is not reported as a change.
 - **It needs git** and the git command line on the `PATH`. When a configured check cannot run, MicroUnit says so on standard error.

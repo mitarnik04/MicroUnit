@@ -6,7 +6,9 @@ description: Test against real databases, real HTTP servers and the real file sy
 
 # Integration testing
 
-Unit tests tell you your classes do what you think. Integration tests tell you they still do it once a real database, a real web server and a real file system get involved, which is usually where the interesting bugs live. MicroUnit treats this as a first-class job: named fixtures that set up and tear down resources, suite-wide setup for the expensive stuff, and a small toolkit (`Database`, `HttpServer`, `Http`, `TemporaryDirectory`) that covers the common cases without pulling in a single package. Services that aren't available skip the test instead of turning the whole run red.
+Unit tests tell you your classes do what you think. Integration tests tell you they still do it once a real database, a real web server and a real file system get involved, which is usually where the interesting bugs live.
+
+MicroUnit treats this as a first-class job: named fixtures that set up and tear down resources, suite-wide setup for the expensive stuff, and a small toolkit (`Database`, `HttpServer`, `Http`, `TemporaryDirectory`) that covers the common cases without pulling in a single package. Services that aren't available skip the test instead of turning the whole run red.
 
 If you're testing a Laravel, Symfony or CodeIgniter app, start with [Laravel, Symfony and CodeIgniter](frameworks.md). Everything on this page works there too.
 
@@ -31,7 +33,7 @@ $tester->define('stores_a_product', function (Database $db) {
 });
 ```
 
-The matching is by parameter **name**, not type. `$db` gets the `db` fixture. Parameters that don't match a fixture are filled with the usual positional values, so fixtures mix freely with `setUp()` results and data sets.
+Matching is by parameter **name**, not type. `$db` gets the `db` fixture. Parameters that don't match a fixture are filled with the usual positional values, so fixtures mix freely with `setUp()` results and data sets.
 
 Fixtures are lazy. One is created the first time a test (or `setUp()`, or another fixture) asks for it, and a test that doesn't ask doesn't pay for it.
 
@@ -74,7 +76,9 @@ By default every test gets a fresh instance. That's what you want for a database
 $tester->fixture('app', fn() => HttpServer::start('public/index.php'), shared: true);
 ```
 
-Shared fixtures play well with [parallel runs](parallel.md): MicroUnit distributes whole suites to workers, so a suite's shared fixtures never get split across processes. A failing cleanup of a shared fixture is printed to stderr, since there's no single test left to blame; `tearDownOnce()` still runs afterwards.
+Shared fixtures play well with [parallel runs](parallel.md): MicroUnit distributes whole suites to workers, so a suite's shared fixtures never get split across processes.
+
+A failing cleanup of a shared fixture is printed to stderr, since there's no single test left to blame; `tearDownOnce()` still runs afterwards.
 
 ## setUpOnce and tearDownOnce
 
@@ -89,7 +93,9 @@ $tester->define('reads_products', function (Database $db) {
 });
 ```
 
-The value goes to `setUp()` if the suite has one; otherwise each test receives it as its first argument. If `setUpOnce()` throws, every test of the suite fails with `setUpOnce() of suite '...' failed: ...`. If it skips (see [below](#skipping-when-a-service-is-missing)), every test of the suite is skipped with that reason.
+The value goes to `setUp()` if the suite has one; otherwise each test receives it as its first argument.
+
+If `setUpOnce()` throws, every test of the suite fails with `setUpOnce() of suite '...' failed: ...`. If it skips (see [below](#skipping-when-a-service-is-missing)), every test of the suite is skipped with that reason.
 
 Need to share more than one thing? Return a `ValueBundle`: a small bag of named values with property access. Values set with `readonly: true` can't be overwritten by accident.
 
@@ -309,7 +315,7 @@ $tester->define('the_worker_sends_the_confirmation', function (Database $db) {
 });
 ```
 
-The check passes when no assertion inside it fails, nothing throws, and it doesn't return `false`. `eventually()` then returns whatever the check returned. Note that returning `null` counts as passing, so assert on the value (as above) instead of just returning it.
+The check passes when no assertion inside it fails, nothing throws, and it doesn't return `false`. `eventually()` then returns whatever the check returned. Returning `null` counts as passing, so assert on the value (as above) instead of just returning it.
 
 The signature is `eventually(callable $check, float $timeoutInSeconds = 5.0, float $intervalInSeconds = 0.1, string $message = '')`. When time runs out, the failure tells you how many attempts were made and what went wrong on the last one:
 

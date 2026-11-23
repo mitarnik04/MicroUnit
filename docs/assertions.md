@@ -6,11 +6,13 @@ description: The complete Assert reference, the two styles of writing a check, H
 
 # Assertions
 
-Everything you check in a MicroUnit test goes through `MicroUnit\Assertion\Assert`. It is one class with static methods, grouped here by topic: values, numbers and dates, collections, strings and JSON, files, behaviour and snapshots. The names are plain English, the argument order is the one you already know from PHPUnit, and a failure tells you what was expected, what arrived and, where it helps, shows a diff. This page lists every method with its signature, what it checks and a small example. If you have not written a test yet, start with [writing tests](writing-tests.md).
+Everything you check in a MicroUnit test goes through `MicroUnit\Assertion\Assert`. It is one class with static methods, grouped here by topic: values, numbers and dates, collections, strings and JSON, files, behaviour and snapshots. The names are plain English, the argument order is the one you already know from PHPUnit, and a failure tells you what was expected and what arrived, with a diff where it helps.
+
+This page lists every method with its signature, what it checks and a small example. If you have not written a test yet, start with [writing tests](writing-tests.md).
 
 ## Two styles: static and fluent
 
-A check on a value can be written in two styles. Static calls name the check and pass the value. Fluent chains start from the value and add one check after another:
+You can write a check on a value in two styles. Static calls name the check and pass the value. Fluent chains start from the value and add one check after another:
 
 ```php
 Assert::notNull($user->email);
@@ -44,7 +46,7 @@ Assert::prints(fn () => $report->render(), "Total: 3\n");
 
 `Assert::exact()` is `===`. Same type, same value, and for objects the same instance. It is the one to reach for by default, because it catches the `'42'` that should have been `42`.
 
-`Assert::equals()` is loose, and smarter than PHP's `==` in one important way: objects of the same class are compared property by property, recursively, like PHPUnit's `assertEquals`. Two `Money(5, 'EUR')` objects are equal even though they are different instances. Dates compare as moments in time, so `12:00 UTC` equals `13:00 +01:00`. Objects of different classes are never equal. Scalars inside still compare with `==`, so `1` equals `'1'`.
+`Assert::equals()` is loose, but smarter than PHP's `==`: objects of the same class are compared property by property, recursively, like PHPUnit's `assertEquals`. Two `Money(5, 'EUR')` objects are equal even though they are different instances. Dates compare as moments in time, so `12:00 UTC` equals `13:00 +01:00`. Objects of different classes are never equal. Scalars inside still compare with `==`, so `1` equals `'1'`.
 
 ```php
 Assert::equals(new Money(5, 'EUR'), $wallet->balance()); // passes for an equal copy
@@ -79,9 +81,9 @@ The rest print `Expected:` and `Actual:` lines. Values always carry their type (
 
 ## Every assertion counts
 
-Each assertion that runs, passing or failing, is counted for the current test: every `Assert` check once (`throws()`, `fileContains()` and a passing `eventually()` included, plus whatever the blocks of `each()`, `multiple()` and `eventually()` assert inside) and every `AssertMock` or `AssertResponse` check once, so `AssertMock::begin($mock)->isCalledOnce('send')->isCalledWith('send', [$mail])` counts two. A test that passes without making a single assertion is flagged as risky: the console prints `no assertions` next to it, and agent output lists it as a warning. A test that cannot fail is not a test, and this is the cheapest way to catch the one where the assertion sits behind an `if` that never runs.
+Each assertion that runs, passing or failing, is counted for the current test: every `Assert` check once (`throws()`, `fileContains()` and a passing `eventually()` included, plus whatever the blocks of `each()`, `multiple()` and `eventually()` assert inside) and every `AssertMock` or `AssertResponse` check once, so `AssertMock::begin($mock)->isCalledOnce('send')->isCalledWith('send', [$mail])` counts two.
 
-To make such tests fail the run, enable `failOnRiskyTests()` on the [configuration](configuration.md) builder.
+A test that passes without making a single assertion is flagged as risky: the console prints `no assertions` next to it, and agent output lists it as a warning. A test that cannot fail is not a test, and this is the cheapest way to catch the one where the assertion sits behind an `if` that never runs. To make such tests fail the run, enable `failOnRiskyTests()` on the [configuration](configuration.md) builder.
 
 ## Values
 
@@ -534,7 +536,7 @@ Assert::equalsIgnoringCase('Ada Lovelace', $user->name);
 Assert::equalsIgnoringWhitespace(string $expected, string $actual, string $message = ''): void
 ```
 
-Equal after trimming both strings and collapsing every run of whitespace (spaces, tabs, newlines) into one space. Made for SQL, HTML and generated code where the indentation is not what you are testing. Note that whitespace is collapsed, not removed: `<ul><li>` and `<ul> <li>` are still different.
+Equal after trimming both strings and collapsing every run of whitespace (spaces, tabs, newlines) into one space. Made for SQL, HTML and generated code where the indentation is not what you are testing. Whitespace is collapsed, not removed: `<ul><li>` and `<ul> <li>` are still different.
 
 ```php
 Assert::equalsIgnoringWhitespace('SELECT * FROM users WHERE id = 1', $query->toSql());
@@ -597,7 +599,7 @@ Pair them with `TemporaryDirectory` from the [integration testing](integration-t
 Assert::throws(callable $callable, ?string $expectedType = null, ?string $expectedMessage = null, string $message = ''): \Throwable
 ```
 
-The callable throws. Optionally of a type (subclasses count) and with a message that contains `$expectedMessage`. It returns the caught exception, so you can assert on its details right after. No `expectException()` that has to come before the code and silently swallows the rest of the test.
+The callable throws. Optionally of a type (subclasses count) and with a message that contains `$expectedMessage`. It returns the caught exception, so you can assert on its details right after. There is no `expectException()` to call before the code, and the test goes on after the line that throws.
 
 ```php
 $exception = Assert::throws(fn () => $stock->reserve('A1', 5), OutOfStock::class, 'out of stock');
@@ -655,7 +657,9 @@ Assert::prints(fn () => $command->run(['--dry-run']), "Would delete 3 files\n");
 Assert::eventually(callable $check, float $timeoutInSeconds = 5.0, float $intervalInSeconds = 0.1, string $message = ''): mixed
 ```
 
-Retries `$check` until it passes (no failed assertion, no exception, not `false`) or the timeout runs out, then reports the last failure and how many attempts were made. It returns whatever the check returned. For queues, background workers, servers, file watchers and anything else that becomes true a moment later. Much better than a `sleep(2)` that is too long on your machine and too short on CI.
+Retries `$check` until it passes (no failed assertion, no exception, not `false`) or the timeout runs out, then reports the last failure and how many attempts were made. It returns whatever the check returned.
+
+Use it for queues, background workers, servers, file watchers and anything else that becomes true a moment later. Much better than a `sleep(2)` that is too long on your machine and too short on CI.
 
 ```php
 Assert::eventually(fn () => Assert::notNull($mailbox->latest()), timeoutInSeconds: 3);
@@ -701,7 +705,9 @@ Assert::multiple(function () use ($user) {
    Actual  : false (bool)
 ```
 
-Blocks nest, and `each()` and `eventually()` work inside them. `Assert`, `AssertMock` and `AssertResponse` checks are all collected softly. A few things end the block at their failure (which is still reported, together with the failures before it): `fail()`, `throws()` when nothing is thrown and `triggersError()` when nothing is triggered, because they cannot carry on without a result, and [custom assertions](#custom-assertions) that throw `TestFailedException` themselves.
+Blocks nest, and `each()` and `eventually()` work inside them. `Assert`, `AssertMock` and `AssertResponse` checks are all collected softly.
+
+A few things end the block at their failure (which is still reported, together with the failures before it): `fail()`, `throws()` when nothing is thrown and `triggersError()` when nothing is triggered, because they cannot carry on without a result, and [custom assertions](#custom-assertions) that throw `TestFailedException` themselves.
 
 ### `skip` / `skipIf` / `fail`
 
@@ -769,7 +775,7 @@ Anything else throws an `InvalidArgumentException` naming the class it got. No p
 | `jsonPathEquals(string $path, mixed $expected)` | the value at a dot path equals `$expected` strictly: `'data.items.0.id'` |
 | `jsonHasPath(string $path)` | the dot path exists in the JSON body |
 
-Every method takes an optional `$message` as last argument. Header names are case-insensitive. A body that is not valid JSON fails the JSON methods with a clear message rather than a `JsonException`. Every failure includes the start of the response body, because "expected 200, got 500" is only half the story:
+Every method takes an optional `$message` as its last argument. Header names are case-insensitive. A body that is not valid JSON fails the JSON methods with a clear message rather than a `JsonException`. Every failure includes the start of the response body, because "expected 200, got 500" is only half the story:
 
 ```text
 Failed asserting that the response is successful (2xx).
@@ -838,6 +844,6 @@ Most assertions map one to one; `microunit migrate` does the translation for you
 | `doesNotThrow` | call the code and `expectNotToPerformAssertions()` |
 | `triggersError` | `expectWarning()` and friends were removed in PHPUnit 10 |
 | `prints` | `expectOutputString()` applies to the whole test |
-| `eventually` | `sleep()` and hope |
+| `eventually` | no retry; usually a fixed `sleep()` |
 | `multiple` | no soft assertions |
 | `matchesSnapshot` | needs a third-party package |

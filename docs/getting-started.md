@@ -6,7 +6,7 @@ description: Install MicroUnit, generate a config and a first test, run it, and 
 
 # Getting started
 
-This page takes you from an empty project to a passing test run in about two minutes. You install one Composer package (it has no dependencies of its own), let `microunit init` write the config and a first test, run it, and learn to read what comes back. MicroUnit needs PHP 8.5 or newer and is tested on PHP 8.5 and 8.6.
+This page takes you from an empty project to a passing test run in about five minutes. You install one Composer package (it has no dependencies of its own), let `microunit init` write the config and a first test, run it, and learn to read what comes back. MicroUnit needs PHP 8.5 or newer and is tested on PHP 8.5 and 8.6.
 
 ## Install
 
@@ -14,7 +14,9 @@ This page takes you from an empty project to a passing test run in about two min
 composer require --dev microunit/microunit
 ```
 
-That is the whole dependency tree. No PHPUnit underneath, no Symfony components, nothing pulled in behind your back. The package ships one binary, `vendor/bin/microunit`. On Windows, Composer also creates `vendor\bin\microunit.bat` for CMD; PowerShell and Git Bash are happy with the forward-slash version.
+That is the whole dependency tree. No PHPUnit underneath, no Symfony components, nothing pulled in behind your back.
+
+The package ships one binary, `vendor/bin/microunit`. On Windows, Composer also creates `vendor\bin\microunit.bat` for CMD; PowerShell and Git Bash are happy with the forward-slash version.
 
 ## Generate a config and a first test
 
@@ -44,7 +46,9 @@ return MicroUnitConfigBuilder::create()
     ->build();
 ```
 
-You could even skip it: without a config file, MicroUnit runs the `*-tests.php` files in `tests/` with its defaults. The file is where your project's own setup goes once it needs one, and there is a lot to set: test groups, parallel runs, coverage reports, output formats, the Test Explorer, framework integration and more, all with autocompletion. Every option is on the [configuration](configuration.md) page.
+You could even skip it: without a config file, MicroUnit runs the `*-tests.php` files in `tests/` with its defaults.
+
+The file is where your project's own setup goes once it needs one, and there is a lot to set: test groups, parallel runs, coverage reports, output formats, the Test Explorer, framework integration and more, all with autocompletion. Every option is on the [configuration](configuration.md) page.
 
 ### Framework detection
 
@@ -87,7 +91,9 @@ $tester->define('refuses_to_divide_by_zero', function (): void {
 });
 ```
 
-No class, no inheritance, no `test` prefix to remember. A test file asks for the tester of a suite, then defines tests as closures with a name that says what the code does. Assertions follow PHPUnit's argument order: expected first, actual second. Every check on a value also comes as a fluent chain that starts from the value, `AssertSingle::begin(2 + 2)->isType('int')->exact(4)`, and both styles mix freely: see [fluent assertions](fluent-assertions.md).
+No class, no inheritance, no `test` prefix to remember. A test file asks for the tester of a suite, then defines tests as closures with a name that says what the code does. Assertions follow PHPUnit's argument order: expected first, actual second.
+
+Every check on a value also comes as a fluent chain that starts from the value, `AssertSingle::begin(2 + 2)->isType('int')->exact(4)`, and both styles mix freely: see [fluent assertions](fluent-assertions.md).
 
 Two details matter:
 
@@ -135,7 +141,9 @@ Summary: 0/1 passed, 1 failed in 19.43ms
 
 For arrays and multi-line strings you get a diff instead of two blobs to compare by eye. An unexpected exception shows its class, message and the file and line it came from.
 
-The summary line counts passed, failed and (if any) skipped tests, and the time is wall clock: what you actually waited for, including bootstrapping. The exit code is `0` when everything passed, `1` when something failed, and `2` for a usage or configuration error. The [CLI page](cli.md#exit-codes) has the full list.
+The summary line counts passed, failed and (if any) skipped tests, and the time is wall clock: what you actually waited for, including bootstrapping.
+
+The exit code is `0` when everything passed, `1` when something failed, and `2` for a usage or configuration error. The [CLI page](cli.md#exit-codes) has the full list.
 
 The default output stays compact on purpose. It does not print what a test echoed or what it returned. When you want that, the Test Explorer shows it, or you can switch to the detailed `StringTestWriter` (see [output](output.md)).
 

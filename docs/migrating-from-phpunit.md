@@ -6,7 +6,9 @@ description: Convert a PHPUnit suite with microunit migrate, see what needs manu
 
 # Migrating from PHPUnit
 
-Nobody rewrites two thousand tests by hand to try a new test runner, and nobody should have to. `microunit migrate` reads your PHPUnit test classes and writes equivalent MicroUnit test files next to them: assertions, fixtures, lifecycle hooks, helpers, data providers, expected exceptions and PHPUnit mocks included. Your original tests are never touched, so both suites can run side by side until you trust the new one. Whatever the tool can't translate safely is not guessed at: it becomes a skipped test that carries the reason and the original code.
+Nobody rewrites two thousand tests by hand to try a new test runner, and nobody should have to. `microunit migrate` reads your PHPUnit test classes and writes equivalent MicroUnit test files next to them: assertions, fixtures, lifecycle hooks, helpers, data providers, expected exceptions and PHPUnit mocks included.
+
+Your original tests are never touched, so both suites can run side by side until you trust the new one. Whatever the tool can't translate safely is not guessed at: it becomes a skipped test that carries the reason and the original code.
 
 ## Running it
 
@@ -123,9 +125,13 @@ Every migrated file gets its own namespace (the original namespace plus the clas
 
 ## What it translates
 
-**Assertions, names and argument order.** MicroUnit uses PHPUnit's argument order (expected first, actual second, message last), so most assertions only change their name: `assertSame` becomes `Assert::exact`, `assertEquals` becomes `Assert::equals`, `assertCount` becomes `Assert::countEquals`, `assertIsInt($x)` becomes `Assert::isType('int', $x)`, and so on. Assertions without a direct counterpart are spelled out as an equivalent expression (`assertStringEqualsFile` compares with `file_get_contents()`, `assertNotInstanceOf` becomes an `Assert::isFalse(... instanceof ...)`). Calls written as `$this->assertX()`, `self::assertX()`, `static::assertX()` and `Assert::assertX()` are all recognised. Named arguments (`assertCount(expectedCount: 2, haystack: $items)`) are written in PHPUnit's order without their names, since MicroUnit names its parameters differently; only `message:` stays named. `$this->fail()`, `markTestSkipped()` and `markTestIncomplete()` become `Assert::fail()` and `Assert::skip()`.
+**Assertions, names and argument order.** MicroUnit uses PHPUnit's argument order (expected first, actual second, message last), so most assertions only change their name: `assertSame` becomes `Assert::exact`, `assertEquals` becomes `Assert::equals`, `assertCount` becomes `Assert::countEquals`, `assertIsInt($x)` becomes `Assert::isType('int', $x)`, and so on. Assertions without a direct counterpart are spelled out as an equivalent expression (`assertStringEqualsFile` compares with `file_get_contents()`, `assertNotInstanceOf` becomes an `Assert::isFalse(... instanceof ...)`).
 
-**Properties become fixtures.** A property assigned in `setUp()` (or one with a default value) becomes a `$tester->fixture()`, and every test that used `$this->calculator` receives `$calculator` as a parameter. Static properties assigned in `setUpBeforeClass()` become shared fixtures (`shared: true`), created once per suite. A local variable of `setUp()` that several properties are built from (`$connection = new Connection();` passed to a repository and a service) becomes a fixture of its own, so both fixtures still receive the same object. Static properties that no method changes, not even through a reference such as `sort(self::$items)`, are inlined as constants.
+Calls written as `$this->assertX()`, `self::assertX()`, `static::assertX()` and `Assert::assertX()` are all recognised. Named arguments (`assertCount(expectedCount: 2, haystack: $items)`) are written in PHPUnit's order without their names, since MicroUnit names its parameters differently; only `message:` stays named. `$this->fail()`, `markTestSkipped()` and `markTestIncomplete()` become `Assert::fail()` and `Assert::skip()`.
+
+**Properties become fixtures.** A property assigned in `setUp()` (or one with a default value) becomes a `$tester->fixture()`, and every test that used `$this->calculator` receives `$calculator` as a parameter. Static properties assigned in `setUpBeforeClass()` become shared fixtures (`shared: true`), created once per suite.
+
+A local variable of `setUp()` that several properties are built from (`$connection = new Connection();` passed to a repository and a service) becomes a fixture of its own, so both fixtures still receive the same object. Static properties that no method changes, not even through a reference such as `sort(self::$items)`, are inlined as constants.
 
 **Lifecycle hooks.** `setUp()`, `tearDown()`, `setUpBeforeClass()` and `tearDownAfterClass()` become `$tester->setUp()`, `tearDown()`, `setUpOnce()` and `tearDownOnce()`, with `parent::setUp()` calls inlined. Code in `tearDownAfterClass()` that only deals with one shared fixture (`rmdir(self::$dir)`) becomes that fixture's `cleanup:`, since `setUpOnce()` and `tearDownOnce()` cannot receive fixtures; other code there that uses a shared fixture is reported.
 
@@ -139,7 +145,9 @@ Every migrated file gets its own namespace (the original namespace plus the clas
 
 **Requirements.** `#[RequiresPhp]`, `#[RequiresPhpExtension]`, `#[RequiresOperatingSystem]`, `#[RequiresOperatingSystemFamily]` and `#[RequiresFunction]`, on the test or on the class, and the matching `@requires` annotations become `Assert::skipIf()` lines at the start of the test, each with a short reason such as `Requires the intl extension.` A requirement without a translation (a version constraint like `^8.1`, `#[RequiresMethod]`, `#[RequiresSetting]`) makes the test need manual work rather than run where PHPUnit would skip it.
 
-**PHPUnit mocks become MicroUnit mocks.** `createMock()`, `createStub()`, `createPartialMock()`, `createConfiguredMock()` and `getMockBuilder()->...->getMock()` become `MockBuilder::create(...)->build()->newInstance()`. Stubbing (`->method('x')->willReturn(...)`, `willReturnOnConsecutiveCalls()`, `willThrowException()`, ...) becomes `MicroMock::of($mock)->returns(...)` and friends. Expectations (`expects($this->once())->method('x')->with(...)`) become `AssertMock` checks that run at the end of the test, which is exactly when PHPUnit verifies them. Expectations set in `setUp()` are checked after every test. See [Mocking](mocking.md) for the MicroUnit side.
+**PHPUnit mocks become MicroUnit mocks.** `createMock()`, `createStub()`, `createPartialMock()`, `createConfiguredMock()` and `getMockBuilder()->...->getMock()` become `MockBuilder::create(...)->build()->newInstance()`. Stubbing (`->method('x')->willReturn(...)`, `willReturnOnConsecutiveCalls()`, `willThrowException()`, ...) becomes `MicroMock::of($mock)->returns(...)` and friends.
+
+Expectations (`expects($this->once())->method('x')->with(...)`) become `AssertMock` checks that run at the end of the test, which is exactly when PHPUnit verifies them. Expectations set in `setUp()` are checked after every test. See [Mocking](mocking.md) for the MicroUnit side.
 
 **Mockery keeps working.** Tests that use Mockery stay as they are; Mockery is a library, not a PHPUnit feature. If the class used `MockeryPHPUnitIntegration`, the migrated suite calls `Mockery::close()` after every test, so expectations are still verified.
 
@@ -160,7 +168,9 @@ return MicroUnitConfigBuilder::create()
     ->build();
 ```
 
-The bootstrap file carries over (a plain `vendor/autoload.php` is dropped, MicroUnit loads Composer's autoloader itself). `<env>`, `<server>` and `<ini>` entries go into a small generated `tests-microunit/bootstrap.php`, which then includes your original bootstrap. With a framework integration, the environment variables are handed to the integration instead. If a `microunit.config.php` already exists, `migrate` leaves it alone and tells you to point it at the new directory with `withTestDir()` and `withTestFilePatterns('*Test.php')`.
+The bootstrap file carries over (a plain `vendor/autoload.php` is dropped, MicroUnit loads Composer's autoloader itself). `<env>`, `<server>` and `<ini>` entries go into a small generated `tests-microunit/bootstrap.php`, which then includes your original bootstrap. With a framework integration, the environment variables are handed to the integration instead.
+
+If a `microunit.config.php` already exists, `migrate` leaves it alone and tells you to point it at the new directory with `withTestDir()` and `withTestFilePatterns('*Test.php')`.
 
 ## What needs manual work
 

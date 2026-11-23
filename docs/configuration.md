@@ -6,7 +6,7 @@ description: Every option of microunit.config.php and MicroUnitConfigBuilder, gr
 
 # Configuration
 
-MicroUnit is configured in PHP, in a file called `microunit.config.php` that returns a `MicroUnitConfig`. You build that object with `MicroUnitConfigBuilder`. Your editor autocompletes the options, and because it is code, you can read environment variables or branch on them. Command line flags exist only to change a single run; anything you want every time belongs here. This page lists every builder method, grouped by what it controls.
+MicroUnit is configured in PHP: a file called `microunit.config.php` returns a `MicroUnitConfig`, which you build with `MicroUnitConfigBuilder`. Your editor autocompletes the options, and because it is code, you can read environment variables or branch on them. Command line flags exist only to change a single run; anything you want every time belongs here. This page lists every builder method, grouped by what it controls.
 
 ## A complete example
 
@@ -278,7 +278,9 @@ Output for AI coding agents: one compact JSON object with only the failures, ins
 ->withAgentOutput(false)   // never, even in agent sessions
 ```
 
-Without this setting it switches on by itself when an agent runs the tests: Claude Code sets `CLAUDECODE=1`, and any other agent can set `MICROUNIT_AGENT=1`. In agent mode the console writers step aside, while file writers such as JUnit keep working. Passing tests cost no tokens. Override per run with `--agent` or `--no-agent`. See [AI coding agents](ai-agents.md).
+Without this setting it switches on by itself when an agent runs the tests: Claude Code sets `CLAUDECODE=1`, and any other agent can set `MICROUNIT_AGENT=1`.
+
+In agent mode the console writers step aside, while file writers such as JUnit keep working. Passing tests cost no tokens. Override per run with `--agent` or `--no-agent`. See [AI coding agents](ai-agents.md).
 
 ### `withIntegrityCheck(string $revision = 'HEAD', bool $failOnFindings = false)`
 
@@ -289,7 +291,9 @@ After every run, list tests that were weakened compared to a git revision: remov
 ->withIntegrityCheck('origin/main', failOnFindings: true) // e.g. in CI for pull requests
 ```
 
-The check is opt-in: without this setting it never runs. With `failOnFindings: true`, findings make the run exit with `1`. When the check cannot compare (no git repository, or a revision missing from a shallow clone), MicroUnit says so on standard error, and with `failOnFindings: true` the run fails, so in CI make sure the revision is fetched. `microunit integrity [revision]` runs the same check on demand (see the [CLI](cli.md#integrity)).
+The check is opt-in: without this setting it never runs. With `failOnFindings: true`, findings make the run exit with `1`.
+
+When the check cannot compare (no git repository, or a revision missing from a shallow clone), MicroUnit says so on standard error, and with `failOnFindings: true` the run fails, so in CI make sure the revision is fetched. `microunit integrity [revision]` runs the same check on demand (see the [CLI](cli.md#integrity)).
 
 ### `failOnRiskyTests()`
 
@@ -327,7 +331,7 @@ PHP warnings, notices and deprecations during a run go to a log file in `logs/` 
 
 ### `MicroUnitConfigBuilder::create()` and `build()`
 
-`create()` starts a builder with every setting at its default; `build()` returns the immutable `MicroUnitConfig`. Anything you did not set keeps its default.
+`create()` starts a builder with every setting at its default; `build()` returns the immutable `MicroUnitConfig`.
 
 You can also construct `MicroUnit\Config\MicroUnitConfig` directly with named arguments, but the builder is the documented interface, and its method names are what this page, the CLI help and the error messages refer to.
 

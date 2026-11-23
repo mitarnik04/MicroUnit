@@ -88,7 +88,9 @@ Every push to `main` and every pull request runs the full suite twelve times: on
   <figcaption>3 operating systems × 2 PHP versions × sequential and parallel</figcaption>
 </figure>
 
-Two settings make these runs stricter than they need to be, on purpose. `error_reporting=-1` means every notice and deprecation gets reported instead of passing as harmless, and OPcache is off, so every run compiles the code from scratch. Running sequentially and in parallel catches a kind of bug that only shows up in one of the two: a test that quietly depends on what another test left behind. The whole setup is one file, [`.github/workflows/ci.yml`](https://github.com/mitarnik04/MicroUnit/blob/main/.github/workflows/ci.yml), and every run is public in the [Actions history](https://github.com/mitarnik04/MicroUnit/actions/workflows/ci.yml).
+Two settings make these runs stricter than they need to be, on purpose. `error_reporting=-1` means every notice and deprecation gets reported instead of passing as harmless, and OPcache is off, so every run compiles the code from scratch.
+
+Running sequentially and in parallel catches a kind of bug that only shows up in one of the two: a test that quietly depends on what another test left behind. The whole setup is one file, [`.github/workflows/ci.yml`](https://github.com/mitarnik04/MicroUnit/blob/main/.github/workflows/ci.yml), and every run is public in the [Actions history](https://github.com/mitarnik04/MicroUnit/actions/workflows/ci.yml).
 
 ## MicroUnit is tested with MicroUnit
 
@@ -109,7 +111,7 @@ The suite in `tests/` runs on MicroUnit itself. I chose that deliberately, becau
 
 Every feature runs every day against a real suite, so a regression usually shows up here first. Every fixed bug leaves a test behind, so that bug can't come back unnoticed. The parallel runner, the coverage tool and the integrity check all run on MicroUnit's own code in every CI run.
 
-A fair question is whether a broken MicroUnit could pass its own tests. In practice that is hard to arrange, because MicroUnit is both the instrument and the thing being measured. The suite doesn't only check that assertions pass: dozens of tests check that they *fail* when they should. If `Assert::exact()` broke and let everything through, the tests that expect it to throw on a mismatch are checked by `Assert::throws()`, a different piece of code, and they go red. Integration tests go one step further and run the real command line as a separate process, against projects whose outcome is known.
+A fair question is whether a broken MicroUnit could pass its own tests. That is hard to arrange, because MicroUnit is both the instrument and the thing being measured. The suite doesn't only check that assertions pass: dozens of tests check that they *fail* when they should. If `Assert::exact()` broke and let everything through, the tests that expect it to throw on a mismatch are checked by `Assert::throws()`, a different piece of code, and they go red. Integration tests go one step further and run the real command line as a separate process, against projects whose outcome is known.
 
 That leaves one case a loop can't judge about itself: whether failures get reported at all. That is the canary's job. Before the suite runs, [`bin/canary.php`](https://github.com/mitarnik04/MicroUnit/blob/main/bin/canary.php) runs MicroUnit on four tests with known outcomes: one passes, one has a failing assertion, one expects an exception that never comes, and one throws. The script loads none of MicroUnit's code and checks the exit code and the report with plain PHP. If MicroUnit ever stops telling a red test from a green one, the canary turns red before anything else does.
 
@@ -118,13 +120,15 @@ That leaves one case a loop can't judge about itself: whether failures get repor
 <dl class="build-list">
   <div><dt><a href="https://github.com/mitarnik04/MicroUnit/blob/main/bin/canary.php">Canary</a></dt><dd>Four tests with known outcomes, checked without MicroUnit's code before the suite runs.</dd></div>
   <div><dt><a href="https://github.com/mitarnik04/MicroUnit/blob/main/phpstan.neon.dist">Static analysis</a></dt><dd>PHPStan at its strictest level, max, on all of <code>src/</code> and <code>bin/</code>, with no baseline file. It runs as a PHAR, never as a dependency.</dd></div>
-  <div><dt><a href="https://github.com/mitarnik04/MicroUnit/blob/main/microunit.config.php">Coverage floor</a></dt><dd>Every CI run measures MicroUnit's coverage with its own coverage tool. About half of the lines in <code>src/</code> are covered today, and the run fails below 47%, so coverage can't quietly slide. The number is lower than the testing behind it, because here the coverage tool measures the framework it is part of. The files that start a run (the coverage tool itself, the command line, the configuration) are already running before measuring begins, so they show 0% even though they have tests. Your own project loads its code after measuring starts, so this doesn't happen there. MicroUnit's integration tests also start a second MicroUnit as its own process, to test the command line exactly as you use it, and the six real projects run outside the measurement as well.</dd></div>
+  <div><dt><a href="https://github.com/mitarnik04/MicroUnit/blob/main/microunit.config.php">Coverage floor</a></dt><dd>Every CI run measures coverage with MicroUnit's own tool and fails below 47% (about half of <code>src/</code> is covered today), so coverage can't quietly slide. The number understates the testing behind it. The files that start a run (the coverage tool, the command line, the configuration) load before measuring begins and show 0% despite their tests, and the integration tests and the six real projects run in separate processes. Your own project's code loads after measuring starts, so this doesn't affect your numbers.</dd></div>
   <div><dt><a href="https://github.com/mitarnik04/MicroUnit/blob/main/.github/workflows/ci.yml">Integrity check</a></dt><dd>Compares the tests with the previous version and lists removed assertions, changed expected values, new skips and removed tests.</dd></div>
   <div><dt><a href="https://github.com/mitarnik04/MicroUnit/blob/main/bin/lint.php">Lint</a></dt><dd>Valid PHP 8.5 syntax, one class per file, namespaces that match folders, and the docs checks described below.</dd></div>
   <div><dt><a href="https://github.com/mitarnik04/MicroUnit/blob/main/.php-cs-fixer.dist.php">Formatting</a></dt><dd>PHP-CS-Fixer with PSR-12 and a few house rules, also as a PHAR.</dd></div>
 </dl>
 
-If I had to point to one of these first, it would be the integrity check, because it answers the specific risk that comes with AI. When a test goes red, an agent can make it green the wrong way: drop the assertion, change the expected value to whatever the code returns now, add a skip. The integrity check lists exactly those changes. On a pull request, any finding fails the build. On my own pushes it lists them in the run, so a deliberate change, like renaming a test, stays visible without blocking anything. In an agent session it also runs after every test run, so the agent hears about a weakened test while it is still working, long before the change reaches me. It is the same check any project can turn on with `withIntegrityCheck()`.
+If I had to point to one of these first, it would be the integrity check, because it answers the specific risk that comes with AI. When a test goes red, an agent can make it green the wrong way: drop the assertion, change the expected value to whatever the code returns now, add a skip. The integrity check lists exactly those changes.
+
+On a pull request, any finding fails the build. On my own pushes it lists them in the run, so a deliberate change, like renaming a test, stays visible without blocking anything. In an agent session it also runs after every test run, so the agent hears about a weakened test while it is still working, long before the change reaches me. It is the same check any project can turn on with `withIntegrityCheck()`.
 
 ## Documentation written from the source
 
@@ -145,7 +149,9 @@ My own suite knows MicroUnit well. That is also its limit: it only contains the 
   <div><dt><code>monolog/monolog</code></dt><dd>Mocks, handlers and I/O</dd></div>
 </dl>
 
-Their tests are translated with `microunit migrate`, and nobody touches the result by hand. A project only counts when every test in the set passes under MicroUnit and MicroUnit runs exactly as many tests as PHPUnit does on the same code. The few tests left out of the set are published, each with its reason. That is the gate a release has to pass, and the [benchmarks](benchmarks.md) are measured on the same verified runs. The projects are public and the commits are pinned, so you can [reproduce it](https://github.com/mitarnik04/MicroUnit/blob/main/benchmarks/README.md#reproducing) on your own machine.
+Their tests are translated with `microunit migrate`, and nobody touches the result by hand. A project only counts when every test in the set passes under MicroUnit and MicroUnit runs exactly as many tests as PHPUnit does on the same code. The few tests left out of the set are published, each with its reason.
+
+That is the gate a release has to pass, and the [benchmarks](benchmarks.md) are measured on the same verified runs. The projects are public and the commits are pinned, so you can [reproduce it](https://github.com/mitarnik04/MicroUnit/blob/main/benchmarks/README.md#reproducing) on your own machine.
 
 ## Check it yourself
 

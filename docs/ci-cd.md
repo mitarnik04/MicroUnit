@@ -6,7 +6,9 @@ description: Run MicroUnit on GitHub Actions, GitLab CI or any other pipeline, w
 
 # CI/CD
 
-MicroUnit is built to run in a pipeline without ceremony. It needs nothing but PHP, it knows when it's running in CI (no browser tabs, no snapshot files written, failures annotated on GitHub), and its exit code tells the pipeline everything it needs to know. Getting from "works on my machine" to "green check on every pull request" is usually one step in a workflow file. This page covers GitHub Actions, GitLab CI and a generic setup, plus the stricter checks worth switching on once the basics run: a coverage minimum, failing on tests without assertions, and catching tests that were quietly weakened in a pull request.
+MicroUnit is built to run in a pipeline. It needs nothing but PHP, it knows when it's running in CI (no browser tabs, no snapshot files written, failures annotated on GitHub), and its exit code tells the pipeline everything it needs to know. Getting from "works on my machine" to "green check on every pull request" is usually one step in a workflow file.
+
+This page covers GitHub Actions, GitLab CI and a generic setup, plus the stricter checks worth switching on once the basics run: a coverage minimum, failing on tests without assertions, and catching tests that were quietly weakened in a pull request.
 
 ## What MicroUnit does differently in CI
 
@@ -114,7 +116,7 @@ Code coverage
   Line coverage 76.4% is below the required minimum of 80.0%.
 ```
 
-Coverage configured this way runs on every run, also locally. If that's too slow for daily work, either pass `--no-coverage` locally, or enable coverage only in CI. The config is plain PHP, so that's an `if`:
+Coverage configured this way is measured on every run, locally too. If that's too slow for daily work, either pass `--no-coverage` locally, or enable coverage only in CI. The config is plain PHP, so that's an `if`:
 
 ```php
 $config = MicroUnitConfigBuilder::create()
@@ -174,9 +176,11 @@ More on fixtures and skipping in [Integration testing](integration-testing.md).
 
 ## The integrity check for pull requests
 
-Here's a failure mode that every team has seen at least once: a test goes red, and instead of fixing the code, someone (or some AI agent) "fixes" the test. An assertion disappears. An expected value changes to whatever the code currently returns. A test gets a skip. The run is green and the bug ships.
+Here's a failure mode many teams know: a test goes red, and instead of fixing the code, someone (or some AI agent) "fixes" the test. An assertion disappears. An expected value changes to whatever the code currently returns. A test gets a skip. The run is green and the bug ships.
 
-MicroUnit's integrity check compares your tests with a git revision and lists exactly those changes: removed tests, removed assertions, new skips, changed expected values, removed data sets and assertions that can't fail. Each finding asks for a look; none of them proves a mistake. Sometimes an expected value really should change. But a reviewer should see it.
+MicroUnit's integrity check compares your tests with a git revision and lists exactly those changes: removed tests, removed assertions, new skips, changed expected values, removed data sets and assertions that can't fail.
+
+Each finding asks for a look; none of them proves a mistake. Sometimes an expected value really should change. But a reviewer should see it.
 
 In a pull request, compare against the target branch. The check needs that branch's history, and `actions/checkout` fetches a single commit by default, so fetch everything:
 
@@ -207,7 +211,7 @@ The alternative is to run the check as part of every test run, configured in PHP
 ->withIntegrityCheck('origin/main', failOnFindings: true)
 ```
 
-The findings are printed after the results, and with `failOnFindings: true` they fail the run. A revision that isn't available (a shallow clone without the target branch) fails the run as well, with a message on standard error, so make sure the pipeline fetches it.
+The findings are printed after the results, and with `failOnFindings: true` they fail the run. So does a revision that isn't available (a shallow clone without the target branch), with a message on standard error, so make sure the pipeline fetches it.
 
 The check is opt-in everywhere: it runs only where you configure it or call the command. See [AI coding agents](ai-agents.md) for using it while an agent works on your code.
 
@@ -292,7 +296,7 @@ If your system doesn't set `CI` (most do), set it yourself. That keeps snapshots
 
 ## Caching
 
-Cache Composer's dependencies as you normally would. Don't bother caching the `.microunit` directory. It holds run logs, Test Explorer state and caches (coverage instrumentation, compiled bytecode for parallel workers) that MicroUnit rebuilds on the first run, and it's ignored by git anyway. A fresh one per pipeline costs next to nothing.
+Cache Composer's dependencies as you normally would, but not the `.microunit` directory. It holds run logs, Test Explorer state and caches (coverage instrumentation, compiled bytecode for parallel workers) that MicroUnit rebuilds on the first run, and it's ignored by git anyway. A fresh one per pipeline costs next to nothing.
 
 ## Related
 

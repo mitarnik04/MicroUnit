@@ -41,7 +41,7 @@ The gap is widest where the runner's own cost per test decides the time: brick/m
 Both suites spend most of their time in the tests themselves, and no runner can make that faster.
 
 - **monolog/monolog** waits. About 8 of its 9 seconds are tests that wait on purpose: a test that tries to reach a CouchDB server on `localhost:5984` and skips itself after a 4-second connection attempt, a stream timeout of 2.7 seconds, socket timeouts of 1.3 seconds. Both tools wait exactly as long.
-- **nesbot/carbon** works. Its `setUp()` and `tearDown()` reset time zones, locales and the test clock before and after each of its 6,233 tests, and many tests format dates in hundreds of languages. Compared test class by test class, MicroUnit is as fast or faster everywhere; the runner is simply a small share of the total.
+- **nesbot/carbon** works. Its `setUp()` and `tearDown()` reset time zones, locales and the test clock before and after each of its 6,233 tests, and many tests format dates in hundreds of languages. Compared test class by test class, MicroUnit is as fast or faster everywhere; the runner is just a small share of the total.
 
 Both suites are measured as they ship. Leaving out slow tests would have made the ratios look better and the comparison less honest.
 
@@ -63,7 +63,9 @@ MicroUnit's built-in parallel runner against ParaTest, both with 4 worker proces
 | symfony/yaml | 1.50 s | 1.04 s | 1.44× faster |
 | monolog/monolog | 5.22 s | 4.63 s | 1.13× faster |
 
-Running in parallel pays off for long suites: carbon goes from 35.9 to 17.1 seconds, monolog from 9.0 to 4.6. For suites that finish in about a second, starting the workers costs more than it saves, with MicroUnit and with ParaTest alike. The benchmark forces 4 workers on both tools to compare like with like. In daily use, `--parallel` without a number checks the previous run's time per test first and stays sequential when parallel would not pay off; see [parallel runs](parallel.md).
+Running in parallel pays off for long suites: carbon goes from 35.9 to 17.1 seconds, monolog from 9.0 to 4.6. For suites that finish in about a second, starting the workers costs more than it saves, with MicroUnit and with ParaTest alike.
+
+The benchmark forces 4 workers on both tools to compare like with like. In daily use, `--parallel` without a number checks the previous run's time per test first and stays sequential when parallel would not pay off; see [parallel runs](parallel.md).
 
 ## One test file
 
@@ -116,7 +118,9 @@ The operating system's peak for the process during a full sequential run.
 | symfony/yaml | 68 MiB | 46 MiB | 32% less |
 | monolog/monolog | 366 MiB | 355 MiB | 3% less |
 
-Carbon is the one project where MicroUnit needs more memory, and the reason is the migration, not the runner. A MicroUnit test file has no base class, so `microunit migrate` copies inherited test methods into every subclass. Carbon's ~800 localization test classes share one parent, which turns 14 MB of PHPUnit tests into 40 MB of MicroUnit tests. Hand-written MicroUnit tests would share that code once. Monolog's peak, in both tools, comes from one test that raises the memory limit to 3 GB on purpose.
+Carbon is the one project where MicroUnit needs more memory, and the reason is the migration, not the runner. A MicroUnit test file has no base class, so `microunit migrate` copies inherited test methods into every subclass. Carbon's ~800 localization test classes share one parent, which turns 14 MB of PHPUnit tests into 40 MB of MicroUnit tests. Hand-written MicroUnit tests would share that code once.
+
+Monolog's peak, in both tools, comes from one test that raises the memory limit to 3 GB on purpose.
 
 Memory is measured as the operating system's peak resident set, not with `memory_get_peak_usage()`: PHPUnit resets PHP's own counter before every test, so it would only show PHPUnit's last test.
 

@@ -6,7 +6,9 @@ description: Build mocks of classes and interfaces, decide what they return, and
 
 # Mocking
 
-MicroUnit ships its own mocking engine, so there is no Prophecy or Mockery to install. You describe a mock with `MockBuilder`, get a `MicroMock` from `build()`, create instances from it, and check the calls afterwards with `AssertMock`. Configuration and assertions are separate on purpose: the test first says what the collaborators return, then runs the code, then states what should have happened. It reads top to bottom, with no expectations hidden in the setup that only fire when the test ends. This page covers all three parts, mocks as fixtures, what cannot be mocked, and how PHPUnit's mock API maps to MicroUnit's.
+MicroUnit ships its own mocking engine, so there is no Prophecy or Mockery to install. You describe a mock with `MockBuilder`, get a `MicroMock` from `build()`, create instances from it, and check the calls afterwards with `AssertMock`. This page covers all three parts, plus mocks as fixtures, what cannot be mocked, and how PHPUnit's mock API maps to MicroUnit's.
+
+Configuration and assertions are separate on purpose: the test first says what the collaborators return, then runs the code, then states what should have happened. It reads top to bottom, with no expectations hidden in the setup that only fire when the test ends.
 
 ## A first mock
 
@@ -42,7 +44,9 @@ You can mock classes, abstract classes and interfaces, including readonly classe
 
 ## What a mock does by default
 
-Every public method of the mock is intercepted: the call is recorded and a value is returned without running the real code. Abstract protected methods are intercepted too; concrete protected methods keep their real behaviour unless you configure them on the builder or name them in `interceptOnly()`. When you have not configured a method, it returns a neutral value for its return type:
+Every public method of the mock is intercepted: the call is recorded and a value is returned without running the real code. Abstract protected methods are intercepted too; concrete protected methods keep their real behaviour unless you configure them on the builder or name them in `interceptOnly()`.
+
+When you have not configured a method, it returns a neutral value for its return type:
 
 | Return type | Default |
 | --- | --- |
@@ -181,7 +185,9 @@ withConstructorArgs(array $args): MockBuilder
 executeInConstructor(callable $callback): MockBuilder
 ```
 
-By default `newInstance()` calls the real constructor, without arguments. `withConstructorArgs()` sets the arguments, `disableOriginalConstructor()` skips the constructor entirely (handy when it opens connections or needs things you do not have in a test). `executeInConstructor()` runs a callback for every new instance, after the original constructor if that runs. It receives the instance and the constructor arguments.
+By default `newInstance()` calls the real constructor, without arguments. `withConstructorArgs()` sets the arguments, `disableOriginalConstructor()` skips the constructor entirely (handy when it opens connections or needs things you do not have in a test).
+
+`executeInConstructor()` runs a callback for every new instance, after the original constructor if that runs. It receives the instance and the constructor arguments.
 
 ```php
 $mock = MockBuilder::create(Greeter::class)
@@ -260,7 +266,13 @@ getInstanceCallLog(object $instance): CallLog
 getTargetType(): string
 ```
 
-Every mock keeps two kinds of call logs: one across all instances it created, and one per instance. `AssertMock` reads them for you, so you rarely need them directly. When you do, a `CallLog` offers `getCallCount($method)`, `getAllCallArgs($method)`, `getCallArgs($method, $callNumber)` (1-based, `null` if there was no such call), `hasCalls($method)` and `getCallSequence()` (method names in call order).
+Every mock keeps two kinds of call logs: one across all instances it created, and one per instance. `AssertMock` reads them for you, so you rarely need them directly. When you do, a `CallLog` offers:
+
+- `getCallCount($method)`
+- `getAllCallArgs($method)`
+- `getCallArgs($method, $callNumber)` (1-based, `null` if there was no such call)
+- `hasCalls($method)`
+- `getCallSequence()` (method names in call order)
 
 Arguments are recorded as passed. Default values of parameters you left out are not filled in, so a call to `price('EUR')` on `price(string $currency, int $quantity = 1)` is recorded as `['EUR']`. Named arguments are recorded in parameter order.
 
@@ -385,7 +397,9 @@ $tester->define('reports_a_failed_mail', function (Mailer $mailer) {
 });
 ```
 
-Return the instance from the fixture, not the `MicroMock`: the instance is what the code under test needs, and `AssertMock::begin()` and `MicroMock::of()` both accept it. Avoid `shared: true` for mocks; a shared mock keeps its configuration and call log across tests, and then the call counts of one test depend on the tests before it. Fixtures are explained in [writing tests](writing-tests.md).
+Return the instance from the fixture, not the `MicroMock`: the instance is what the code under test needs, and `AssertMock::begin()` and `MicroMock::of()` both accept it.
+
+Avoid `shared: true` for mocks; a shared mock keeps its configuration and call log across tests, and then the call counts of one test depend on the tests before it. Fixtures are explained in [writing tests](writing-tests.md).
 
 ## What cannot be mocked
 
@@ -426,4 +440,4 @@ If you find yourself fighting these limits, the class is telling you something a
 | `->with($this->callback($fn))` | `->isOnlyCalledWithMatchingArgs('x', $fn)` |
 | `->withConsecutive(...)` (removed in PHPUnit 10) | `->isCalledWithOnSpecificCall('x', [...], $n)` per call |
 
-The biggest change is where expectations live. In PHPUnit, `expects()` and `with()` sit in the arrange step and are verified silently when the test ends. In MicroUnit, the arrange step only says what the mock returns, and the checks come after the code ran, where a reader expects assertions to be. One side effect I like: a mock that is only used as a stub needs no ceremony at all, and a test that never gets around to checking anything is flagged as risky instead of passing quietly.
+The biggest change is where expectations live. In PHPUnit, `expects()` and `with()` sit in the arrange step and are verified silently when the test ends. In MicroUnit, the arrange step only says what the mock returns, and the checks come after the code ran, where a reader expects assertions to be. One side effect I like: a mock that is only used as a stub needs no extra code at all, and a test that never gets around to checking anything is flagged as risky instead of passing quietly.

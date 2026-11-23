@@ -21,7 +21,9 @@ AssertString::begin($slug)
     ->matchesRegex('/^[a-z0-9-]+$/');
 ```
 
-Both run the same code underneath. A fluent method calls its `Assert` twin, so the failure message, the diff and the assertion count are identical, and so is everything the [assertions reference](assertions.md) says about a check. Use the style that reads better to you. Both mix freely in one test, and a suite can settle on either.
+Both run the same code underneath. A fluent method calls its `Assert` twin, so the failure message, the diff and the assertion count are identical, and so is everything the [assertions reference](assertions.md) says about a check.
+
+Use the style that reads better to you. Both mix freely in one test, and a suite can settle on either.
 
 ## How it works
 
@@ -144,7 +146,9 @@ AssertString::begin($invoice->number)->startsWith('INV-')->matchesFormat('INV-%d
 | `jsonEquals($expected)` | is the same JSON document, key order and formatting aside | `Assert::jsonEquals()` |
 | `matchesSnapshot($name = null)` | matches the stored [snapshot](snapshots.md) | `Assert::matchesSnapshot()` |
 
-Two strings are the same text or they are not, so `AssertString` compares strictly everywhere: `equals('1')` fails for `'1.0'`, which `Assert::equals()` would let pass. `lengthEquals()` counts characters, not bytes, so `'grüß'` is 4 long, with or without the `mbstring` extension.
+Two strings are the same text or they are not, so `AssertString` compares strictly everywhere: `equals('1')` fails for `'1.0'`, which `Assert::equals()` would let pass.
+
+`lengthEquals()` counts characters, not bytes, so `'grüß'` is 4 long, with or without the `mbstring` extension.
 
 ## `AssertFile`: a path on disk
 
@@ -158,7 +162,7 @@ AssertFile::begin($exportPath)->exists()->contains('order_id,total')->contentEqu
 | `notExists()` | does not exist | `Assert::fileNotExists()` |
 | `isDirectory()` | is an existing directory | `Assert::directoryExists()` |
 | `contains($needle)` | is a file that contains the text | `Assert::fileContains()` |
-| `contentEquals($expected)` | is a file with exactly this content (line endings normalized) | `Assert::fileContentEquals()` |
+| `contentEquals($expected)` | is a file with exactly this content (line endings normalised) | `Assert::fileContentEquals()` |
 
 ## Checks that stay on `Assert`
 

@@ -6,7 +6,9 @@ description: Compare output with a reviewed copy stored next to the test, update
 
 # Snapshots
 
-A snapshot test compares a value with a copy of it stored in a file. The first run writes the file, you review it and commit it, and from then on the test fails whenever the value changes. That is the right tool for big outputs you would never type out by hand: rendered HTML, generated SQL, an API payload, a CLI report, an exported config. MicroUnit has it built in as one assertion, `Assert::matchesSnapshot()`, with no plugin and no extra setup. This page covers where the files go, how the first run, CI and updates behave, and when you should not use snapshots at all.
+A snapshot test compares a value with a copy of it stored in a file. The first run writes the file, you review it and commit it, and from then on the test fails whenever the value changes.
+
+That is the right tool for big outputs you would never type out by hand: rendered HTML, generated SQL, an API payload, a CLI report, an exported config. MicroUnit has it built in as one assertion, `Assert::matchesSnapshot()`, with no plugin and no extra setup. This page covers where the files go, how the first run, CI and updates behave, and when you should not use snapshots at all.
 
 ## The assertion
 
@@ -73,7 +75,9 @@ This rewrites the snapshots of every test that runs, so narrow it down when you 
 vendor/bin/microunit --update-snapshots --filter=Invoice::renders_the_invoice
 ```
 
-`--update-snapshots` works with `--parallel` as well; the setting is passed on to the worker processes. Then look at `git diff`: it shows exactly what changed, and that diff is what you are signing off on.
+Then look at `git diff`: it shows exactly what changed, and that diff is what you are signing off on.
+
+`--update-snapshots` works with `--parallel` as well; the setting is passed on to the worker processes.
 
 ## CI never writes snapshots
 
@@ -83,7 +87,9 @@ A snapshot that is created on the CI server is never reviewed by anyone. It woul
 Failed asserting that the snapshot matches: there is no snapshot at /builds/app/tests/__snapshots__/invoice-tests/renders_the_invoice.snap (they are never created in CI; run the tests locally and commit the file).
 ```
 
-This usually means someone added a snapshot test and forgot to commit the `.snap` file. Changed snapshots fail in CI exactly as they do locally. An explicit `--update-snapshots` is still obeyed in CI, so do not put it in your pipeline. See [CI/CD](ci-cd.md) for the rest of the pipeline setup.
+This usually means someone added a snapshot test and forgot to commit the `.snap` file.
+
+Changed snapshots fail in CI exactly as they do locally. An explicit `--update-snapshots` is still obeyed in CI, so do not put it in your pipeline. See [CI/CD](ci-cd.md) for the rest of the pipeline setup.
 
 ## Several snapshots in one test
 

@@ -6,7 +6,9 @@ description: Console output, JUnit, HTML, logs, GitHub annotations and JSON for 
 
 # Output and reports
 
-Everything MicroUnit reports goes through test writers. A writer receives the results and decides what to do with them: print a line per test, write a JUnit file for your CI, render an HTML report for a reviewer, or produce a compact JSON object for an AI agent. You can run several writers at once, and writing your own takes four methods. Out of the box you get one: a compact, coloured console output that shows details only for the tests that need your attention.
+Everything MicroUnit reports goes through test writers. A writer receives the results and decides what to do with them: print a line per test, write a JUnit file for your CI, render an HTML report for a reviewer, or produce a compact JSON object for an AI agent.
+
+You can run several writers at once, and writing your own takes four methods. Out of the box you get one: a compact, coloured console output that shows details only for the tests that need your attention.
 
 ## Choosing writers
 
@@ -295,13 +297,15 @@ Things worth knowing before you ship one:
 
 Writers report test results. PHP's own diagnostics (warnings, notices, deprecations) are a different channel: MicroUnit routes them into a run log instead of letting them spray across the console output.
 
-Run logs live in `.microunit/logs/`, one file per run named after the start time and process id, like `2026-11-19T09-14-02Z-3092.log`. A file only appears when PHP actually reported something, and a parallel run writes one per process. The runtime directory moves with `withRuntimeDirectory()`, and it git-ignores itself.
+Run logs live in `.microunit/logs/`, one file per run named after the start time and process id, like `2026-11-19T09-14-02Z-3092.log`. A file only appears when PHP reported something, and a parallel run writes one per process. The runtime directory moves with `withRuntimeDirectory()`, and it git-ignores itself.
 
 ```
 [19-Nov-2026 09:14:03 UTC] PHP Warning:  Undefined array key "missing" in /app/tests/cart-tests.php on line 5
 ```
 
-Warnings don't fail tests, so this is where you look when something smells off. By default only the latest run's logs are kept. To keep all of them:
+Warnings don't fail tests, so this is where you look when something smells off.
+
+By default only the latest run's logs are kept. To keep all of them:
 
 ```php
 ->persistRunLogs()

@@ -29,7 +29,9 @@ Code coverage
   src/Cart.php   75.0% (6/8)
 ```
 
-Without any configuration, `--coverage` measures everything under `src/` (next to `microunit.config.php`, or in the working directory when there is no config file) and prints the table. The table lists totals first, then every file that is not fully covered; fully covered files are summed up in one line (`+ 12 file(s) fully covered`) so the table stays short on a healthy project.
+Without any configuration, `--coverage` measures everything under `src/` (next to `microunit.config.php`, or in the working directory when there is no config file) and prints the table.
+
+The table lists totals first, then every file that is not fully covered; fully covered files are summed up in one line (`+ 12 file(s) fully covered`) so the table stays short on a healthy project.
 
 ## Configuring it
 
@@ -79,7 +81,7 @@ A common split: no `withCoverage()` locally, and `vendor/bin/microunit --coverag
 
 **Cobertura.** `cobertura: 'build/cobertura.xml'` is what GitLab merge requests and Azure DevOps expect.
 
-You can configure any combination of them at the same time. The [CI/CD](ci-cd.md) page shows how to hand them to the common CI systems.
+You can configure any combination of them. The [CI/CD](ci-cd.md) page shows how to hand them to the common CI systems.
 
 ## Enforcing a minimum
 
@@ -103,7 +105,9 @@ Classic PHP coverage tools hook into the engine through an extension. MicroUnit 
 2. **Instrumenting statements.** A small parser on top of PHP's own tokenizer puts a hit counter in front of every executable statement: assignments, calls, `return`, `if`, loops, `throw`, and so on, inside functions, methods, closures, arrow functions and property hooks. The counter is placed on the statement's own line, so line numbers, `__FILE__` and `__DIR__` stay exactly those of the original file. Stack traces and failure lines keep pointing at the right place.
 3. **Counting.** A counter is one increment on a static array, about the cheapest thing PHP can do, so instrumented code stays fast. After the run, the counters become the reports.
 
-A line is **executable** when a statement starts on it, and **covered** when that statement started running. A function or method counts as covered when all of its executable lines ran (the same definition PHPUnit uses). Files under `include` that no test loaded still show up, with zero coverage, so untested code lowers the percentage as it should instead of silently vanishing from the report.
+A line is **executable** when a statement starts on it, and **covered** when that statement started running. A function or method counts as covered when all of its executable lines ran (the same definition PHPUnit uses).
+
+Files under `include` that no test loaded still show up, with zero coverage, so untested code lowers the percentage as it should instead of silently vanishing from the report.
 
 Instrumentation is cached in `.microunit/cache/coverage`, keyed by each file's path, size, modification time and the version of the instrumenter. On the next run, unchanged files skip parsing entirely. You never need to clear the cache by hand; deleting `.microunit` is safe if you want to anyway.
 
