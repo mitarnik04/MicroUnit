@@ -153,9 +153,15 @@ final readonly class ParallelRunner
             return 'Its result could not be read: ' . $error->getMessage();
         }
 
-        return $result instanceof WorkerResult
-            ? $result
-            : 'Its result could not be read (' . strlen($contents) . ' bytes): ' . (error_get_last()['message'] ?? get_debug_type($result));
+        if ($result instanceof WorkerResult) {
+            return $result;
+        }
+        $error = error_get_last()['message'] ?? get_debug_type($result);
+        $near = preg_match('/at offset (\d+)/', $error, $match) === 1
+            ? "\nNear: " . json_encode(substr($contents, max(0, (int) $match[1] - 200), 300), JSON_INVALID_UTF8_SUBSTITUTE)
+            : '';
+
+        return 'Its result could not be read (' . strlen($contents) . " bytes): $error$near";
     }
 
     /** A worker that died (fatal error, exit() in a test, ...) fails every test it was given, with its log. */
