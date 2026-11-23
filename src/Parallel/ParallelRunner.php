@@ -5,6 +5,7 @@ namespace MicroUnit\Parallel;
 use MicroUnit\Assertion\AssertionFailure;
 use MicroUnit\Assertion\NotProvided;
 use MicroUnit\Core\RunSummary;
+use MicroUnit\Core\Test;
 use MicroUnit\Core\TestError;
 use MicroUnit\Core\TestPlan;
 use MicroUnit\Core\TestResult;
@@ -24,10 +25,10 @@ final readonly class ParallelRunner
 {
     private const int POLL_INTERVAL_IN_MICROSECONDS = 5_000;
 
-    /** Classes a worker result may contain; nothing else is ever unserialized. */
+    /** Classes a test result may contain; nothing else is ever unserialized. */
     private const array TRANSPORT_CLASSES = [
-        WorkerResult::class, TestResult::class, TestStatus::class, TestError::class, AssertionFailure::class,
-        NotProvided::class, Diff::class, DiffLine::class, DiffLineType::class, ExportedValue::class, CoverageData::class,
+        TestResult::class, TestStatus::class, TestError::class, AssertionFailure::class,
+        NotProvided::class, Diff::class, DiffLine::class, DiffLineType::class, ExportedValue::class,
     ];
 
     /**
@@ -49,9 +50,10 @@ final readonly class ParallelRunner
         $resultsById = [];
         $coverage = null;
         foreach ($workers as $index => $worker) {
-            $result = $this->readResult($worker['output']);
+            $share = $plan->partition($index, $this->workerCount);
+            $result = $this->readResult($worker['output'], $share);
             if (is_string($result)) {
-                $result = $this->crashResult($plan->partition($index, $this->workerCount), $worker['log'], $worker['exitCode'], $result);
+                $result = $this->crashResult($share, $worker['log'], $worker['exitCode'], $result);
             }
             foreach ($result->results as $testResult) {
                 $resultsById[$testResult->id] = $testResult;
@@ -140,28 +142,61 @@ final readonly class ParallelRunner
         } while ($isAnyRunning);
     }
 
-    /** @return WorkerResult|string the result, or why there is none */
-    private function readResult(string $outputFile): WorkerResult|string
+    /**
+     * Reads what WorkerRunner wrote: every test result serialized on its own, keyed by test id, and the
+     * coverage. A result that cannot be read fails only its own test.
+     *
+     * @return WorkerResult|string the results, or why there are none
+     */
+    private function readResult(string $outputFile, TestPlan $share): WorkerResult|string
     {
         $contents = @file_get_contents($outputFile);
         if ($contents === false) {
             return 'It left no result.';
         }
-        try {
-            $result = @unserialize($contents, ['allowed_classes' => self::TRANSPORT_CLASSES]);
-        } catch (\Throwable $error) {
-            return 'Its result could not be read: ' . $error->getMessage();
+        [$transport, $error] = self::unserialize($contents, []);
+        if (!is_array($transport) || !is_array($transport['results'] ?? null) || !is_string($transport['coverage'] ?? null)) {
+            return 'Its result could not be read: ' . ($error ?? 'unexpected format') . '.';
         }
 
-        if ($result instanceof WorkerResult) {
-            return $result;
+        $testsById = array_column(array_map(static fn(array $entry): Test => $entry[1], $share->entries), null, 'id');
+        $results = [];
+        foreach ($transport['results'] as $id => $serialized) {
+            $test = $testsById[$id] ?? null;
+            if ($test === null) {
+                continue;
+            }
+            [$result, $error] = is_string($serialized) ? self::unserialize($serialized, self::TRANSPORT_CLASSES) : [null, 'not serialized'];
+            $results[] = $result instanceof TestResult
+                ? $result
+                : self::failedResult($test, "The parallel worker ran this test, but its result could not be read: $error");
         }
-        $error = error_get_last()['message'] ?? get_debug_type($result);
+        [$coverage] = self::unserialize($transport['coverage'], [CoverageData::class]);
+
+        return new WorkerResult($results, $coverage instanceof CoverageData ? $coverage : null);
+    }
+
+    /**
+     * @param list<class-string> $allowedClasses
+     * @return array{mixed, ?string} the value, and why it could not be read (with the bytes around the error)
+     */
+    private static function unserialize(string $contents, array $allowedClasses): array
+    {
+        error_clear_last();
+        try {
+            $value = @unserialize($contents, ['allowed_classes' => $allowedClasses]);
+        } catch (\Throwable $throwable) {
+            return [null, $throwable->getMessage()];
+        }
+        if ($value !== false || $contents === serialize(false)) {
+            return [$value, null];
+        }
+        $error = error_get_last()['message'] ?? 'unserialize() failed';
         $near = preg_match('/at offset (\d+)/', $error, $match) === 1
-            ? "\nNear: " . json_encode(substr($contents, max(0, (int) $match[1] - 200), 300), JSON_INVALID_UTF8_SUBSTITUTE)
+            ? ', near ' . json_encode(substr($contents, max(0, (int) $match[1] - 200), 300), JSON_INVALID_UTF8_SUBSTITUTE)
             : '';
 
-        return 'Its result could not be read (' . strlen($contents) . " bytes): $error$near";
+        return [null, $error . $near];
     }
 
     /** A worker that died (fatal error, exit() in a test, ...) fails every test it was given, with its log. */
@@ -171,13 +206,14 @@ final readonly class ParallelRunner
         $message = "The parallel worker running this test stopped unexpectedly (exit code $exitCode). $reason"
             . ($log === '' ? '' : "\nWorker output:\n" . substr($log, -2000));
 
-        $results = [];
-        foreach ($share->entries as [, $test]) {
-            // Located at the test itself: a trace of this process would only show MicroUnit internals.
-            $error = new TestError(\RuntimeException::class, $message, (string) $test->file, (int) $test->line, '');
-            $results[] = new TestResult($test->id, $test->suite, $test->name, TestStatus::Failed, 0.0, error: $error, file: $test->file, line: $test->line, failureLine: $test->line);
-        }
+        return new WorkerResult(array_map(static fn(array $entry): TestResult => self::failedResult($entry[1], $message), $share->entries), null);
+    }
 
-        return new WorkerResult($results, null);
+    private static function failedResult(Test $test, string $message): TestResult
+    {
+        // Located at the test itself: a trace of this process would only show MicroUnit internals.
+        $error = new TestError(\RuntimeException::class, $message, (string) $test->file, (int) $test->line, '');
+
+        return new TestResult($test->id, $test->suite, $test->name, TestStatus::Failed, 0.0, error: $error, file: $test->file, line: $test->line, failureLine: $test->line);
     }
 }

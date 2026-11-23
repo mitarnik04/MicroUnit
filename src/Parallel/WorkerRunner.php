@@ -4,7 +4,6 @@ namespace MicroUnit\Parallel;
 
 use MicroUnit\Core\SuiteRunner;
 use MicroUnit\Core\TestPlan;
-use MicroUnit\Core\TestResult;
 use MicroUnit\Core\TestRunner;
 use MicroUnit\Coverage\CoverageSession;
 use MicroUnit\Helpers\Filesystem;
@@ -21,11 +20,13 @@ final readonly class WorkerRunner
     {
         $summary = new SuiteRunner($this->testRunner, $this->stopOnFailure)->run($share, static function (): void {});
 
-        $result = new WorkerResult(
-            array_map(static fn(TestResult $result): TestResult => $result->forTransport(), $summary->results),
-            $coverage?->collect(),
-        );
+        // Every result is serialized on its own, keyed by test id: back-references stay inside one small
+        // result, and a result the parent cannot read fails only its own test, not the whole share.
+        $results = [];
+        foreach ($summary->results as $result) {
+            $results[$result->id] = serialize($result->forTransport());
+        }
 
-        Filesystem::writeAtomically($outputFile, serialize($result));
+        Filesystem::writeAtomically($outputFile, serialize(['results' => $results, 'coverage' => serialize($coverage?->collect())]));
     }
 }
