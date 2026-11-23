@@ -125,12 +125,26 @@ final class Filesystem
         }
     }
 
-    /** Writes atomically so concurrent readers never see a half-written file. */
+    /**
+     * Writes atomically so concurrent readers never see a half-written file. On Windows, a file that
+     * was just written can be held briefly (by a virus scanner, for example), so the move is retried
+     * for a moment before it fails.
+     *
+     * @throws \RuntimeException when the file cannot be written
+     */
     public static function writeAtomically(string $file, string $contents): void
     {
         self::ensureDirectory(dirname($file));
         $temporaryFile = $file . '.' . getmypid() . '.tmp';
-        file_put_contents($temporaryFile, $contents);
-        rename($temporaryFile, $file);
+        if (@file_put_contents($temporaryFile, $contents) === false) {
+            throw new \RuntimeException("Could not write $temporaryFile.");
+        }
+        for ($attempt = 1; !@rename($temporaryFile, $file); $attempt++) {
+            if ($attempt === 5) {
+                @unlink($temporaryFile);
+                throw new \RuntimeException("Could not move the written file to $file.");
+            }
+            usleep(10_000 * $attempt);
+        }
     }
 }
