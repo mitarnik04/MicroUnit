@@ -42,7 +42,7 @@ $tester->define('a_crashed_worker_fails_its_tests_at_their_own_location', functi
     $run = Cli::run('cli', ['crash', '--parallel=2', '--no-colors']);
 
     Assert::exact(1, $run->exitCode);
-    Assert::stringContains('stopped unexpectedly (exit code 3)', $run->output);
+    Assert::stringContains('stopped unexpectedly (exit code 3). It left no result.', $run->output);
     Assert::stringContains('crash-tests.php:7', $run->output);
     Assert::isFalse(str_contains($run->output, 'ParallelRunner.php'));
 });

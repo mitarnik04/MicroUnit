@@ -50,8 +50,8 @@ final readonly class ParallelRunner
         $coverage = null;
         foreach ($workers as $index => $worker) {
             $result = $this->readResult($worker['output']);
-            if ($result === null) {
-                $result = $this->crashResult($plan->partition($index, $this->workerCount), $worker['log'], $worker['exitCode']);
+            if (is_string($result)) {
+                $result = $this->crashResult($plan->partition($index, $this->workerCount), $worker['log'], $worker['exitCode'], $result);
             }
             foreach ($result->results as $testResult) {
                 $resultsById[$testResult->id] = $testResult;
@@ -140,22 +140,29 @@ final readonly class ParallelRunner
         } while ($isAnyRunning);
     }
 
-    private function readResult(string $outputFile): ?WorkerResult
+    /** @return WorkerResult|string the result, or why there is none */
+    private function readResult(string $outputFile): WorkerResult|string
     {
         $contents = @file_get_contents($outputFile);
         if ($contents === false) {
-            return null;
+            return 'It left no result.';
         }
-        $result = @unserialize($contents, ['allowed_classes' => self::TRANSPORT_CLASSES]);
+        try {
+            $result = @unserialize($contents, ['allowed_classes' => self::TRANSPORT_CLASSES]);
+        } catch (\Throwable $error) {
+            return 'Its result could not be read: ' . $error->getMessage();
+        }
 
-        return $result instanceof WorkerResult ? $result : null;
+        return $result instanceof WorkerResult
+            ? $result
+            : 'Its result could not be read (' . strlen($contents) . ' bytes): ' . (error_get_last()['message'] ?? get_debug_type($result));
     }
 
     /** A worker that died (fatal error, exit() in a test, ...) fails every test it was given, with its log. */
-    private function crashResult(TestPlan $share, string $logFile, ?int $exitCode): WorkerResult
+    private function crashResult(TestPlan $share, string $logFile, ?int $exitCode, string $reason): WorkerResult
     {
         $log = trim((string) @file_get_contents($logFile));
-        $message = "The parallel worker running this test stopped unexpectedly (exit code $exitCode)."
+        $message = "The parallel worker running this test stopped unexpectedly (exit code $exitCode). $reason"
             . ($log === '' ? '' : "\nWorker output:\n" . substr($log, -2000));
 
         $results = [];

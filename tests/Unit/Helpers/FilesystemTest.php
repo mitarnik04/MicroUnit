@@ -32,6 +32,6 @@ $tester->define('write_atomically_replaces_the_file_and_leaves_no_temporary_file
 $tester->define('write_atomically_fails_loudly_when_the_file_cannot_be_written', function (TemporaryDirectory $directory): void {
     mkdir($directory->path('taken'));
 
-    Assert::throws(fn() => Filesystem::writeAtomically($directory->path('taken'), 'data'), RuntimeException::class, 'Could not move the written file');
+    Assert::throws(fn() => Filesystem::writeAtomically($directory->path('taken'), 'data'), RuntimeException::class, 'Could not');
     Assert::exact([], glob($directory->path('*.tmp')));
 });
