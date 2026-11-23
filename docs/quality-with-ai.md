@@ -43,7 +43,7 @@ That is what this page does. It follows a change from the first line to a releas
 
 ## Who decides, who writes
 
-I'm not handing MicroUnit over to AI. I'm one developer with a very fast tool, and the work splits along what each of us is good at. AI is excellent at implementing a change that is clearly specified. It is far less reliable at deciding what the change should be, which API will read well in a test, or when the right answer is no.
+I'm not handing MicroUnit over to AI. I'm one developer with a very fast tool, and the work splits along what each of us is good at. AI is good at implementing a change that is clearly specified. It is much less reliable at deciding what the change should be, which API will read well in a test, or when the right answer is no.
 
 <div class="build-roles">
   <div class="build-role by-me">
@@ -65,17 +65,14 @@ I'm not handing MicroUnit over to AI. I'm one developer with a very fast tool, a
   </div>
 </div>
 
-My review is the one step on this page you can't verify from the outside. Nothing rests on it alone. Everything I check by hand is checked again, automatically, on every change.
+My review is the one step on this page you can't verify from the outside, and it covers what no automated check can: whether a change is the right one, whether an API reads well in a test, and whether a test checks the right thing in the first place. Everything that can be checked automatically is, on every change. That leaves my attention for the questions only a person can answer, and I look at every change.
 
 ## The harness the AI works in
 
 Every AI session on MicroUnit starts in the same harness. Its job is to make the right thing the easy thing, long before a change reaches my review.
 
 - **The rules load first.** [`CLAUDE.md`](https://github.com/mitarnik04/MicroUnit/blob/main/CLAUDE.md) is read at the start of every session: the code rules (zero dependencies, typed, `final readonly` by default, no dead code), the commands, the known pitfalls, and what "done" means. Done is tests added, the suite, canary, lint and PHPStan green, and the docs updated in the same change. [`PRODUCT.md`](https://github.com/mitarnik04/MicroUnit/blob/main/PRODUCT.md) adds who MicroUnit is for and how it talks, so the docs keep one voice.
-- **MicroUnit answers the agent in its own format.** In an agent session the suite replies with one compact JSON object: only the failures, each with where it failed, the expected and actual values and the code around it, plus a warning for every test that passes without asserting anything. The agent's attention goes to what broke.
-- **A weakened test is flagged on the spot.** After every run in an agent session, MicroUnit compares the tests with the last commit. When a test lost an assertion, changed its expected value, gained a skip or disappeared, the agent is told right away to fix the code or explain the change. CI runs the same check again, so it reaches the review as well.
-
-None of this is special tooling. These are the agent features MicroUnit ships for your projects, described in [AI coding agents](ai-agents.md). Here they run on MicroUnit itself.
+- **MicroUnit answers the agent in its own format.** In an agent session the suite replies with one compact JSON object ([AI coding agents](ai-agents.md) describes it): only the failures, each with where it failed, the expected and actual values and the code around it, plus a warning for every test that passes without asserting anything. The agent's attention goes to what broke.
 
 ## Twelve runs for every change
 
@@ -95,7 +92,7 @@ Two settings make these runs stricter than they need to be, on purpose. `error_r
 
 ## MicroUnit is tested with MicroUnit
 
-The suite in `tests/` runs on MicroUnit itself. I chose that deliberately, and of everything on this page it is the part I would least want to give up, because it turns the suite into a loop:
+The suite in `tests/` runs on MicroUnit itself. I chose that deliberately, because it turns the suite into a loop:
 
 <figure class="build-loop" aria-label="The self-testing loop">
   <div class="build-loop-ring">
@@ -110,7 +107,7 @@ The suite in `tests/` runs on MicroUnit itself. I chose that deliberately, and o
   <div class="build-canary"><strong>Canary</strong><span>Runs first, outside the loop, and checks that failures still get reported at all.</span></div>
 </figure>
 
-Every feature gets used every day on a real suite, so a regression usually shows up here first. Every bug that gets fixed leaves a test behind, so the suite only ever learns. The parallel runner works through that same suite in every CI run, coverage and the integrity check run on MicroUnit's own code, and the zero-dependency promise holds for the repository too, not only for the package you install.
+Every feature runs every day against a real suite, so a regression usually shows up here first. Every fixed bug leaves a test behind, so that bug can't come back unnoticed. The parallel runner, the coverage tool and the integrity check all run on MicroUnit's own code in every CI run.
 
 A fair question is whether a broken MicroUnit could pass its own tests. In practice that is hard to arrange, because MicroUnit is both the instrument and the thing being measured. The suite doesn't only check that assertions pass: dozens of tests check that they *fail* when they should. If `Assert::exact()` broke and let everything through, the tests that expect it to throw on a mismatch are checked by `Assert::throws()`, a different piece of code, and they go red. Integration tests go one step further and run the real command line as a separate process, against projects whose outcome is known.
 
@@ -121,19 +118,19 @@ That leaves one case a loop can't judge about itself: whether failures get repor
 <dl class="build-list">
   <div><dt><a href="https://github.com/mitarnik04/MicroUnit/blob/main/bin/canary.php">Canary</a></dt><dd>Four tests with known outcomes, checked without MicroUnit's code before the suite runs.</dd></div>
   <div><dt><a href="https://github.com/mitarnik04/MicroUnit/blob/main/phpstan.neon.dist">Static analysis</a></dt><dd>PHPStan at its strictest level, max, on all of <code>src/</code> and <code>bin/</code>, with no baseline file. It runs as a PHAR, never as a dependency.</dd></div>
-  <div><dt><a href="https://github.com/mitarnik04/MicroUnit/blob/main/microunit.config.php">Coverage floor</a></dt><dd>Every CI run measures MicroUnit's coverage with its own coverage tool and fails below a floor set just under the current value, so coverage can't quietly drop.</dd></div>
+  <div><dt><a href="https://github.com/mitarnik04/MicroUnit/blob/main/microunit.config.php">Coverage floor</a></dt><dd>Every CI run measures MicroUnit's coverage with its own coverage tool. About half of the lines in <code>src/</code> are covered today, and the run fails below 47%, so coverage can't quietly slide.</dd></div>
   <div><dt><a href="https://github.com/mitarnik04/MicroUnit/blob/main/.github/workflows/ci.yml">Integrity check</a></dt><dd>Compares the tests with the previous version and lists removed assertions, changed expected values, new skips and removed tests.</dd></div>
   <div><dt><a href="https://github.com/mitarnik04/MicroUnit/blob/main/bin/lint.php">Lint</a></dt><dd>Valid PHP 8.5 syntax, one class per file, namespaces that match folders, and the docs checks described below.</dd></div>
   <div><dt><a href="https://github.com/mitarnik04/MicroUnit/blob/main/.php-cs-fixer.dist.php">Formatting</a></dt><dd>PHP-CS-Fixer with PSR-12 and a few house rules, also as a PHAR.</dd></div>
 </dl>
 
-If I had to point to one of these first, it would be the integrity check, because it answers the specific risk that comes with AI. When a test goes red, an agent can make it green the wrong way: drop the assertion, change the expected value to whatever the code returns now, add a skip. The integrity check lists exactly those changes. On a pull request, any finding fails the build. On my own pushes it lists them in the run, so a deliberate change, like renaming a test, stays visible without blocking anything. It is the same check MicroUnit ships for your projects.
+If I had to point to one of these first, it would be the integrity check, because it answers the specific risk that comes with AI. When a test goes red, an agent can make it green the wrong way: drop the assertion, change the expected value to whatever the code returns now, add a skip. The integrity check lists exactly those changes. On a pull request, any finding fails the build. On my own pushes it lists them in the run, so a deliberate change, like renaming a test, stays visible without blocking anything. In an agent session it also runs after every test run, so the agent hears about a weakened test while it is still working, long before the change reaches me. It is the same check any project can turn on with `withIntegrityCheck()`.
 
 ## Documentation written from the source
 
-The documentation and the README are written with AI too. It is a job AI is unusually good at: it reads the complete source and describes what is actually there, and the docs change in the same commit as the code they describe.
+The documentation and the README are written with AI too, from the source and in the same commit as the code they describe, so the two change together.
 
-As a safety net for the rare slip, CI checks that every CLI flag, config option and assertion appears in the docs, and that every link between pages, from the sidebar and from the README leads somewhere. A missing piece can't reach a release. Whether every sentence says the right thing is part of my review, and if you find one that doesn't, [tell me](https://github.com/mitarnik04/MicroUnit/issues). A wrong sentence in the docs is a bug like any other.
+As a safety net, CI checks what can be checked mechanically: every CLI flag, config option, assertion and fluent method has to appear in the docs, and every link between pages, from the sidebar and from the README has to lead somewhere. Whether each sentence says the right thing is part of my review. If you find one that doesn't, [tell me](https://github.com/mitarnik04/MicroUnit/issues): a wrong sentence in the docs is a bug like any other.
 
 ## Real projects before every release
 
@@ -148,11 +145,7 @@ My own suite knows MicroUnit well. That is also its limit: it only contains the 
   <div><dt><code>monolog/monolog</code></dt><dd>Mocks, handlers and I/O</dd></div>
 </dl>
 
-Their tests are translated with `microunit migrate`, and nobody touches the result by hand. A project only counts when every test in the set passes under MicroUnit and MicroUnit runs exactly as many tests as PHPUnit does on the same code. The few tests left out of the set are published, each with its reason. That is the gate a release has to pass, and it is the same harness that measures the [benchmarks](benchmarks.md): every result there comes from such a verified run. The projects are public and the commits are pinned, so you can [reproduce it](https://github.com/mitarnik04/MicroUnit/blob/main/benchmarks/README.md#reproducing) on your own machine.
-
-## Nothing else to trust
-
-MicroUnit has zero dependencies, so the code you install is all there is: no second project behind it whose releases you would have to follow. The Test Explorer, the one part that opens a port, listens only on your own machine, needs a token that only its own page knows, and refuses requests for any other host. Its tests check exactly that, and the [security model](test-explorer.md#security-model) explains it in full.
+Their tests are translated with `microunit migrate`, and nobody touches the result by hand. A project only counts when every test in the set passes under MicroUnit and MicroUnit runs exactly as many tests as PHPUnit does on the same code. The few tests left out of the set are published, each with its reason. That is the gate a release has to pass, and the [benchmarks](benchmarks.md) are measured on the same verified runs. The projects are public and the commits are pinned, so you can [reproduce it](https://github.com/mitarnik04/MicroUnit/blob/main/benchmarks/README.md#reproducing) on your own machine.
 
 ## Check it yourself
 
@@ -165,5 +158,4 @@ MicroUnit has zero dependencies, so the code you install is all there is: no sec
 | The test suite and the coverage floor | [`tests/`](https://github.com/mitarnik04/MicroUnit/tree/main/tests), [`microunit.config.php`](https://github.com/mitarnik04/MicroUnit/blob/main/microunit.config.php) |
 | The agent harness | [`CLAUDE.md`](https://github.com/mitarnik04/MicroUnit/blob/main/CLAUDE.md), [`PRODUCT.md`](https://github.com/mitarnik04/MicroUnit/blob/main/PRODUCT.md) |
 | The real projects and their results | [`benchmarks/`](https://github.com/mitarnik04/MicroUnit/tree/main/benchmarks) |
-| The Explorer's security tests | [`ExplorerServerTest.php`](https://github.com/mitarnik04/MicroUnit/blob/main/tests/Integration/Explorer/ExplorerServerTest.php) |
 | The rules every change follows | [`CONTRIBUTING.md`](https://github.com/mitarnik04/MicroUnit/blob/main/CONTRIBUTING.md) |
