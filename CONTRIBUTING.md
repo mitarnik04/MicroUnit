@@ -2,7 +2,7 @@
 
 First of all: thank you for even opening this file.
 
-MicroUnit is a PHP testing framework with zero dependencies. Assertions, mocking, code coverage, parallel runs and a test explorer, all written in plain PHP. The goal isn't to be a nice alternative to PHPUnit and Pest. The goal is to build the testing tool PHP developers reach for first.
+MicroUnit is a PHP testing framework with zero dependencies. Assertions, mocking, code coverage, parallel runs and a test explorer, all written in plain PHP. The goal is a modern testing tool that is a pleasure to use in every project where those things matter: tests that read like a description, runs fast enough that you never wait for them, and nothing extra to install.
 
 That's a big goal for a small project, and right now it's mostly me working on it. So yes, I really do want your help. A typo fix counts. So does a bug report with a five-line reproduction, or a deep dive into the coverage instrumenter. All of it moves the project forward.
 
@@ -14,6 +14,8 @@ That's a big goal for a small project, and right now it's mostly me working on i
 - [What makes a pull request easy to merge](#what-makes-a-pull-request-easy-to-merge)
 - [AI-assisted contributions](#ai-assisted-contributions)
 - [Code style](#code-style)
+- [Writing docs and other text](#writing-docs-and-other-text)
+- [Releasing](#releasing)
 - [Reporting bugs](#reporting-bugs)
 - [Suggesting features](#suggesting-features)
 - [Questions](#questions)
@@ -50,7 +52,8 @@ A few commands you'll use all the time:
 php bin/microunit --filter=Mock         # only tests whose "Suite::test" id contains "Mock"
 php bin/microunit tests/Unit/Mock       # only the tests in a directory or file
 php bin/microunit --parallel            # use every CPU core
-php bin/lint.php                        # syntax-check every PHP file
+php bin/lint.php                        # syntax, structure and docs checks
+php bin/canary.php                      # MicroUnit still tells passing tests from failing ones
 ```
 
 `ARCHITECTURE.md` explains how a run works and where everything lives. Read it before touching the runner, coverage or the explorer, it'll save you an evening.
@@ -62,7 +65,7 @@ Want to try things by hand? Create a `playground/` folder with its own `microuni
 1. Fork the repository and create a branch: `git checkout -b fix-diff-for-nested-arrays`.
 2. Write a test that shows the bug or describes the new behaviour. MicroUnit's tests live in `tests/Unit/<Namespace>/<Thing>Test.php`, one suite per file.
 3. Make it pass.
-4. Run `php bin/microunit`, `php bin/lint.php` and `php php-cs-fixer.phar fix` (see [Formatting](#formatting)). Everything must be green.
+4. Run `php bin/microunit`, `php bin/lint.php`, `php php-cs-fixer.phar fix` and `php phpstan.phar analyse` (see [Formatting](#formatting)). Everything must be green.
 5. If users will notice the change, update the docs in `docs/` and add a line to `CHANGELOG.md`.
 6. Open a pull request. Tell me what changed and, more importantly, why.
 
@@ -111,9 +114,15 @@ You don't have to think about formatting, tools do it for you:
   ```
 
   The PHAR is git-ignored. Run `fix` before you push.
-- **`php bin/lint.php`** checks what a formatter can't: valid syntax, one class per file, file name equals class name, namespace matches the folder, interfaces start with `I`.
+- **`php bin/lint.php`** checks what a formatter can't: valid syntax, one class per file, file name equals class name, namespace matches the folder, interfaces start with `I`. It also checks that every CLI option, config method and assertion is documented, and that every link in the docs and the README leads somewhere.
+- **[PHPStan](https://phpstan.org/)** checks types, also as a standalone PHAR (git-ignored, never a dependency), with the settings in `phpstan.neon.dist`:
 
-CI runs all three on every pull request, so you'll find out either way. Running them locally just saves you a round trip.
+  ```bash
+  curl -sSL -o phpstan.phar https://github.com/phpstan/phpstan/releases/download/2.3.7/phpstan.phar
+  php phpstan.phar analyse
+  ```
+
+CI runs all of them on every pull request, together with the test suite on three operating systems and two PHP versions, the canary (`bin/canary.php`), the coverage floor and the integrity check. [Ensuring high quality with AI](https://mitarnik04.github.io/MicroUnit/quality-with-ai/) explains each one. Running them locally just saves you a round trip.
 
 ### File structure
 
@@ -142,6 +151,14 @@ Don't repeat what the signature already says: `generate(string $input)`, not `ge
 ### Commit messages
 
 Short and to the point. Say what the diff can't tell you on its own.
+
+## Writing docs and other text
+
+The docs, the README and everything else MicroUnit says about itself follow the voice and the rules in [PRODUCT.md](PRODUCT.md#brand-commitments). It also says who MicroUnit is for and how it is positioned, so it is worth a read before you write anything users will see.
+
+## Releasing
+
+A release needs the whole CI pipeline green, and one more gate that is too slow for every push: the test suites of the six real projects in `benchmarks/`. Run the harness as [`benchmarks/README.md`](benchmarks/README.md#reproducing) describes. Before it measures anything, it migrates each project's tests and checks that every test in the set passes under MicroUnit and that MicroUnit runs as many tests as PHPUnit. A release needs every scenario of every project to be valid. Commit the results folder with the release, so each release has its record.
 
 ## Reporting bugs
 

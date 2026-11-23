@@ -1,8 +1,9 @@
 # MicroUnit
 
 Dependency-free, pure-PHP testing framework (assertions, mocking, coverage, parallel runs, test
-explorer, framework integrations). Goal: become the new standard for PHP testing, not an
-alternative. It tests itself: `tests/` is run by MicroUnit.
+explorer, framework integrations). It tests itself: `tests/` is run by MicroUnit. Who it is for, how
+it is positioned, its voice and brand colours: `PRODUCT.md`. Read it before writing docs, copy or
+designs.
 
 ## Rules
 
@@ -11,13 +12,12 @@ alternative. It tests itself: `tests/` is run by MicroUnit.
   order (expected, actual), named args / fluent `with…()`, no hidden magic.
 - **Zero dependencies.** No Composer packages, not even `require-dev`. Write it yourself.
 - **PHP 8.5+.** Use modern features where they make code clearer or faster.
-- **Code quality** per `CONTRIBUTING.md#code-quality`: separation of concerns, KISS, YAGNI,
+- **Code quality** per `CONTRIBUTING.md#code-style`: separation of concerns, KISS, YAGNI,
   `final readonly` by default, typed, helpful errors, no dead code.
 - **Fast.** Startup and per-test overhead matter.
 - **Configurable in PHP.** Options live on `MicroUnitConfigBuilder`; CLI flags only override per run.
-- **Done means:** tests added/updated, suite and lint pass, `docs/` (+ `README.md`, `CHANGELOG.md`
-  for public changes) updated.
-
+- **Done means:** tests added/updated, suite, canary, lint and PHPStan pass, `docs/` (+ `README.md`,
+  `CHANGELOG.md` for public changes) updated.
 Read `ARCHITECTURE.md` before changing the run flow or a subsystem. `docs/` is the user-facing contract.
 
 ## Commands
@@ -28,7 +28,9 @@ Read `ARCHITECTURE.md` before changing the run flow or a subsystem. `docs/` is t
 | Subset | `php bin/microunit --filter=Mock` or `php bin/microunit tests/Unit/Mock` |
 | Parallel | `php bin/microunit --parallel=4` |
 | Coverage | `php bin/microunit --coverage` |
-| Lint | `php bin/lint.php` |
+| Lint (incl. docs checks) | `php bin/lint.php` |
+| Canary | `php bin/canary.php` |
+| Static analysis | `php phpstan.phar analyse` (PHAR, see `CONTRIBUTING.md#formatting`) |
 | Help for every command | `php bin/microunit help [run\|init\|migrate\|integrity\|explorer]` |
 | Benchmarks (quiet machine only) | see `benchmarks/README.md` |
 | Rebuild brand PNGs | `php assets/brand/build.php` (needs Chrome) |

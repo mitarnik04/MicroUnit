@@ -1,0 +1,33 @@
+parameters:
+    level: max
+    paths:
+        - src
+        - bin
+    phpVersion: 80500
+    ignoreErrors:
+        # The framework integrations and the PHPUnit bridges reference classes that only exist in
+        # the user's project. MicroUnit has zero dependencies by design, so they can't be loaded here.
+        -
+            identifier: class.notFound
+            paths:
+                - src/Integration/Laravel/*
+                - src/Integration/Symfony/*
+                - src/Integration/CodeIgniter/*
+                - src/Integration/TestCaseHost.php
+                - src/Assertion/ForeignAssertionFailure.php
+                - src/Assertion/ResponseView.php
+        # These two read such objects by duck typing, so PHPStan only sees mixed values there.
+        -
+            identifiers:
+                - cast.string
+                - method.nonObject
+            paths:
+                - src/Assertion/ForeignAssertionFailure.php
+                - src/Assertion/ResponseView.php
+        -
+            identifiers:
+                - argument.type
+                - method.notFound
+                - property.notFound
+                - return.type
+            path: src/Assertion/ResponseView.php

@@ -17,6 +17,7 @@ test-results.log
 
 # Local tools
 php-cs-fixer.phar
+phpstan.phar
 .microunit/
 
 # Benchmark: checked-out corpus and scratch files (results/ is committed)

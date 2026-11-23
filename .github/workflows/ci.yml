@@ -24,13 +24,15 @@ jobs:
           php-version: ${{ matrix.php }}
           coverage: none
           ini-values: opcache.enable_cli=0, error_reporting=-1
-      - name: Run MicroUnit's own test suite
+      - name: Canary (MicroUnit still tells passing tests from failing ones)
+        run: php bin/canary.php
+      - name: Run MicroUnit's own test suite (with its own coverage, see microunit.config.php)
         run: php bin/microunit
       - name: Run it again in parallel
         run: php bin/microunit --parallel=4
 
   quality:
-    name: Lint and formatting
+    name: Lint, formatting and static analysis
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -38,9 +40,34 @@ jobs:
         with:
           php-version: "8.5"
           coverage: none
-      - name: Lint (syntax and structure)
+      - name: Lint (syntax, structure and docs)
         run: php bin/lint.php
       - name: Formatting (PHP-CS-Fixer, used as a PHAR, never a dependency)
         run: |
           curl -sSL -o php-cs-fixer.phar https://cs.symfony.com/download/php-cs-fixer-v3.phar
           php php-cs-fixer.phar fix --dry-run --diff --config=.php-cs-fixer.dist.php
+      - name: Static analysis (PHPStan, used as a PHAR, never a dependency)
+        run: |
+          curl -sSL -o phpstan.phar https://github.com/phpstan/phpstan/releases/download/2.3.7/phpstan.phar
+          php -d memory_limit=2G phpstan.phar analyse --no-progress
+
+  integrity:
+    name: Integrity (no test was weakened)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.5"
+          coverage: none
+      - name: Compare the tests with the target branch
+        if: github.event_name == 'pull_request'
+        run: php bin/microunit integrity origin/${{ github.base_ref }}
+      # A push to main has nobody to approve a deliberate change, so its findings are listed for review
+      # (the step is marked) without failing the build.
+      - name: Compare the tests with the previous push
+        if: github.event_name == 'push' && github.event.before != '0000000000000000000000000000000000000000'
+        continue-on-error: true
+        run: php bin/microunit integrity ${{ github.event.before }}
