@@ -57,6 +57,8 @@ body {
 .banner.dark { background: var(--deep); }
 .banner.dark .tag { color: var(--cyan); }
 .banner.dark .sub { color: #A5B1DF; }
+/* The same banner at X's size (1500 x 500): the avatar covers the lower left, so the copy sits higher. */
+.banner.x .copy { top: 37%; }
 
 /* Social preview (1280 x 640) */
 .social { background: var(--ultra); color: #FFFFFF; }
@@ -68,6 +70,10 @@ body {
 .social .row { position: absolute; z-index: 1; left: 6.5cqw; bottom: 6cqw; display: flex; gap: 2.8cqw; font-size: 1.5cqw; color: #C7CEFA; }
 .social .row span::before { content: ""; display: inline-block; width: .6em; height: .6em; background: var(--cyan); margin-right: .9em; vertical-align: .1em; }
 .social .giant { position: absolute; right: -5cqw; top: -5cqw; width: 34cqw; height: 34cqw; }
+
+/* Profile picture (square, shown as a circle): the mark centred on brand blue. */
+.avatar { background: var(--ultra); display: grid; place-items: center; }
+.avatar .mk { width: 56cqw; height: 56cqw; }
 
 /* Release cards (1080 x 1080) */
 .release { background: var(--deep); color: #FFFFFF; }
