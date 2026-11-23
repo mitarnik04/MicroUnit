@@ -137,7 +137,16 @@ Assert::multiple(function () use ($user) {                                   // 
 Assert::matchesSnapshot($invoice->render());
 ```
 
+Prefer to start from the value? Every check on a value also comes as a fluent chain, and both
+styles mix freely:
+
+```php
+AssertString::begin($user->email)->notEmpty()->endsWith('@example.com');
+AssertArray::begin($ids)->isList()->isUnique()->countEquals(3);
+```
+
 [All assertions](https://mitarnik04.github.io/MicroUnit/assertions/) ·
+[Fluent assertions](https://mitarnik04.github.io/MicroUnit/fluent-assertions/) ·
 [Snapshots](https://mitarnik04.github.io/MicroUnit/snapshots/)
 
 **Mocks without a second library.**

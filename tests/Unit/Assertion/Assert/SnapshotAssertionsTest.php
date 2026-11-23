@@ -1,6 +1,9 @@
 <?php
 
 use MicroUnit\Assertion\Assert;
+use MicroUnit\Assertion\AssertArray;
+use MicroUnit\Assertion\AssertSingle;
+use MicroUnit\Assertion\AssertString;
 use MicroUnit\Core\Test;
 use MicroUnit\Core\TestContext;
 use MicroUnit\Exceptions\TestFailedException;
@@ -92,4 +95,19 @@ $tester->define('named_snapshots_do_not_shift_the_numbering', function (Temporar
 
     Assert::fileContentEquals('first', $directory->path('__snapshots__/InvoiceTest/renders.snap'));
     Assert::fileContentEquals('second', $directory->path('__snapshots__/InvoiceTest/renders_2.snap'));
+});
+
+$tester->define('the_fluent_classes_compare_with_the_same_snapshots', function (TemporaryDirectory $directory): void {
+    inSnapshotTest($directory, function (): void {
+        Assert::matchesSnapshot('text', name: 'text');
+        Assert::matchesSnapshot(['total' => 10], name: 'array');
+        Assert::matchesSnapshot(42, name: 'value');
+    });
+
+    inSnapshotTest($directory, function (): void {
+        AssertString::begin('text')->matchesSnapshot('text');
+        AssertArray::begin(['total' => 10])->matchesSnapshot('array');
+        AssertSingle::begin(42)->matchesSnapshot('value');
+    });
+    Assert::throws(fn() => inSnapshotTest($directory, fn() => AssertString::begin('changed')->matchesSnapshot('text')), TestFailedException::class, '--update-snapshots');
 });

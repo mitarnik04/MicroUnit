@@ -40,6 +40,9 @@ feature I had imagined for it.
   `multiple` (soft assertions), `matchesSnapshot`, plus `stringStartsWith`, `stringEndsWith`,
   `matchesRegex`, `equalsWithDelta`, `isGreaterThanOrEqual`, `isLessThanOrEqual`, `fail`, and an
   optional failure message on every assertion. `AssertResponse` for HTTP responses.
+- Fluent assertions for every kind of value: `AssertNumeric`, `AssertArray`, `AssertString` and
+  `AssertFile` next to `AssertSingle`, each with the checks that fit its type and the same failures
+  as their `Assert` twins.
 - Snapshot testing with `--update-snapshots`; snapshots are never created in CI.
 - Mocks: per-instance call logs (next to the all-instances log), `MicroMock::of($instance)`,
   changing return values after `build()`, `returnsMap`, partial mocks with `interceptOnly`.

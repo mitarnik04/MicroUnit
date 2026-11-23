@@ -87,7 +87,7 @@ $tester->define('refuses_to_divide_by_zero', function (): void {
 });
 ```
 
-No class, no inheritance, no `test` prefix to remember. A test file asks for the tester of a suite, then defines tests as closures with a name that says what the code does. Assertions follow PHPUnit's argument order: expected first, actual second.
+No class, no inheritance, no `test` prefix to remember. A test file asks for the tester of a suite, then defines tests as closures with a name that says what the code does. Assertions follow PHPUnit's argument order: expected first, actual second. Every check on a value also comes as a fluent chain that starts from the value, `AssertSingle::begin(2 + 2)->isType('int')->exact(4)`, and both styles mix freely: see [fluent assertions](fluent-assertions.md).
 
 Two details matter:
 
@@ -152,7 +152,7 @@ It is opt-in, so a normal run never opens a browser tab and does no work for it.
 ## Next steps
 
 - [Writing tests](writing-tests.md): suites, data sets, setUp and tearDown, fixtures, skipping.
-- [Assertions](assertions.md): everything `Assert` can check.
+- [Assertions](assertions.md): everything `Assert` can check, and [fluent assertions](fluent-assertions.md) for the chained style.
 - [Mocking](mocking.md) and [snapshots](snapshots.md) when plain assertions are not enough.
 - [Configuration](configuration.md) and the [command line](cli.md) for the full reference.
 - Coming from PHPUnit? `microunit migrate` converts your suite. See [Migrating from PHPUnit](migrating-from-phpunit.md).

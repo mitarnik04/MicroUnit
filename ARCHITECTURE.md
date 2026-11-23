@@ -8,7 +8,7 @@ How MicroUnit is put together. Read this before changing the run flow or a subsy
 bin/microunit            CLI entry point (bin/run-tests.php is a BC shim)
 src/
   Assertion/             Assert (static, PHPUnit argument order) built from the traits in Assert/*,
-                         fluent AssertSingle/Numeric/Array/String, AssertMock(+Method), AssertResponse,
+                         fluent AssertSingle/Numeric/Array/String/File, AssertMock(+Method), AssertResponse,
                          AssertionFailure, ForeignAssertionFailure (PHPUnit interop)
   Bootstrap/             Own autoloader, lazy project autoloader, config discovery, run log, runtime dir
   Cli/                   CliOptions (parsing), Application (orchestrates one run), HelpText (data)

@@ -174,6 +174,7 @@ function checkDocs(string $root): array
         ...compareWithDocs('CLI option', helpOptions(), $acceptedOptions[1], array_values(array_unique($documentedOptions[1])), 'docs/cli.md'),
         ...compareWithDocs('config method', configMethods(), configMethods(), $documentedMethods[1], 'docs/configuration.md'),
         ...array_map(static fn(string $name): string => "docs/assertions.md  does not document Assert::$name()", array_values($undocumentedAssertions)),
+        ...array_map(static fn(string $method): string => "docs/fluent-assertions.md  does not document $method()", undocumentedFluentMethods($root)),
         ...brokenLinks($root),
     ];
 }
@@ -232,6 +233,27 @@ function publicAssertions(): array
     return array_values(array_unique(array_map(static fn(ReflectionMethod $method): string => $method->name, $methods)));
 }
 
+/**
+ * The public methods of the fluent value classes that their section of docs/fluent-assertions.md
+ * (from "## `AssertX`" to the next "## ") does not list.
+ *
+ * @return list<string> as "AssertX::method"
+ */
+function undocumentedFluentMethods(string $root): array
+{
+    $page = (string) file_get_contents("$root/docs/fluent-assertions.md");
+    $missing = [];
+    foreach (['AssertSingle', 'AssertNumeric', 'AssertArray', 'AssertString', 'AssertFile'] as $class) {
+        $section = preg_match("~^## `$class`.*?(?=^## |\\z)~ms", $page, $match) === 1 ? $match[0] : '';
+        foreach (new ReflectionClass("MicroUnit\\Assertion\\$class")->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
+            if (!$method->isConstructor() && $method->name !== 'begin' && !str_contains($section, "`{$method->name}(")) {
+                $missing[] = "$class::{$method->name}";
+            }
+        }
+    }
+
+    return $missing;
+}
 
 /**
  * Links that lead nowhere: pages, #anchors and navigation entries of the docs site, and the files and

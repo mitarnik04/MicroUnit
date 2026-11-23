@@ -451,7 +451,7 @@ Groups are about which files run. To pick individual tests, use `--filter`.
 
 ## Related
 
-- [Assertions](assertions.md) for everything `Assert` can check.
+- [Assertions](assertions.md) for everything `Assert` can check, and [fluent assertions](fluent-assertions.md) for the chained style.
 - [Mocking](mocking.md) for test doubles and [snapshots](snapshots.md) for large outputs.
 - [Integration testing](integration-testing.md) for databases, HTTP and servers.
 - [Configuration](configuration.md) for every option.

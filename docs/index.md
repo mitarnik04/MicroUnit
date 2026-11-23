@@ -29,6 +29,10 @@ $tester->define('adds_items_and_totals_them', function (Cart $cart): void {
 });
 ```
 
+Assertions come in two styles that mix freely: static calls like the ones above, or
+[fluent chains](fluent-assertions.md) that start from the value, such as
+`AssertArray::begin($cart->items())->notEmpty()->countEquals(2)`.
+
 ```bash
 composer require --dev microunit/microunit
 vendor/bin/microunit init
@@ -41,7 +45,7 @@ vendor/bin/microunit
 ## What you get
 
 <div class="feature-grid">
-  <a href="{{ '/assertions/' | relative_url }}"><strong>Assertions</strong><span>Sixty of them, including the ones you keep writing by hand: partial matches, any-order comparisons, soft assertions, eventually.</span></a>
+  <a href="{{ '/assertions/' | relative_url }}"><strong>Assertions</strong><span>Sixty of them, static or fluent, including the ones you keep writing by hand: partial matches, any-order comparisons, soft assertions, eventually.</span></a>
   <a href="{{ '/snapshots/' | relative_url }}"><strong>Snapshots</strong><span>Compare output with a reviewed file. Never created by accident in CI.</span></a>
   <a href="{{ '/mocking/' | relative_url }}"><strong>Mocking</strong><span>Mocks, stubs and spies without a second library, with per-instance call logs.</span></a>
   <a href="{{ '/integration-testing/' | relative_url }}"><strong>Integration testing</strong><span>Fixtures with cleanup, a database helper, an HTTP server and client.</span></a>

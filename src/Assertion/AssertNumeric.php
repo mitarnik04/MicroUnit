@@ -67,4 +67,30 @@ final readonly class AssertNumeric
         Assert::isBetween($minimum, $maximum, $this->actual, $inclusive, $message);
         return $this;
     }
+
+    public function notEquals(int|float $unexpected, string $message = ''): self
+    {
+        Assert::notEquals($unexpected, $this->actual, $message);
+        return $this;
+    }
+
+    /** Relative tolerance: equalsWithinPercent(100, 5) accepts 95 to 105. */
+    public function equalsWithinPercent(int|float $expected, int|float $percent, string $message = ''): self
+    {
+        Assert::equalsWithinPercent($expected, $this->actual, $percent, $message);
+        return $this;
+    }
+
+    public function isNan(string $message = ''): self
+    {
+        Assert::isNan($this->actual, $message);
+        return $this;
+    }
+
+    /** Not NAN and not ±INF. */
+    public function isFinite(string $message = ''): self
+    {
+        Assert::isFinite($this->actual, $message);
+        return $this;
+    }
 }

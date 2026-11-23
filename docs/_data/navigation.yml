@@ -5,6 +5,7 @@
     - { title: Getting started, url: /getting-started/ }
     - { title: Writing tests, url: /writing-tests/ }
     - { title: Assertions, url: /assertions/ }
+    - { title: Fluent assertions, url: /fluent-assertions/ }
 - title: Writing tests
   pages:
     - { title: Snapshots, url: /snapshots/ }

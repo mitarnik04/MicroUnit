@@ -55,6 +55,8 @@ Rules:
 - Test names are `snake_case` sentences describing behaviour. One suite per file.
 - Argument order is PHPUnit's: expected first, actual last, optional message last.
 - `exact()` compares with `===`, `equals()` with `==`. Prefer `exact()`.
+- Checks on a value also come fluent: `AssertString::begin($slug)->startsWith('post-')->matchesRegex('/^[a-z0-9-]+$/')`
+  (`AssertSingle`, `AssertNumeric`, `AssertArray`, `AssertString`, `AssertFile`). Write the style the project's tests already use.
 - Use `Assert::throws(fn () => ..., Type::class, 'message part')` for exceptions; it returns the
   exception for further checks.
 - Shared state goes in fixtures (`shared: true` for one per suite), never in globals or `static`.

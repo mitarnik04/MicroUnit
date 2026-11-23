@@ -1,12 +1,25 @@
 ---
 layout: default
 title: Assertions
-description: The complete Assert reference, plus the fluent assertion classes, HTTP response assertions and how to write your own.
+description: The complete Assert reference, the two styles of writing a check, HTTP response assertions and how to write your own.
 ---
 
 # Assertions
 
 Everything you check in a MicroUnit test goes through `MicroUnit\Assertion\Assert`. It is one class with static methods, grouped here by topic: values, numbers and dates, collections, strings and JSON, files, behaviour and snapshots. The names are plain English, the argument order is the one you already know from PHPUnit, and a failure tells you what was expected, what arrived and, where it helps, shows a diff. This page lists every method with its signature, what it checks and a small example. If you have not written a test yet, start with [writing tests](writing-tests.md).
+
+## Two styles: static and fluent
+
+A check on a value can be written in two styles. Static calls name the check and pass the value. Fluent chains start from the value and add one check after another:
+
+```php
+Assert::notNull($user->email);
+Assert::stringEndsWith('@example.com', $user->email);
+
+AssertString::begin($user->email)->notEmpty()->endsWith('@example.com');
+```
+
+The fluent classes call the same `Assert` methods underneath, so failures, messages and assertion counting are identical. There is one class per kind of value: `AssertSingle`, `AssertNumeric`, `AssertArray`, `AssertString` and `AssertFile`. Both styles mix freely in one test. This page describes every check in its static form; [fluent assertions](fluent-assertions.md) lists every fluent method with its static twin.
 
 ## Two rules that cover every method
 
@@ -199,7 +212,7 @@ Assert::isLessThan(int|float $maximum, int|float $actual, string $message = ''):
 Assert::isLessThanOrEqual(int|float $maximum, int|float $actual, string $message = ''): void
 ```
 
-The bound comes first, like an expected value.
+`isGreaterThan` and `isGreaterThanOrEqual` take a minimum, `isLessThan` and `isLessThanOrEqual` a maximum. The bound comes first, like an expected value.
 
 ```php
 Assert::isGreaterThan(0, $order->total());
@@ -718,28 +731,6 @@ Assert::matchesSnapshot($invoice->renderHtml());
 ```
 
 Where snapshots live, how CI treats them and when they are a bad idea: [snapshots](snapshots.md).
-
-## Fluent assertions
-
-If you prefer chaining several checks on one value, there are four small fluent classes. Each starts with `begin($actual)` and returns itself from every method. They call the same `Assert` methods underneath, so failures, messages and assertion counting are identical.
-
-```php
-AssertSingle::begin($user->id)->notNull()->exact(42);
-AssertNumeric::begin($total)->isGreaterThan(0)->isLessThanOrEqual(1000);
-AssertArray::begin($row)->hasKey('id')->notHasKey('password')->countEquals(3);
-AssertString::begin($slug)->startsWith('post-')->matchesRegex('/^[a-z0-9-]+$/');
-```
-
-| Class | Methods |
-| --- | --- |
-| `AssertSingle` (any value) | `equals`, `notEquals`, `exact`, `notExact`, `instanceOf`, `isTrue`, `isFalse`, `isNull`, `notNull` |
-| `AssertNumeric` (`int\|float`) | `equals`, `exact`, `notExact`, `equalsWithDelta($expected, $delta)`, `isGreaterThan`, `isGreaterThanOrEqual`, `isLessThan`, `isLessThanOrEqual`, `isBetween($min, $max, $inclusive = true)` |
-| `AssertArray` (`array`) | `equals`, `notEquals`, `exact`, `notExact`, `empty`, `notEmpty`, `contains($needle, $strict = true)`, `notContains`, `countEquals`, `hasKey`, `notHasKey`, `keysEqual`, `containsOnly` |
-| `AssertString` (`string`) | `equals`, `contains`, `notContains`, `startsWith`, `endsWith`, `matchesRegex`, `lengthEquals`, `isEmpty`, `notEmpty` |
-
-Every method takes the expected value (if any) and an optional `$message` last. Two details worth knowing: `AssertString::equals()` is strict (`===`), and `AssertString::lengthEquals()` counts UTF-8 characters, not bytes, even without `mbstring`.
-
-The fluent classes cover the common checks only. For everything else, use `Assert` directly. Both styles mix freely in one test.
 
 ## HTTP responses: `AssertResponse`
 

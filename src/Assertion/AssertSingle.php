@@ -68,4 +68,47 @@ final readonly class AssertSingle
         Assert::notNull($this->actual, $message);
         return $this;
     }
+
+    /** The type, written the way PHP writes it: 'int', '?string', 'int|float', 'list', or a class name. */
+    public function isType(string $expectedType, string $message = ''): self
+    {
+        Assert::isType($expectedType, $this->actual, $message);
+        return $this;
+    }
+
+    /** Same contents, order ignored: lists compared as multisets, maps by key, recursively. */
+    public function equivalent(mixed $expected, string $message = ''): self
+    {
+        Assert::equivalent($expected, $this->actual, $message);
+        return $this;
+    }
+
+    /** An object with this property; any other value fails with its type. */
+    public function hasProperty(string $property, string $message = ''): self
+    {
+        if (!is_object($this->actual)) {
+            Assert::isType('object', $this->actual, $message);
+            return $this;
+        }
+        Assert::hasProperty($property, $this->actual, $message);
+        return $this;
+    }
+
+    /** Same moment in time, give or take $toleranceInSeconds; a value that is not a date fails with its type. */
+    public function dateEquals(\DateTimeInterface|string $expected, int|float $toleranceInSeconds = 0, string $message = ''): self
+    {
+        if (!$this->actual instanceof \DateTimeInterface && !is_string($this->actual)) {
+            Assert::isType('DateTimeInterface|string', $this->actual, $message);
+            return $this;
+        }
+        Assert::dateEquals($expected, $this->actual, $toleranceInSeconds, $message);
+        return $this;
+    }
+
+    /** Compares the value with the snapshot stored for this test, like Assert::matchesSnapshot(). */
+    public function matchesSnapshot(?string $name = null, string $message = ''): self
+    {
+        Assert::matchesSnapshot($this->actual, $name, $message);
+        return $this;
+    }
 }
