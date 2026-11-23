@@ -54,21 +54,24 @@ final readonly class TemporaryDirectory
         return file_exists($this->path($relativePath));
     }
 
-    /** Removes the directory and everything in it. */
+    /** Removes the directory and everything in it. Links are removed, never followed. */
     public function delete(): void
     {
-        if (!is_dir($this->root)) {
+        if (is_dir($this->root)) {
+            self::remove($this->root);
+        }
+    }
+
+    private static function remove(string $path): void
+    {
+        // is_link() reads the link itself (lstat), so a link whose target is gone is no problem.
+        if (is_link($path) || !is_dir($path)) {
+            unlink($path);
             return;
         }
-
-        $entries = new \RecursiveIteratorIterator(
-            new \RecursiveDirectoryIterator($this->root, \FilesystemIterator::SKIP_DOTS),
-            \RecursiveIteratorIterator::CHILD_FIRST,
-        );
-        foreach ($entries as $entry) {
-            /** @var \SplFileInfo $entry */
-            $entry->isDir() && !$entry->isLink() ? rmdir($entry->getPathname()) : unlink($entry->getPathname());
+        foreach (array_diff(scandir($path) ?: [], ['.', '..']) as $entry) {
+            self::remove($path . DIRECTORY_SEPARATOR . $entry);
         }
-        rmdir($this->root);
+        rmdir($path);
     }
 }
