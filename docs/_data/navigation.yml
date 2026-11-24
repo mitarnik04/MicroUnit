@@ -6,7 +6,7 @@
     - { title: Migrating from PHPUnit, url: /migrating-from-phpunit/ }
 - title: Writing tests
   pages:
-    - { title: Writing tests, url: /writing-tests/ }
+    - { title: Basics, url: /writing-tests/ }
     - { title: Mocking, url: /mocking/ }
     - { title: Snapshots, url: /snapshots/ }
     - { title: Integration testing, url: /integration-testing/ }
