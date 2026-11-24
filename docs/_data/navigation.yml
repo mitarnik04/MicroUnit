@@ -3,30 +3,32 @@
   pages:
     - { title: Overview, url: / }
     - { title: Getting started, url: /getting-started/ }
-    - { title: Writing tests, url: /writing-tests/ }
-    - { title: Assertions, url: /assertions/ }
-    - { title: Fluent assertions, url: /fluent-assertions/ }
+    - { title: Migrating from PHPUnit, url: /migrating-from-phpunit/ }
 - title: Writing tests
   pages:
-    - { title: Snapshots, url: /snapshots/ }
+    - { title: Writing tests, url: /writing-tests/ }
     - { title: Mocking, url: /mocking/ }
+    - { title: Snapshots, url: /snapshots/ }
     - { title: Integration testing, url: /integration-testing/ }
-    - { title: "Laravel, Symfony, CodeIgniter", url: /frameworks/ }
-- title: Tools
+- title: Running tests
   pages:
     - { title: Test Explorer, url: /test-explorer/ }
     - { title: Parallel runs, url: /parallel/ }
     - { title: Code coverage, url: /coverage/ }
     - { title: Output and reports, url: /output/ }
-- title: Workflow
+- title: Integrations
   pages:
+    - { title: "Laravel, Symfony, CodeIgniter", url: /frameworks/ }
     - { title: AI coding agents, url: /ai-agents/ }
-    - { title: Migrating from PHPUnit, url: /migrating-from-phpunit/ }
     - { title: CI/CD, url: /ci-cd/ }
 - title: Reference
   pages:
+    - { title: Assertions, url: /assertions/ }
+    - { title: Fluent assertions, url: /fluent-assertions/ }
     - { title: Configuration, url: /configuration/ }
     - { title: Command line, url: /cli/ }
+    - { title: Troubleshooting, url: /troubleshooting/ }
+- title: Project
+  pages:
     - { title: Benchmarks, url: /benchmarks/ }
     - { title: Quality with AI, url: /quality-with-ai/ }
-    - { title: Troubleshooting, url: /troubleshooting/ }

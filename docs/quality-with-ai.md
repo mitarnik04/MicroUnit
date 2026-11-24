@@ -65,14 +65,14 @@ I'm not handing MicroUnit over to AI. I'm one developer with a very fast tool, a
   </div>
 </div>
 
-My review is the one step on this page you can't verify from the outside, and it covers what no automated check can: whether a change is the right one, whether an API reads well in a test, and whether a test checks the right thing in the first place. Everything that can be checked automatically is, on every change. That leaves my attention for the questions only a person can answer, and I look at every change.
+My review is the one step on this page you can't verify from the outside. It covers what no automated check can: whether a change is the right one, whether an API reads well in a test, and whether a test checks the right thing in the first place. Everything that can be checked automatically is, on every change. That leaves my attention for the questions only a person can answer, and I look at every change.
 
 ## The harness the AI works in
 
 Every AI session on MicroUnit starts in the same harness. Its job is to make the right thing the easy thing, long before a change reaches my review.
 
 - **The rules load first.** [`CLAUDE.md`](https://github.com/mitarnik04/MicroUnit/blob/main/CLAUDE.md) is read at the start of every session: the code rules (zero dependencies, typed, `final readonly` by default, no dead code), the commands, the known pitfalls, and what "done" means. Done is tests added, the suite, canary, lint and PHPStan green, and the docs updated in the same change. [`PRODUCT.md`](https://github.com/mitarnik04/MicroUnit/blob/main/PRODUCT.md) adds who MicroUnit is for and how it talks, so the docs keep one voice.
-- **MicroUnit answers the agent in its own format.** In an agent session the suite replies with one compact JSON object ([AI coding agents](ai-agents.md) describes it): only the failures, each with where it failed, the expected and actual values and the code around it, plus a warning for every test that passes without asserting anything. The agent's attention goes to what broke.
+- **MicroUnit answers the agent in its own format.** In an agent session the suite replies with one compact JSON object, described in [AI coding agents](ai-agents.md). It holds only the failures, each with where it failed, the expected and actual values and the code around it, plus a warning for every test that passes without asserting anything. The agent's attention goes to what broke.
 
 ## Twelve runs for every change
 

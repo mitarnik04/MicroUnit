@@ -77,11 +77,11 @@ vendor/bin/microunit --update-snapshots --filter=Invoice::renders_the_invoice
 
 Then look at `git diff`: it shows exactly what changed, and that diff is what you are signing off on.
 
-`--update-snapshots` works with `--parallel` as well; the setting is passed on to the worker processes.
+`--update-snapshots` works with `--parallel` as well. The setting is passed on to the worker processes.
 
 ## CI never writes snapshots
 
-A snapshot that is created on the CI server is never reviewed by anyone. It would pass forever, testing nothing. So when MicroUnit detects CI, through a non-empty `CI` environment variable (GitHub Actions, GitLab CI and most others set it) or `TF_BUILD` (Azure Pipelines), a missing snapshot is a failure:
+A snapshot that is created on the CI server is never reviewed by anyone. It would pass forever, testing nothing. MicroUnit detects CI through a non-empty `CI` environment variable, which GitHub Actions, GitLab CI and most others set, or through `TF_BUILD` on Azure Pipelines. There, a missing snapshot is a failure:
 
 ```text
 Failed asserting that the snapshot matches: there is no snapshot at /builds/app/tests/__snapshots__/invoice-tests/renders_the_invoice.snap (they are never created in CI; run the tests locally and commit the file).
@@ -171,4 +171,4 @@ Snapshot files are code. Treat their diffs that way:
 - **Watch for snapshots that changed without a matching code change.** That usually means non-deterministic output, or someone ran `--update-snapshots` on everything to make a failure go away.
 - **Delete orphans.** Renaming or removing a test leaves its old `.snap` file behind; MicroUnit does not clean those up. Remove them in the same pull request.
 
-When an AI agent works on your code, the same applies with more force: an agent that "fixes" a failing snapshot test by updating the snapshot has not fixed anything. [AI coding agents](ai-agents.md) covers how MicroUnit helps you spot weakened tests.
+When an AI agent works on your code, this matters even more. An agent that "fixes" a failing snapshot test by updating the snapshot has not fixed anything. [AI coding agents](ai-agents.md) covers how MicroUnit helps you spot weakened tests.

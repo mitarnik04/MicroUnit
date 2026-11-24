@@ -8,7 +8,7 @@ description: Test against real databases, real HTTP servers and the real file sy
 
 Unit tests tell you your classes do what you think. Integration tests tell you they still do it once a real database, a real web server and a real file system get involved, which is usually where the interesting bugs live.
 
-MicroUnit treats this as a first-class job: named fixtures that set up and tear down resources, suite-wide setup for the expensive stuff, and a small toolkit (`Database`, `HttpServer`, `Http`, `TemporaryDirectory`) that covers the common cases without pulling in a single package. Services that aren't available skip the test instead of turning the whole run red.
+MicroUnit treats this as a first-class job. It gives you named fixtures that set up and tear down resources, suite-wide setup for the expensive stuff, and a small toolkit for the common cases: `Database`, `HttpServer`, `Http` and `TemporaryDirectory`. None of it pulls in a single package. Services that aren't available skip the test instead of turning the whole run red.
 
 If you're testing a Laravel, Symfony or CodeIgniter app, start with [Laravel, Symfony and CodeIgniter](frameworks.md). Everything on this page works there too.
 
@@ -187,7 +187,7 @@ use MicroUnit\Toolkit\HttpServer;
 $tester->fixture('app', fn() => HttpServer::start('public/index.php'), shared: true);
 ```
 
-The argument is either a document root directory or a router script like `public/index.php` (then its directory becomes the document root). It's resolved against the current working directory. Two optional arguments: `environment` (extra environment variables for the application process) and `host` (default `127.0.0.1`).
+The argument is either a document root directory or a router script like `public/index.php` (then its directory becomes the document root). It's resolved against the current working directory. It takes two optional arguments: `environment` adds environment variables for the application process, and `host` defaults to `127.0.0.1`.
 
 ```php
 HttpServer::start('public/index.php', environment: ['APP_ENV' => 'testing', 'DB_DSN' => 'sqlite::memory:']);
@@ -204,7 +204,7 @@ If the server doesn't come up within 10 seconds, `start()` throws with the serve
 
 ## Http and HttpResponse
 
-`MicroUnit\Toolkit\Http` is a tiny HTTP client built on PHP's stream wrappers, so it needs no cURL. Two decisions make it good for tests: redirects are **not** followed (you want to assert them), and 4xx/5xx responses are returned, not thrown.
+`MicroUnit\Toolkit\Http` is a tiny HTTP client built on PHP's stream wrappers, so it needs no cURL. Two decisions make it good for tests. Redirects are **not** followed, because you want to assert them, and 4xx/5xx responses are returned, not thrown.
 
 ```php
 use MicroUnit\Toolkit\Http;

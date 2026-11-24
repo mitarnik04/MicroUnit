@@ -166,7 +166,13 @@ AssertFile::begin($exportPath)->exists()->contains('order_id,total')->contentEqu
 
 ## Checks that stay on `Assert`
 
-Some checks do not start from a value, so they keep their one form on `Assert`: the ones about code that runs (`throws`, `doesNotThrow`, `prints`, `triggersError`, `eventually`), [`multiple`](assertions.md#multiple-soft-assertions) for collecting failures, and `fail`, `skip` and `skipIf` for steering the test. They sit happily next to a fluent chain:
+Some checks do not start from a value, so they keep their one form on `Assert`:
+
+- checks on code that runs: `throws`, `doesNotThrow`, `prints`, `triggersError`, `eventually`
+- [`multiple`](assertions.md#multiple-soft-assertions) for collecting failures
+- `fail`, `skip` and `skipIf` for steering the test
+
+They sit happily next to a fluent chain:
 
 ```php
 $tester->define('exports_the_paid_orders', function (Exporter $exporter, string $path): void {

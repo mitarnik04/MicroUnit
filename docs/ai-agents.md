@@ -6,11 +6,16 @@ description: Compact JSON output for coding agents, an integrity check that catc
 
 # MicroUnit for AI agents
 
-Coding agents run tests constantly: after every edit, sometimes dozens of times per task. That changes what a test runner should optimise for. Every line of output costs tokens and context, a wall of green checkmarks is pure noise, and the agent needs the failing line, the expected and actual values and nothing else.
+Coding agents run tests constantly: after every edit, sometimes dozens of times per task. That changes what a test runner should optimise for. Every line of output costs tokens and context, so a wall of green checkmarks is pure noise. The agent needs the failing line and the expected and actual values, nothing else.
 
 There is also a less comfortable problem. Under pressure to turn a red test green, agents sometimes weaken the test instead of fixing the code.
 
-MicroUnit has a feature for each of these: output made for agents, an integrity check that flags weakened tests, a warning for tests that prove nothing, and a skill file that teaches the agent how MicroUnit works.
+MicroUnit has a feature for each of these:
+
+- Output made for agents.
+- An integrity check that flags weakened tests.
+- A warning for tests that prove nothing.
+- A skill file that teaches the agent how MicroUnit works.
 
 ## Agent output
 
@@ -104,7 +109,11 @@ The fields of a failure:
 | `code` | The failing line (marked with `>`) and two lines around it, so the agent often doesn't need to open the file. |
 | `output` | Whatever the test printed. |
 
-Long values are shortened to about 1500 bytes; what was left out is marked with `…`. Next to `failures`, the object can contain `warnings` (tests without assertions, see below), `weakenedTests` (the integrity check, when you enabled it) and `skippedTests` (with their reasons).
+Long values are shortened to about 1500 bytes; what was left out is marked with `…`. Next to `failures`, the object can contain:
+
+- `warnings`: tests without assertions (see below).
+- `weakenedTests`: findings of the integrity check, when you enabled it.
+- `skippedTests`: skipped tests with their reasons.
 
 `result` always agrees with the exit code. When the run fails although every test passed, because of a coverage minimum, `failOnRiskyTests()` or an integrity check with `failOnFindings`, `result` is `"failed"` and `failedBecause` says why:
 
@@ -141,7 +150,7 @@ If you configure an `AgentTestWriter` that writes to standard output, MicroUnit 
 
 ## The integrity check
 
-This is the feature I'd most like other test runners to copy. An agent that can't make a test pass has a few tempting shortcuts: delete the assertion, change the expected value to whatever the code returns, skip the test, or replace the check with `Assert::isTrue(true)`. The test goes green and the bug stays. In a long diff, that is easy to miss in review.
+This is the feature I'd most like other test runners to copy. An agent that can't make a test pass has a few tempting shortcuts. It can delete the assertion, change the expected value to whatever the code returns, skip the test, or replace the check with `Assert::isTrue(true)`. The test goes green and the bug stays. In a long diff, that is easy to miss in review.
 
 The integrity check compares your test files with a git revision and lists tests that were weakened. It is opt-in: nothing runs unless you call `microunit integrity` or configure `withIntegrityCheck()`, so projects without git, or teams that don't want it, never notice it exists.
 
@@ -188,11 +197,11 @@ For an agent working on your code, `withIntegrityCheck()` is the setting to use:
 "weakenedTestsNote": "Compared to the last commit. Tests must not be weakened to make them pass: fix the code, or explain why the test changed."
 ```
 
-When the revision is not `HEAD`, the note names it (`Compared to origin/main.`). The note is written for the agent: at the moment it matters, it says that this is not an acceptable way to get a green run, and what to do instead. The agent skill described below says the same thing up front.
+When the revision is not `HEAD`, the note names it (`Compared to origin/main.`). The note is written for the agent. At the moment it matters, it says that this is not an acceptable way to get a green run, and what to do instead. The agent skill described below says the same thing up front.
 
 In console runs, the findings are printed below the summary.
 
-With `failOnFindings: true`, any finding makes the run exit with `1`, and so does a check that could not compare at all (no git repository, or a revision missing from a shallow clone), so a misconfigured pipeline can't pass by accident. That works well as a pull request gate: the author either fixes the code or explains the changed test in the review.
+With `failOnFindings: true`, any finding makes the run exit with `1`. So does a check that could not compare at all, for example without a git repository or with a revision missing from a shallow clone, so a misconfigured pipeline can't pass by accident. That makes it a good pull request gate: the author either fixes the code or explains the changed test in the review.
 
 ### What it can't do
 
@@ -201,12 +210,12 @@ These are heuristics that read your test source. They are useful precisely becau
 - **A finding is a question, not a verdict.** Removing an obsolete test or correcting a wrong expected value is legitimate. That is why findings don't fail the run unless you ask for it.
 - **Only modified and deleted test files are compared.** A new test file has nothing to compare against. A test that was moved to another file or renamed shows up as removed.
 - **Production code is not checked.** An agent that "fixes" a test by special-casing the test input in the code under test will not be caught here. Code review still matters.
-- **Only recognisable assertions count**: `Assert::` and `AssertMock::` calls, chained mock checks (`->isCalled...()`) and helper functions whose name starts with `assert`. Expected-value changes are only reported between literals (numbers, strings, `true`, `false`, `null`): a literal that disappeared is paired with one that appeared, so adding or reordering assertions is not reported as a change.
+- **Only recognisable assertions count**: `Assert::` and `AssertMock::` calls, chained mock checks (`->isCalled...()`) and helper functions whose name starts with `assert`. Expected-value changes are only reported between literals: numbers, strings, `true`, `false` and `null`. A literal that disappeared is paired with one that appeared, so adding or reordering assertions is not reported as a change.
 - **It needs git** and the git command line on the `PATH`. When a configured check cannot run, MicroUnit says so on standard error.
 
 ## Risky tests
 
-A test that passes without a single assertion proves nothing. It may be a smoke test on purpose, or an agent may have written a test that calls the code and checks nothing. MicroUnit marks such tests in the console output (`no assertions` after the test name) and lists them under `warnings` in the agent JSON:
+A test that passes without a single assertion proves nothing. It may be a smoke test on purpose, or an agent may have written a test that calls the code and checks nothing. The console output marks such tests with `no assertions` after the name, and the agent JSON lists them under `warnings`:
 
 ```json
 "warnings": [{"test": "Report::renders_without_crashing", "warning": "passed without a single assertion"}]
@@ -239,9 +248,16 @@ vendor/bin/microunit init --skill
 
 Claude Code picks up skills from `.claude/skills/` on its own. For Codex, Cursor, Copilot and other agents, paste the two printed lines into `AGENTS.md` or whatever instructions file your agent reads.
 
-The skill is one page: how to run tests (with `--filter`, `--failed`, `--list=json`), how to write them (closures, fixtures, data sets, PHPUnit argument order), the assertions worth knowing, mocks, framework helpers, and a short "never" list that starts with "never weaken a test to make it pass". Commit it with your project so every agent and every teammate's agent gets it.
+The skill is one page. It covers:
 
-`init --skill` works in projects that are already set up: if `microunit.config.php` exists, it only installs the skill. Run it again after upgrading MicroUnit to replace the file with the version that ships with the new release (it overwrites the existing skill file, so keep your own additions in `AGENTS.md`).
+- how to run tests, with `--filter`, `--failed` and `--list=json`
+- how to write them: closures, fixtures, data sets, PHPUnit argument order
+- the assertions worth knowing, mocks and framework helpers
+- a short "never" list that starts with "never weaken a test to make it pass"
+
+Commit it with your project so every agent and every teammate's agent gets it.
+
+`init --skill` works in projects that are already set up: if `microunit.config.php` exists, it only installs the skill. Run it again after upgrading MicroUnit to get the version that ships with the new release. It overwrites the existing skill file, so keep your own additions in `AGENTS.md`.
 
 ## Commands agents should know
 

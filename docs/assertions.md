@@ -81,7 +81,7 @@ The rest print `Expected:` and `Actual:` lines. Values always carry their type (
 
 ## Every assertion counts
 
-Each assertion that runs, passing or failing, is counted for the current test: every `Assert` check once (`throws()`, `fileContains()` and a passing `eventually()` included, plus whatever the blocks of `each()`, `multiple()` and `eventually()` assert inside) and every `AssertMock` or `AssertResponse` check once, so `AssertMock::begin($mock)->isCalledOnce('send')->isCalledWith('send', [$mail])` counts two.
+Each assertion that runs, passing or failing, is counted for the current test. Every `Assert` check counts once, including `throws()`, `fileContains()` and a passing `eventually()`. So does every assertion inside the blocks of `each()`, `multiple()` and `eventually()`, and every `AssertMock` or `AssertResponse` check, so `AssertMock::begin($mock)->isCalledOnce('send')->isCalledWith('send', [$mail])` counts two.
 
 A test that passes without making a single assertion is flagged as risky: the console prints `no assertions` next to it, and agent output lists it as a warning. A test that cannot fail is not a test, and this is the cheapest way to catch the one where the assertion sits behind an `if` that never runs. To make such tests fail the run, enable `failOnRiskyTests()` on the [configuration](configuration.md) builder.
 
@@ -707,7 +707,10 @@ Assert::multiple(function () use ($user) {
 
 Blocks nest, and `each()` and `eventually()` work inside them. `Assert`, `AssertMock` and `AssertResponse` checks are all collected softly.
 
-A few things end the block at their failure (which is still reported, together with the failures before it): `fail()`, `throws()` when nothing is thrown and `triggersError()` when nothing is triggered, because they cannot carry on without a result, and [custom assertions](#custom-assertions) that throw `TestFailedException` themselves.
+A few things end the block at their failure, which is still reported together with the failures before it:
+
+- `fail()`, `throws()` when nothing is thrown and `triggersError()` when nothing is triggered, because they cannot carry on without a result
+- [custom assertions](#custom-assertions) that throw `TestFailedException` themselves
 
 ### `skip` / `skipIf` / `fail`
 
@@ -818,7 +821,14 @@ function assertIsEven(int $actual, string $message = ''): void
 }
 ```
 
-`AssertionFailure` takes the description, the expected and actual values (both optional: leave them out and no `Expected:` / `Actual:` lines are printed), an optional `MicroUnit\Helpers\Diff` (`Diff::generate($expected, $actual)` for values, `Diff::fromLines($expectedLines, $actualLines)` for text) and your custom message. `TestContext::countAssertions()` tells MicroUnit an assertion ran, so a test that only uses your assertion is not reported as risky.
+`AssertionFailure` takes these arguments:
+
+- the description
+- the expected and actual values, both optional. Without them, no `Expected:` / `Actual:` lines are printed.
+- an optional `MicroUnit\Helpers\Diff`: `Diff::generate($expected, $actual)` for values, `Diff::fromLines($expectedLines, $actualLines)` for text
+- your custom message
+
+`TestContext::countAssertions()` tells MicroUnit an assertion ran, so a test that only uses your assertion is not reported as risky.
 
 One limitation: a custom assertion that throws directly ends an [`Assert::multiple()`](#multiple-soft-assertions) block at its failure instead of being collected with the others.
 

@@ -37,13 +37,13 @@ MicroUnit never starts more workers than there are selected suites.
 
 ## How the work is split
 
-The unit of distribution is the **suite**, never the single test. Every test of a suite runs in the same worker, one after another, in definition order. That is deliberate: a suite's `setUpOnce()`, its shared fixtures (`shared: true`) and anything else its tests share (an open connection, a temp directory, a server started for the suite) stay in one process and are created exactly once, just like in a sequential run.
+The unit of distribution is the **suite**, never the single test. Every test of a suite runs in the same worker, one after another, in definition order. That is deliberate. A suite's `setUpOnce()`, its shared fixtures (`shared: true`) and anything else its tests share stay in one process and are created exactly once, just like in a sequential run. That covers things like an open connection, a temp directory or a server started for the suite.
 
 Suites are dealt out largest first, each to the worker with the fewest tests so far. Every worker computes the same split independently, so no coordination is needed: worker 2 of 4 knows which suites are its own.
 
 Two consequences worth knowing:
 
-- **Balance is by test count, not by duration.** A suite with ten slow integration tests weighs the same as a suite with ten one-millisecond unit tests. Usually that evens out across a real project; if one slow suite dominates, splitting it into two suites (two files) is the fix.
+- **Balance is by test count, not by duration.** A suite with ten slow integration tests weighs the same as a suite with ten one-millisecond unit tests. Usually that evens out across a real project. If one slow suite dominates, split it into two suites, which means two files.
 - **One huge suite can't be split.** If 90% of your tests live in one suite, one worker gets 90% of the work.
 
 Each worker is a fresh PHP process. It loads your config, the bootstrap file, the framework integration and all test files, then runs only its share.
@@ -80,7 +80,7 @@ The bootstrap runs once per worker, so this is also the right place to create a 
 
 [Code coverage](coverage.md) works with `--parallel` with no extra setting. Each worker measures the code its tests run, sends its line counts back with its results, and the main process merges them before writing the reports. The reports and the minimum check cover the whole run, exactly as they would sequentially.
 
-Workers that do not measure coverage get one extra speed-up: when the OPcache extension is available, they run with its file cache enabled (stored in `.microunit/cache/opcache`), so compiled code is reused from one run to the next. Coverage runs skip this, because OPcache could bypass the instrumentation.
+Workers that do not measure coverage get one extra speed-up. When the OPcache extension is available, they run with its file cache enabled, so compiled code is reused from one run to the next. The cache lives in `.microunit/cache/opcache`. Coverage runs skip this, because OPcache could bypass the instrumentation.
 
 ## When parallel does not pay off
 
@@ -104,7 +104,7 @@ A test that calls `exit()`, hits a fatal error or crashes PHP takes its worker d
     at /path/to/vendor/microunit/microunit/src/Parallel/ParallelRunner.php:160
 ```
 
-(The `at` line points into MicroUnit because that is where the failure is recorded; the test file is the one to look at.)
+The `at` line points into MicroUnit because that is where the failure is recorded. The test file is the one to look at.
 
 The run as a whole still completes and the other workers' results are reported normally.
 

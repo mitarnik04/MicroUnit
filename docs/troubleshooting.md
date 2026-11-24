@@ -6,7 +6,11 @@ description: Fixes for the problems people actually run into, from missing tests
 
 # Troubleshooting
 
-Most problems with a test runner come down to a handful of causes: it looks for files in a different place than you think, it loads a different config than you think, or something in the environment changes its behaviour.
+Most problems with a test runner come down to a handful of causes:
+
+- It looks for files in a different place than you think.
+- It loads a different config than you think.
+- Something in the environment changes its behaviour.
 
 This page goes through the common symptoms, their causes and their fixes. MicroUnit tries hard to say what went wrong in its error messages, and the messages quoted below are the real ones, so you can search this page for the one you see.
 
@@ -91,7 +95,7 @@ return MicroUnitConfigBuilder::create()   // "return" is easy to forget
     ->build();                             // and so is build()
 ```
 
-"returned int" is what you get without `return` (PHP's `require` returns `1`); "returned MicroUnit\Config\MicroUnitConfigBuilder" means `->build()` is missing. MicroUnit exits with code `2` for configuration errors, so CI fails clearly instead of running nothing.
+"returned int" is what you get without `return`, because PHP's `require` returns `1`. "returned MicroUnit\Config\MicroUnitConfigBuilder" means `->build()` is missing. MicroUnit exits with code `2` for configuration errors, so CI fails clearly instead of running nothing.
 
 ## No output at all
 
@@ -111,7 +115,7 @@ The [output](output.md) page lists every writer.
 
 ## Classes are not found, or the bootstrap fails
 
-MicroUnit loads your Composer autoloader for you: it looks for `vendor/autoload.php` from the working directory upwards (falling back to the one MicroUnit itself was installed with). You don't need a bootstrap file just to autoload.
+MicroUnit loads your Composer autoloader for you. It looks for `vendor/autoload.php` from the working directory upwards and falls back to the one MicroUnit itself was installed with. You don't need a bootstrap file just to autoload.
 
 When a class is not found:
 
@@ -175,7 +179,7 @@ Something else is listening on port 7357, often the explorer of another project.
 
 ### The browser doesn't open
 
-MicroUnit opens the URL with `start` on Windows, `open` on macOS and `xdg-open` on Linux. If that fails (a server without a desktop, WSL without a browser bridge, a missing `xdg-open`), the URL is still printed: open `http://127.0.0.1:7357/` yourself.
+MicroUnit opens the URL with `start` on Windows, `open` on macOS and `xdg-open` on Linux. If that fails, the URL is still printed, so open `http://127.0.0.1:7357/` yourself. That happens on a server without a desktop, in WSL without a browser bridge, or when `xdg-open` is missing.
 
 ### "Explorer stopped"
 
@@ -187,7 +191,7 @@ The explorer server shuts down after 30 minutes without requests. An open tab th
 RuntimeException: The parallel worker running this test stopped unexpectedly (exit code 255).
 ```
 
-A test in that worker took the process down: a fatal error, an `exit()` or `die()` in the code under test, a segfault in an extension, or running out of memory. Every test the worker was given is reported with this message, so the named suite is a starting point, not the culprit itself. When the worker printed something before it died, the last part of it is included under "Worker output".
+A test in that worker took the process down. Typical causes are a fatal error, an `exit()` or `die()` in the code under test, a segfault in an extension, or running out of memory. Every test the worker was given is reported with this message, so the named suite is a starting point, not the culprit itself. When the worker printed something before it died, the last part of it is included under "Worker output".
 
 To find the real error, run the suite sequentially, where the fatal error is reported normally:
 
@@ -205,7 +209,7 @@ Workers start with the same `php.ini` and memory limit as the main process, but 
 The test case class Illuminate\Foundation\Testing\TestCase does not exist. Is the framework (and phpunit/phpunit) installed?
 ```
 
-The Laravel, Symfony and CodeIgniter integrations run your tests inside the framework's own test case class, so the framework's helpers (`actingAs()`, `assertDatabaseHas()`, the HTTP client) behave exactly as they do under PHPUnit. Those test case classes extend PHPUnit's `TestCase`.
+The Laravel, Symfony and CodeIgniter integrations run your tests inside the framework's own test case class, so the framework's helpers behave exactly as they do under PHPUnit, from `actingAs()` and `assertDatabaseHas()` to the HTTP client. Those test case classes extend PHPUnit's `TestCase`.
 
 MicroUnit itself has no dependencies, but with a framework integration your project needs `phpunit/phpunit` in `require-dev`. A new Laravel project already has it; keep it there after migrating from PHPUnit. The [frameworks](frameworks.md) page has the details.
 
@@ -228,7 +232,7 @@ The reverse also happens: an agent sees no JSON because the config has `withAgen
 
 When `--failed` finds nothing to re-run, it prints "No failed tests in the previous run" and runs the full selection instead.
 
-`--failed` reads the results the previous run saved in `.microunit/explorer/`. If that run had no failures, if `.microunit` was deleted, or if the previous run happened with a different config (and therefore a different runtime directory), there is nothing to re-run.
+`--failed` reads the results the previous run saved in `.microunit/explorer/`. If that run had no failures, if `.microunit` was deleted, or if the previous run used a different config and with it a different runtime directory, there is nothing to re-run.
 
 ## A data set or fixture gets the wrong arguments
 
@@ -241,7 +245,7 @@ Parameters of a test closure are filled in this order: parameters named like a f
 - a data set has fewer values than the closure has non-fixture parameters, or
 - `setUp()` returns a value, which then takes the first positional slot and shifts the data set values by one.
 
-Give every data set the same number of values as the closure expects, and either accept the `setUp()` value as the first non-fixture parameter or stop returning it (fixtures are usually the better tool). [Writing tests](writing-tests.md) covers fixtures and data sets in detail.
+Give every data set the same number of values as the closure expects, and either accept the `setUp()` value as the first non-fixture parameter or stop returning it. Fixtures are usually the better tool, and [Writing tests](writing-tests.md) covers them and data sets in detail.
 
 ## Windows notes
 

@@ -6,7 +6,7 @@ description: Console output, JUnit, HTML, logs, GitHub annotations and JSON for 
 
 # Output and reports
 
-Everything MicroUnit reports goes through test writers. A writer receives the results and decides what to do with them: print a line per test, write a JUnit file for your CI, render an HTML report for a reviewer, or produce a compact JSON object for an AI agent.
+Everything MicroUnit reports goes through test writers. A writer receives the results and decides what to do with them. It might print a line per test, write a JUnit file for your CI, render an HTML report for a reviewer, or produce a compact JSON object for an AI agent.
 
 You can run several writers at once, and writing your own takes four methods. Out of the box you get one: a compact, coloured console output that shows details only for the tests that need your attention.
 
@@ -193,13 +193,18 @@ LogTestWriter::jsonLines('build/microunit.jsonl', logPassedTests: true)
 
 ## AgentTestWriter
 
-AI coding agents pay for every token they read, and a wall of green checkmarks is pure waste. `AgentTestWriter` prints one compact JSON object with the failures only. Each failure carries what an agent needs to fix it and nothing else: where it failed, expected and actual (or a diff), the code around the failing line and a stack trace limited to your project's own code.
+AI coding agents pay for every token they read, and a wall of green checkmarks is pure waste. `AgentTestWriter` prints one compact JSON object with the failures only. Each failure carries what an agent needs to fix it and nothing else:
+
+- where it failed
+- expected and actual, or a diff
+- the code around the failing line
+- a stack trace limited to your project's own code
 
 ```json
 {"result":"failed","tests":11,"passed":8,"failed":1,"skipped":2,"seconds":1.214,"failures":[{"test":"Cart::refuses_negative_quantities","at":"tests/cart-tests.php:31","message":"Failed asserting that two values are identical (type and value).","expected":"'Quantity must be positive.' (string)","actual":"'Invalid quantity.' (string)","code":["30|     $cart = new Cart();","31>     Assert::exact('Quantity must be positive.', $cart->add('A1', -1));"]}],"skippedTests":[{"test":"Cart::syncs_with_the_warehouse","reason":"WAREHOUSE_URL is not set."}]}
 ```
 
-You normally don't configure it. It switches on by itself when an agent runs the tests (Claude Code is detected, and any other agent can set `MICROUNIT_AGENT=1`), and it can be forced with `--agent` or `withAgentOutput()`. The [AI coding agents](ai-agents.md) page covers that, plus the warnings and integrity findings in the JSON.
+You normally don't configure it. It switches on by itself when an agent runs the tests. Claude Code is detected, and any other agent can set `MICROUNIT_AGENT=1`. You can also force it with `--agent` or `withAgentOutput()`. The [AI coding agents](ai-agents.md) page covers that, plus the warnings and integrity findings in the JSON.
 
 Configure it explicitly to write the JSON to a file instead of stdout:
 
@@ -207,7 +212,7 @@ Configure it explicitly to write the JSON to a file instead of stdout:
 new AgentTestWriter('build/agent.json')
 ```
 
-The optional second argument, `projectDirectory`, is the directory paths in the output are relative to (default: the working directory).
+The optional second argument, `projectDirectory`, sets the directory that paths in the output are relative to. It defaults to the working directory.
 
 A file-based `AgentTestWriter` writes its file in every run. In agent sessions, MicroUnit still adds its own stdout writer next to it, so the agent gets the JSON on the console as well. Only a configured stdout `AgentTestWriter` (no file path) replaces MicroUnit's own.
 
@@ -295,7 +300,7 @@ Things worth knowing before you ship one:
 
 ## Run logs
 
-Writers report test results. PHP's own diagnostics (warnings, notices, deprecations) are a different channel: MicroUnit routes them into a run log instead of letting them spray across the console output.
+Writers report test results. PHP's own warnings, notices and deprecations are a different channel. MicroUnit routes them into a run log instead of letting them spray across the console output.
 
 Run logs live in `.microunit/logs/`, one file per run named after the start time and process id, like `2026-11-19T09-14-02Z-3092.log`. A file only appears when PHP reported something, and a parallel run writes one per process. The runtime directory moves with `withRuntimeDirectory()`, and it git-ignores itself.
 

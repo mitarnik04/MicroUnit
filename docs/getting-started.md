@@ -48,11 +48,11 @@ return MicroUnitConfigBuilder::create()
 
 You could even skip it: without a config file, MicroUnit runs the `*-tests.php` files in `tests/` with its defaults.
 
-The file is where your project's own setup goes once it needs one, and there is a lot to set: test groups, parallel runs, coverage reports, output formats, the Test Explorer, framework integration and more, all with autocompletion. Every option is on the [configuration](configuration.md) page.
+The file is where your project's own setup goes once it needs one. There is a lot to set, from test groups and parallel runs to coverage reports and framework integration, and your editor autocompletes all of it. Every option is on the [configuration](configuration.md) page.
 
 ### Framework detection
 
-`init` reads your `composer.json` (both `require` and `require-dev`) and sets the config up for the framework it finds:
+`init` looks through `require` and `require-dev` in your `composer.json` and sets the config up for the framework it finds:
 
 | Package in composer.json | What `init` adds |
 | --- | --- |
@@ -68,7 +68,7 @@ Everything else gets the plain config above. The [frameworks](frameworks.md) pag
 vendor/bin/microunit init --skill
 ```
 
-This also copies a skill file to `.claude/skills/microunit/SKILL.md`. Claude Code picks it up automatically; for other agents, `init` prints two lines to paste into your `AGENTS.md` (or whatever instructions file your agent reads). If the config already exists, `--skill` only installs the skill and exits with `0`, so you can run it on an existing project too. More on this in [AI coding agents](ai-agents.md).
+This also copies a skill file to `.claude/skills/microunit/SKILL.md`. Claude Code picks it up automatically. For other agents, `init` prints two lines to paste into `AGENTS.md` or whichever instructions file your agent reads. If the config already exists, `--skill` only installs the skill and exits with `0`, so you can run it on an existing project too. More on this in [AI coding agents](ai-agents.md).
 
 ## The first test
 
@@ -93,7 +93,7 @@ $tester->define('refuses_to_divide_by_zero', function (): void {
 
 No class, no inheritance, no `test` prefix to remember. A test file asks for the tester of a suite, then defines tests as closures with a name that says what the code does. Assertions follow PHPUnit's argument order: expected first, actual second.
 
-Every check on a value also comes as a fluent chain that starts from the value, `AssertSingle::begin(2 + 2)->isType('int')->exact(4)`, and both styles mix freely: see [fluent assertions](fluent-assertions.md).
+Every check on a value also comes as a fluent chain that starts from the value, like `AssertSingle::begin(2 + 2)->isType('int')->exact(4)`. Both styles mix freely, and [fluent assertions](fluent-assertions.md) covers the chained one.
 
 Two details matter:
 
@@ -141,7 +141,7 @@ Summary: 0/1 passed, 1 failed in 19.43ms
 
 For arrays and multi-line strings you get a diff instead of two blobs to compare by eye. An unexpected exception shows its class, message and the file and line it came from.
 
-The summary line counts passed, failed and (if any) skipped tests, and the time is wall clock: what you actually waited for, including bootstrapping.
+The summary line counts passed and failed tests, plus skipped ones when there are any. Its time is what you actually waited for, bootstrapping included.
 
 The exit code is `0` when everything passed, `1` when something failed, and `2` for a usage or configuration error. The [CLI page](cli.md#exit-codes) has the full list.
 
@@ -153,7 +153,7 @@ The default output stays compact on purpose. It does not print what a test echoe
 vendor/bin/microunit explorer
 ```
 
-opens the Test Explorer in your browser: a local page with every test, its status, output and failure details, buttons to run all tests, a suite, a single test or only the failures, and links that open the file at the right line in your editor. Test runs in your terminal update it while it is open.
+This opens the Test Explorer in your browser. It is a local page that lists every test with its status, output and failure details. From there you run all tests, a suite, a single test or only the failures, and a click opens a test's file at the right line in your editor. Test runs in your terminal update it while it is open.
 
 It is opt-in, so a normal run never opens a browser tab and does no work for it. `--explorer` opens it after a single run; `withTestExplorer()` in the config opens it after every interactive run. Details on the [Test Explorer](test-explorer.md) page.
 

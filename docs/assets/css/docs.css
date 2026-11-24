@@ -6,7 +6,8 @@
 @font-face { font-family: "Archivo"; src: url("../fonts/archivo-w100-700.woff2") format("woff2"); font-weight: 700; font-display: swap; }
 
 :root { --header: 60px; --content: 760px; }
-body { font-size: 16px; line-height: 1.65; }
+/* 17px Archivo sets as wide as 16px Open Sans; the paragraph gap is clearly larger than the line gap, so paragraphs read as blocks. */
+body { font-size: 17px; line-height: 1.7; }
 
 /* ---- Header ---------------------------------------------------------------------------- */
 .site-header {
@@ -27,7 +28,7 @@ body { font-size: 16px; line-height: 1.65; }
 /* ---- Layout ---------------------------------------------------------------------------- */
 .page { display: grid; grid-template-columns: 260px minmax(0, 1fr) 220px; gap: 0 48px; max-width: 1360px; margin: 0 auto; padding: 0 24px; }
 .sidebar { position: sticky; top: var(--header); align-self: start; height: calc(100vh - var(--header)); overflow: auto; padding: 28px 8px 40px 0; }
-.sidebar h2 { font: 600 11px/1 var(--font-label); letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); margin: 22px 0 8px; }
+.sidebar h2 { font: 600 12px/1 var(--font-label); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); margin: 22px 0 8px; }
 .sidebar h2:first-child { margin-top: 0; }
 .sidebar ul { list-style: none; margin: 0; padding: 0; }
 .sidebar a { display: block; padding: 5px 10px; margin-left: -10px; border-radius: 6px; color: var(--ink-2); text-decoration: none; font-size: 14.5px; line-height: 1.35; }
@@ -48,13 +49,16 @@ main { min-width: 0; padding: 40px 0 80px; }
 
 /* ---- Content --------------------------------------------------------------------------- */
 .content h1 { font: 800 clamp(32px, 4vw, 44px)/1.08 var(--font-display); letter-spacing: -.035em; margin: 0 0 18px; color: var(--ink); text-wrap: balance; }
-.content .lead, .content h1 + p { font-size: 18.5px; line-height: 1.55; color: var(--ink-2); margin-bottom: 32px; }
+.content .lead, .content h1 + p { font-size: 19.5px; line-height: 1.55; color: var(--ink-2); margin-bottom: 32px; }
 .content h2 { font: 800 25px/1.2 var(--font-display); letter-spacing: -.025em; margin: 56px 0 14px; padding-top: 14px; border-top: 1px solid var(--hair); scroll-margin-top: calc(var(--header) + 16px); text-wrap: balance; }
 .content h3 { font: 700 18.5px/1.3 var(--font-ui); margin: 34px 0 10px; scroll-margin-top: calc(var(--header) + 16px); text-wrap: balance; }
 .content h4 { font: 700 15px/1.4 var(--font-ui); margin: 26px 0 8px; }
-.content p, .content ul, .content ol { margin: 0 0 16px; }
+.content p, .content ul, .content ol { margin: 0 0 24px; }
 .content p, .content li, .content dd, .build-path p span, .build-canary { text-wrap: pretty; }
-.content li { margin: 4px 0; }
+.content li { margin: 6px 0; }
+/* Archivo sets tightly; a touch of letter and word spacing opens running text up. Code keeps its exact spacing. */
+.content :is(p, li, td, dd) { letter-spacing: .012em; word-spacing: .04em; }
+.content code { letter-spacing: normal; word-spacing: normal; }
 .content strong { color: var(--ink); }
 .content hr { border: 0; border-top: 1px solid var(--hair); margin: 40px 0; }
 .content img { max-width: 100%; height: auto; border-radius: 8px; }
@@ -62,17 +66,17 @@ main { min-width: 0; padding: 40px 0 80px; }
 .content :is(h2, h3):hover .heading-anchor { opacity: 1; }
 
 .content :not(pre) > code { padding: .12em .38em; border-radius: 5px; background: var(--code-bg); border: 1px solid var(--hair); font-size: .86em; overflow-wrap: anywhere; }
-.content pre { margin: 0 0 20px; padding: 16px 18px; border-radius: 9px; background: var(--code-bg); border: 1px solid var(--hair); overflow: auto; font-size: 13.8px; line-height: 1.6; tab-size: 4; }
+.content pre { margin: 0 0 24px; padding: 16px 18px; border-radius: 9px; background: var(--code-bg); border: 1px solid var(--hair); overflow: auto; font-size: 14.5px; line-height: 1.6; tab-size: 4; }
 .content pre code { font-size: inherit; background: none; border: 0; padding: 0; }
 .content blockquote { margin: 0 0 20px; padding: 12px 18px; border: 1px solid color-mix(in srgb, var(--cyan) 35%, var(--hair)); background: color-mix(in srgb, var(--cyan) 6%, var(--surface)); border-radius: 8px; color: var(--ink-2); }
 .content blockquote p:last-child { margin: 0; }
 
 /* A table spans the column; its wrapper scrolls only when a narrow screen leaves no other way. */
 .content .table-wrap { margin: 0 0 22px; overflow-x: auto; }
-.content table { width: 100%; border-collapse: collapse; font-size: 14.5px; }
+.content table { width: 100%; border-collapse: collapse; font-size: 15px; }
 /* A chart and the table with its numbers belong together, but each needs its own room. */
 .content :is(picture, img) + .table-wrap { margin-top: 28px; }
-.content th { text-align: left; font: 600 11.5px/1.2 var(--font-label); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3); padding: 9px 12px; border-bottom: 1px solid var(--hair); white-space: nowrap; }
+.content th { text-align: left; font: 700 13px/1.3 var(--font-ui); color: var(--ink-2); padding: 9px 12px; border-bottom: 1px solid var(--hair); white-space: nowrap; }
 .content td { padding: 9px 12px; border-bottom: 1px solid var(--hair); vertical-align: top; font-variant-numeric: tabular-nums; }
 /* Code in a cell wraps at its spaces, and breaks inside a token only when nothing else fits, so wide
    mapping tables fit the column instead of scrolling sideways. */
@@ -181,7 +185,7 @@ main { min-width: 0; padding: 40px 0 80px; }
 .build-role-label { display: flex; align-items: center; gap: 9px; margin-bottom: 8px; font: 600 11.5px/1.4 var(--font-label); letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); }
 .build-role-label::before { content: ""; width: 9px; height: 9px; border-radius: 2px; background: var(--build-marker); }
 .build-role.by-me .build-role-label::before { background: transparent; box-shadow: inset 0 0 0 1.5px var(--ink-2); }
-.content .build-role ul { padding-left: 18px; font-size: 15px; color: var(--ink-2); }
+.content .build-role ul { padding-left: 18px; margin-bottom: 14px; font-size: 15px; color: var(--ink-2); }
 
 /* Twelve runs: one green cell per run, lighting up once. */
 .build-matrix-grid { display: grid; grid-template-columns: auto 1fr 1fr; gap: 8px 10px; max-width: 540px; align-items: center; margin-bottom: 12px; }

@@ -6,9 +6,9 @@ description: Run MicroUnit on GitHub Actions, GitLab CI or any other pipeline, w
 
 # CI/CD
 
-MicroUnit is built to run in a pipeline. It needs nothing but PHP, it knows when it's running in CI (no browser tabs, no snapshot files written, failures annotated on GitHub), and its exit code tells the pipeline everything it needs to know. Getting from "works on my machine" to "green check on every pull request" is usually one step in a workflow file.
+MicroUnit is built to run in a pipeline. It needs nothing but PHP, and its exit code tells the pipeline everything it needs to know. It also knows when it's running in CI: it opens no browser tabs, writes no snapshot files and annotates failures on GitHub. Getting from "works on my machine" to "green check on every pull request" is usually one step in a workflow file.
 
-This page covers GitHub Actions, GitLab CI and a generic setup, plus the stricter checks worth switching on once the basics run: a coverage minimum, failing on tests without assertions, and catching tests that were quietly weakened in a pull request.
+This page covers GitHub Actions, GitLab CI and a generic setup. It also covers the stricter checks worth switching on once the basics run: a coverage minimum, failing on tests without assertions, and catching tests that were quietly weakened in a pull request.
 
 ## What MicroUnit does differently in CI
 
@@ -102,7 +102,7 @@ The HTML report is a single self-contained file, readable by anyone who download
 
 ### Coverage with a minimum
 
-`withCoverage()` measures coverage and writes reports; `minimum` makes the run fail (exit code `1`) when line coverage drops below it:
+`withCoverage()` measures coverage and writes reports. With `minimum`, the run fails with exit code `1` when line coverage drops below it:
 
 ```php
 ->withCoverage(include: 'src', clover: 'build/clover.xml', minimum: 80)
@@ -265,7 +265,7 @@ tests:
         path: build/cobertura.xml
 ```
 
-With `JUnitTestWriter('build/junit.xml')` configured, GitLab shows the results in the merge request's test report widget. With `withCoverage(cobertura: 'build/cobertura.xml')`, it marks covered and uncovered lines in the merge request diff, and the `coverage` regex picks the line percentage out of MicroUnit's console summary. (The `\S*?` skips the colour code in front of the number, because GitLab logs keep colours.)
+With `JUnitTestWriter('build/junit.xml')` configured, GitLab shows the results in the merge request's test report widget. With `withCoverage(cobertura: 'build/cobertura.xml')`, it marks covered and uncovered lines in the merge request diff, and the `coverage` regex picks the line percentage out of MicroUnit's console summary. The `\S*?` skips the colour code in front of the number, because GitLab logs keep colours.
 
 For merge requests, the integrity check needs the target branch, which GitLab's shallow clone may not include:
 

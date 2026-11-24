@@ -6,9 +6,9 @@ description: The browser-based Test Explorer that opens after interactive runs, 
 
 # Test Explorer
 
-The Test Explorer is a small web UI that MicroUnit serves on your own machine. If you have used the Test Explorer in Visual Studio, you already know the idea: every test in one list, a summary of what passed and what didn't, a detail pane for the selected test, and a handful of ways to run exactly the tests you care about right now.
+The Test Explorer is a small web UI that MicroUnit serves on your own machine. If you have used the Test Explorer in Visual Studio, you already know the idea. Every test sits in one list, with a summary of what passed and what didn't. A detail pane shows the selected test, and a handful of buttons run exactly the tests you care about right now.
 
-It is opt-in: it opens when you ask for it, and it needs nothing installed (it is plain PHP plus one HTML file).
+It is opt-in and opens only when you ask for it. It needs nothing installed, because it is plain PHP plus one HTML file.
 
 <img alt="The MicroUnit Test Explorer: the test list on the left, a failed assertion with its diff on the right" src="{{ '/assets/img/explorer-dark.png' | relative_url }}" width="100%">
 
@@ -44,7 +44,7 @@ With `openAfterRun: false`, the port and editor still apply when you open it wit
 
 `microunit explorer` starts the server if it isn't running and opens the browser. Before the first run there is nothing to show yet, so you get an empty page with a "Run all" button.
 
-Once it is open, it stays current: test runs in your terminal update the open tab too, and the terminal only prints the URL:
+Once it is open, it stays current. Test runs in your terminal update the open tab too, and the terminal only prints the URL:
 
 ```text
 Test Explorer updated: http://127.0.0.1:7357/
@@ -59,7 +59,7 @@ With `withTestExplorer()` it still never opens by itself when either of these is
 
 ### Port
 
-The explorer listens on port `7357` by default. If that port is taken (by another project's explorer, for example), pick a different one:
+The explorer listens on port `7357` by default. If that port is taken, for example by another project's explorer, pick a different one:
 
 ```php
 ->withTestExplorer(port: 7358)
@@ -69,15 +69,15 @@ Each project remembers its own running server, so two projects with two ports ca
 
 ## What you see
 
-The explorer is built like the test runner in an IDE: a toolbar, a list of your tests on the left, the details of the selected one on the right, and a status bar. It is dark by default; the theme switch in the status bar cycles through dark, light and following your system, and your browser remembers the choice.
+The explorer is laid out like the test runner in an IDE. A toolbar sits at the top, your tests are listed on the left and the selected test's details on the right, with a status bar along the bottom. It is dark by default; the theme switch in the status bar cycles through dark, light and following your system, and your browser remembers the choice.
 
-**The toolbar** has the run actions (Run all, Rerun failed, the Run menu), a text filter (matches anywhere in `Suite::test`) and the status filter with counts: All, Failed, Passed, Skipped, Not run.
+**The toolbar** holds the run actions: Run all, Rerun failed and the Run menu. Next to them are a text filter, which matches anywhere in `Suite::test`, and a status filter with counts for All, Failed, Passed, Skipped and Not run.
 
-**The run bar** under it is a thin strip with one cell per test, in the order they were defined: green passed, red failed, amber skipped, grey not run, dimmed when the result is from an earlier run. On a big suite it is the fastest way to spot the one red cell among a thousand green ones; click a cell to select that test. Above 600 tests it shows one segment per status instead.
+**The run bar** under it is a thin strip with one cell per test, in the order the tests were defined. Green means passed, red failed, amber skipped and grey not run. A dimmed cell holds a result from an earlier run. On a big suite it is the fastest way to spot the one red cell among a thousand green ones; click a cell to select that test. Above 600 tests it shows one segment per status instead.
 
-The line below the run bar says how the run went ("2 failed", "All passed"), the counts, the number of tests, the wall-clock time and, when the run measured [coverage](coverage.md), the line coverage with a link to the HTML report.
+The line below the run bar sums up the latest run, such as "2 failed" or "All passed". It also shows the counts, the number of tests in that run and its wall-clock time. When the run measured [coverage](coverage.md), the line adds that run's line coverage with a link to the HTML report.
 
-**The list** shows your tests grouped by suite, in definition order. Data sets of a `defineGroup()` test sit under their own collapsible group. Every row has a drawn status icon (so the status never depends on colour alone), the name and the duration; suites and groups show how many tests they contain, their total time and, for suites, a "2 failed" badge.
+**The list** shows your tests grouped by suite, in definition order. Data sets of a `defineGroup()` test sit under their own collapsible group. Every row shows a status icon, the name and the duration. The icons are drawn shapes, so the status never depends on colour alone. Suites and groups show how many tests they contain and their total time, and a suite with failures gets a badge like "2 failed".
 
 The sort button in the list's header puts the slowest tests first; the other two buttons expand or collapse everything. Drag the divider between list and details to make the list wider (double-click it to reset).
 
@@ -91,7 +91,7 @@ The sort button in the list's header puts the slowest tests first; the other two
 
 Every block has a copy button. When a test failed, the location points at the failing line, not at the start of the test.
 
-Select a suite or a group instead, and the details show what is in it: the failed tests first, each with its failure message, then the others, every one a click away, plus buttons to run all of them or only the failed ones.
+Select a suite or a group instead, and the details list what is in it. The failed tests come first, each with its failure message, then the others, every one a click away. Buttons run all of them or only the failed ones.
 
 ### Open in editor
 
@@ -111,7 +111,7 @@ A name MicroUnit does not know and that contains no `{file}` falls back to VS Co
 
 ## Running tests from the explorer
 
-The explorer is not just a viewer. Every run it starts is an ordinary `microunit` process with your config, started in the background so the page stays responsive. While a run is in progress, the tests it covers show a ring, the numbers of the last run are dimmed, and the run buttons are disabled until it finishes (one run at a time).
+The explorer is not just a viewer. Every run it starts is an ordinary `microunit` process with your config, started in the background so the page stays responsive. While a run is in progress, the tests it covers show a ring and the numbers of the last run are dimmed. The run buttons stay disabled until it finishes, because only one run happens at a time.
 
 | Run mode | How | What runs |
 | --- | --- | --- |
@@ -140,7 +140,7 @@ Marked tests get a tinted background. `Enter` then runs exactly those. `Esc` cle
 
 ### Partial runs keep earlier results
 
-When a run covers only some tests (Run selection, Rerun failed, `--filter`, `--failed`), the tests that did not run keep their previous result instead of turning grey. They are marked as stale: dimmed in the list and the run bar, and the details say "Not part of the latest run; this is the previous result." The verdict line shows "partial run" next to the time of the last run. You keep the full picture while you work on a handful of tests, and a full run clears every stale mark.
+When a run covers only some tests (Run selection, Rerun failed, `--filter`, `--failed`), the tests that did not run keep their previous result instead of turning grey. They are marked as stale, which dims them in the list and the run bar, and their details say "Not part of the latest run; this is the previous result." The verdict line shows "partial run" next to the time of the last run. You keep the full picture while you work on a handful of tests, and a full run clears every stale mark.
 
 One caveat: this only covers tests MicroUnit loaded. When you run specific files or directories (`microunit tests/Unit`) or a `--group`, only those test files are loaded, so the explorer shows only their tests. Runs started from the explorer always load the whole suite.
 
@@ -180,7 +180,7 @@ The coverage report link (shown when the run wrote an [HTML coverage report](cov
 
 ## Light theme
 
-If you work in a light editor, the explorer comes along: the theme switch in the status bar cycles through dark, light and following your system, and your browser remembers the choice.
+If you work in a light editor, the explorer comes along. The theme switch in the status bar cycles through dark, light and your system's setting, and your browser remembers the choice.
 
 <img alt="The MicroUnit Test Explorer in its light theme" src="{{ '/assets/img/explorer.png' | relative_url }}" width="100%">
 

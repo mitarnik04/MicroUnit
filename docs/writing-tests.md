@@ -6,7 +6,7 @@ description: Suites, tests, data sets, fixtures, setUp and tearDown, skipping, o
 
 # Writing tests
 
-A MicroUnit test is a closure with a name. That is the whole model, and everything on this page builds on it: suites group tests, data sets run one closure with different inputs, fixtures hand each test the objects it needs, and lifecycle hooks cover the rest.
+A MicroUnit test is a closure with a name. That is the whole model, and everything on this page builds on it. Suites group tests. Data sets run one closure with different inputs. Fixtures hand each test the objects it needs, and lifecycle hooks cover the rest.
 
 The goal is a test file you can read from top to bottom like a description of what the code does, whether a colleague wrote it, you wrote it at 2am, or an AI agent wrote it.
 
@@ -172,7 +172,7 @@ $tester->fixture(string $name, callable $factory, ?callable $cleanup = null, boo
 
 - **`$factory`** creates the value. It runs lazily, the first time a test (or setUp, tearDown or another fixture) asks for it. Tests that do not ask never pay for it.
 - **`$cleanup`** receives the value after the test, also when the test failed. A cleanup that throws turns an otherwise passing test into a failure, because leaking state into the next test is a bug too.
-- **`$shared: true`** creates one instance for the whole suite instead of one per test, and cleans it up after the suite's last test. Use it for expensive things that tests do not mutate in conflicting ways, like a database connection or an HTTP server. A shared fixture can use other shared fixtures, but not per-test ones: it would keep the first test's instance after that instance was cleaned up, so MicroUnit fails the test with an explanation instead.
+- **`$shared: true`** creates one instance for the whole suite instead of one per test, and cleans it up after the suite's last test. Use it for expensive things that tests do not mutate in conflicting ways, like a database connection or an HTTP server. A shared fixture can use other shared fixtures, but not per-test ones. It would keep the first test's instance after that instance was cleaned up, so MicroUnit fails the test with an explanation instead.
 
 Without `shared`, every test gets a fresh instance. That is the default for a reason: tests that share mutable state start depending on their order, and then you have a very bad afternoon.
 
@@ -305,7 +305,7 @@ $tester->tearDown(function (TestResult $result, FakeMailer $mailer): void {
 });
 ```
 
-Fixture parameters can sit anywhere in the list because they are matched by name. The other parameters are filled in order from the hook's usual values (for `tearDown()`: the result, then the setUp value), and values nobody asked for are not used.
+Fixture parameters can sit anywhere in the list because they are matched by name. The other parameters are filled in order from the hook's usual values, and values nobody asked for are not used. For `tearDown()`, those values are the result, then the setUp value.
 
 ### Replacing a fixture for every test
 
@@ -341,7 +341,7 @@ $tester->define('handles_leap_seconds', function (): void {
 });
 ```
 
-`Assert::skip(string $reason = 'Skipped.')` stops the test immediately. `Assert::skipIf(bool $condition, string $reason)` does the same when the condition is true. A skipped test is not a failure; it shows up with its reason:
+`Assert::skip(string $reason = 'Skipped.')` stops the test immediately. `Assert::skipIf(bool $condition, string $reason)` does the same when the condition is true. A skipped test is not a failure. It shows up with its reason:
 
 ```text
 [-] reads_from_postgres skipped: pdo_pgsql is not installed
@@ -385,7 +385,7 @@ $tester->define('slugifies_titles', function (): void {
 });
 ```
 
-Assertions inside helpers count as assertions of the test. When one fails, the Test Explorer, the CI annotations and the agent output report the line in the test file that called the helper, which is usually the line you want to look at.
+Assertions inside helpers count as assertions of the test. When one fails, the Test Explorer, the CI annotations and the agent output point to the line in the test file that called the helper. That is usually the line you want to look at.
 
 Two things to watch:
 
@@ -429,7 +429,7 @@ return MicroUnitConfigBuilder::create()
     ->build();
 ```
 
-Files passed on the command line (`vendor/bin/microunit tests/CartTest.php`) run even if they do not match a pattern; directories passed on the command line are searched with the configured patterns.
+A file you pass on the command line, like `vendor/bin/microunit tests/CartTest.php`, runs even if it does not match a pattern. A directory you pass is searched with the configured patterns.
 
 ### Test groups
 

@@ -22,7 +22,7 @@ The test case class Illuminate\Foundation\Testing\TestCase does not exist. Is th
 
 ## How it works
 
-For each test, MicroUnit generates a tiny subclass of the framework's base test case (plus any traits you asked for, like `RefreshDatabase`), creates a fresh instance and runs this sequence:
+For each test, MicroUnit generates a tiny subclass of the framework's base test case, with any traits you asked for, like `RefreshDatabase`. It creates a fresh instance and runs this sequence:
 
 1. The framework's `setUp()`: boots the application, applies traits such as `RefreshDatabase`.
 2. Your suite's `setUp()`, then the fixtures the test asks for.
@@ -50,13 +50,13 @@ Call a method the test case doesn't have and you get a pointed error instead of 
 BadMethodCallException: Illuminate\Foundation\Testing\TestCase has no method assertDatabaseHas(). Is a trait missing? Add it with the proxy's uses().
 ```
 
-Calling a framework helper outside a running test (in a test file's top-level code, or in `setUpOnce()`) throws a `LogicException`, because there is no test case to forward to yet. `uses()` and `useTestCase()` are the exception: they belong at the top of the file.
+Outside a running test, such as in a test file's top-level code or in `setUpOnce()`, a framework helper throws a `LogicException`, because there is no test case to forward to yet. `uses()` and `useTestCase()` are the exception: they belong at the top of the file.
 
 ### Framework assertions are first-class
 
 Framework helpers assert through PHPUnit. MicroUnit watches PHPUnit's assertion counter around every test and adds the difference to the test's own count, so a test that only calls `->assertOk()` is not flagged as "no assertions". Expectations the framework adds to the test case itself count too, like the Mockery expectations (`shouldReceive()->once()`) Laravel verifies in `tearDown()`.
 
-When a framework assertion fails, MicroUnit translates the `PHPUnit\Framework\AssertionFailedError` into a normal MicroUnit failure. No PHPUnit stack trace, no crash report: you get the message, and when PHPUnit had a comparison (expected vs. actual) you get MicroUnit's diff. Very long messages are cut to 12 lines and object dumps are collapsed to the class name, because nobody reads a 300-line `var_dump` of a response object.
+When a framework assertion fails, MicroUnit translates the `PHPUnit\Framework\AssertionFailedError` into a normal MicroUnit failure. There is no PHPUnit stack trace and no crash report. You get the message, and when PHPUnit compared an expected and an actual value, you also get MicroUnit's diff. Very long messages are cut to 12 lines and object dumps are collapsed to the class name, because nobody reads a 300-line `var_dump` of a response object.
 
 ```
 [✖] creating_a_product_requires_a_name (41.20ms)
@@ -126,7 +126,7 @@ return MicroUnitConfigBuilder::create()
     ->build();
 ```
 
-The default test case is `Symfony\Bundle\FrameworkBundle\Test\WebTestCase`, and `APP_ENV` defaults to `test` (anything you pass in `environment` is merged on top).
+The default test case is `Symfony\Bundle\FrameworkBundle\Test\WebTestCase`, and `APP_ENV` defaults to `test`. Anything you pass in `environment` is merged on top.
 
 Symfony needs its test bootstrap: `tests/bootstrap.php` loads `.env`, `.env.test` and friends through Dotenv. Point `withBootstrapFile()` at it. `microunit init` adds that line when the file exists.
 

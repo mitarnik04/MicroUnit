@@ -31,7 +31,7 @@ Code coverage
 
 Without any configuration, `--coverage` measures everything under `src/` (next to `microunit.config.php`, or in the working directory when there is no config file) and prints the table.
 
-The table lists totals first, then every file that is not fully covered; fully covered files are summed up in one line (`+ 12 file(s) fully covered`) so the table stays short on a healthy project.
+The table lists totals first, then every file that is not fully covered. Fully covered files are summed up in one line, `+ 12 file(s) fully covered`, so the table stays short on a healthy project.
 
 ## Configuring it
 
@@ -129,7 +129,7 @@ Being honest about what a userland approach can and can't do:
 
 - **Line coverage only.** There is no branch or path coverage. The Cobertura report always says `branch-rate="0"`.
 - **Statement granularity.** A statement spread over several lines counts on the line where it starts. A line with two statements is covered as soon as either of them ran.
-- **Only included files.** Code reaches the counters through `include`/`require`. Code run through `eval()` is not measured, and neither are files loaded before coverage started. That happens when `microunit.config.php` itself includes source files; MicroUnit warns about it (`Coverage: N file(s) were loaded before coverage started and cannot be measured`). Keep the config file free of `require` statements for your own code and use the bootstrap file instead.
+- **Only included files.** Code reaches the counters through `include`/`require`. Code run through `eval()` is not measured, and neither are files loaded before coverage started. That happens when `microunit.config.php` itself includes source files. MicroUnit warns about it with `Coverage: N file(s) were loaded before coverage started and cannot be measured`. Keep the config file free of `require` statements for your own code and use the bootstrap file instead.
 - **Unknown syntax is skipped, not guessed.** If the instrumenter meets syntax it can't parse, it leaves that file out of the report and says so on stderr (`Coverage: /path/to/src/Weird.php is not measured (...)`). The file still runs normally, it just isn't counted.
 - **Overhead.** While coverage is on, file operations in your tests pass through the stream wrapper, and instrumented code does a little more work per statement. Expect coverage runs to be slower than plain runs, which is one more reason to use `--no-coverage` for quick local loops.
 - **Needs the tokenizer extension.** It is part of every standard PHP build, but some minimal Docker images leave it out.

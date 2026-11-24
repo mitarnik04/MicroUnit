@@ -52,7 +52,7 @@ Builder methods change the builder and return it, so you can chain them, or call
 
 MicroUnit looks for `microunit.config.php` in the current directory and then in each parent directory, and uses the first one it finds. So you can run `vendor/bin/microunit` from anywhere inside the project. `--config=path/to/file.php` (or `-c=...`) picks a file explicitly.
 
-Without any config file, MicroUnit runs with the defaults: tests in `tests/` (or the current directory if there is no `tests/`), files named `*-tests.php`, compact console output, sequential.
+Without any config file, MicroUnit runs with its defaults. It looks for files named `*-tests.php` in `tests/`, or in the current directory if there is no `tests/`, and runs them sequentially with compact console output.
 
 **Paths in the config are relative to the config file**, never to the directory you run from. Absolute paths work too, so `__DIR__ . '/tests'` is fine. This applies to `withTestDir()`, `withTestGroup()`, `withBootstrapFile()`, `withCoverage()` and `withRuntimeDirectory()`.
 
@@ -246,7 +246,7 @@ Everything about the Test Explorer in one call. It is off by default: without th
 
 - **`openAfterRun`**: open the explorer (or update the open one) after every local, interactive run. It never opens in CI or when the output is piped; `--no-explorer` keeps it closed for one run.
 - **`port`**: the local port it listens on.
-- **`editor`**: what its file links open. Known names: `vscode`, `cursor`, `windsurf`, `zed`, `phpstorm`, `idea`, `sublime`. Anything else must be a URL template containing `{file}` (and usually `{line}`), such as `myeditor://open?file={file}&line={line}`; an unknown name without `{file}` falls back to VS Code.
+- **`editor`**: what its file links open. Known names: `vscode`, `cursor`, `windsurf`, `zed`, `phpstorm`, `idea`, `sublime`. Anything else must be a URL template that contains `{file}` and usually `{line}`, such as `myeditor://open?file={file}&line={line}`. An unknown name without `{file}` falls back to VS Code.
 
 See [Test Explorer](test-explorer.md).
 
@@ -265,7 +265,13 @@ use MicroUnit\Integration\Laravel\LaravelIntegration;
 ))
 ```
 
-MicroUnit ships `LaravelIntegration`, `SymfonyIntegration` and `CodeIgniterIntegration`. All three take `testCase` (the base test case, default: the framework's own), `traits` (applied to every test) and `environment` (like `<env>` in `phpunit.xml`). `microunit init` adds the right one when it finds the framework in `composer.json`. The [frameworks](frameworks.md) page has the details.
+MicroUnit ships `LaravelIntegration`, `SymfonyIntegration` and `CodeIgniterIntegration`. All three take the same arguments:
+
+- `testCase`: the base test case. Defaults to the framework's own.
+- `traits`: traits applied to every test.
+- `environment`: environment variables, like `<env>` in `phpunit.xml`.
+
+`microunit init` adds the right one when it finds the framework in `composer.json`. The [frameworks](frameworks.md) page has the details.
 
 ## AI agents and strictness
 
@@ -315,7 +321,14 @@ Where MicroUnit keeps its working files. The default is `.microunit` next to the
 ->withRuntimeDirectory('var/microunit')
 ```
 
-It holds the run logs (`logs/`), the explorer's state (`explorer/`), caches for coverage instrumentation and parallel workers (`cache/`) and temporary files (`tmp/`). MicroUnit writes a `.gitignore` into it, so it never ends up in a commit and you do not need to add it to your own `.gitignore`.
+It holds:
+
+- `logs/`: the run logs
+- `explorer/`: the Test Explorer's state
+- `cache/`: caches for coverage instrumentation and parallel workers
+- `tmp/`: temporary files
+
+MicroUnit writes a `.gitignore` into it, so it never ends up in a commit and you do not need to add it to your own `.gitignore`.
 
 ### `persistRunLogs()`
 

@@ -115,7 +115,7 @@ The callback receives the call's arguments and its return value is returned. For
 returnsMap(string $method, array $map): MockBuilder
 ```
 
-A lookup table. Each row lists arguments followed by the return value; the first row whose arguments equal the call's leading arguments (strictly) wins. Without a matching row, the method returns its default.
+A lookup table. Each row lists arguments followed by the return value. The first row whose arguments strictly equal the call's leading arguments wins. Without a matching row, the method returns its default.
 
 ```php
 ->returnsMap('price', [
