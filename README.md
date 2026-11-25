@@ -75,14 +75,14 @@ No base classes, no annotations. A test is a closure with a name that says what 
 
 I started MicroUnit by hand and moved to an agentic workflow later. With AI I finally had the time
 to build every feature I had in mind, and to test each one from several sides, how it fails as well
-as how it passes. On my own, next to a day job, I could not have done either. This README and the
-documentation are written with AI too.
+as how it passes. On my own, I could not have done either.
 
-The quality comes from what surrounds it. I design the APIs and review the code, and every change
-has to pass MicroUnit's own test suite on three operating systems, static analysis, a coverage floor
-and a check that no test got weaker. Before a release, the test suites of six real projects run
-through it as well. [Ensuring high quality with AI](https://mitarnik04.github.io/MicroUnit/quality-with-ai/)
-walks through every step and links to the proof.
+The quality comes from what surrounds it. I design the APIs and review everything AI writes, from
+the code to this README and the docs. Every change has to pass MicroUnit's own test suite on three
+operating systems, static analysis, a coverage floor and a check that no test got weaker. Before a
+release, the test suites of six real projects run through it as well.
+[Ensuring high quality with AI](https://mitarnik04.github.io/MicroUnit/quality-with-ai/) walks
+through every step and links to the proof.
 
 ## Why MicroUnit
 
@@ -209,11 +209,13 @@ tests. [More](https://mitarnik04.github.io/MicroUnit/ai-agents/)
 
 ## The story
 
-I started MicroUnit as a side project in May 2025, because I wanted PHP tests that were quick to
-write and quick to read. It got to a public beta that summer, and then it stalled: building coverage, parallel
-runs, framework integrations and a proper explorer next to a day job was more than one person could
-do. AI changed that. With it as my tool, I finally had the capacity to bring MicroUnit to its first
-official release and to build every feature I had imagined for it.
+I started MicroUnit as a side project in May 2025, because I wanted to try a new approach to unit
+testing in PHP. Two questions drove it: could a test framework be faster than what already exists,
+and could it do without a single external dependency? MicroUnit got to a public beta that summer,
+and then it stalled: coverage, parallel runs, framework integrations and a proper explorer were more
+than I could build alone next to a day job. Moving to an agentic workflow brought it to 1.0. The
+[benchmarks](https://mitarnik04.github.io/MicroUnit/benchmarks/) answer the first question on six
+real projects, and the answer to the second hasn't changed: not one dependency.
 
 ## Contributing
 
