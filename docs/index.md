@@ -10,6 +10,8 @@ description: A new way to test PHP. Built for today. The dependency-free testing
 says what it checks, the assertions read like sentences, and runs are fast enough that you never
 wait for them. Everything else you need is in the box.
 
+**Featured on PHP News** in an [article by Eric L. Barnes](https://phpnews.net/microunit).
+
 ```php
 <?php
 
@@ -41,8 +43,6 @@ vendor/bin/microunit
 
 [Get started in five minutes](getting-started.md), or bring your PHPUnit suite along with
 [one command](migrating-from-phpunit.md).
-
-Featured on PHP News: [“MicroUnit 1.0: A Zero-Dependency Testing Framework for PHP”](https://phpnews.net/microunit) by Eric L. Barnes.
 
 ## What you get
 
