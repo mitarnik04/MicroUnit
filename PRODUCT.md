@@ -129,8 +129,10 @@ sentences, specific facts, a little personality. The rules for every text:
   and their HTML sources in `assets/brand/src/`).
 - The quality process: `.github/workflows/ci.yml`, `bin/canary.php`, `bin/lint.php`,
   `docs/quality-with-ai.md`.
+- Press: "MicroUnit 1.0: A Zero-Dependency Testing Framework for PHP" by Eric L. Barnes on PHP News
+  (https://phpnews.net/microunit). Quote it only verbatim.
 - Not on hand, never to be invented: testimonials, user or download numbers, company users,
-  sponsors (none yet), press coverage, a release date.
+  sponsors (none yet), other press coverage, a release date.
 
 ## Product Principles
 

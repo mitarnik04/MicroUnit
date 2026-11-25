@@ -11,6 +11,10 @@
 </p>
 
 <p align="center">
+  <strong>Featured on PHP News</strong> in an <a href="https://phpnews.net/microunit">article by Eric L. Barnes</a>
+</p>
+
+<p align="center">
   <a href="https://github.com/mitarnik04/MicroUnit/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/mitarnik04/MicroUnit/actions/workflows/ci.yml/badge.svg"></a>
   <a href="https://packagist.org/packages/microunit/microunit"><img alt="Packagist" src="https://img.shields.io/packagist/v/microunit/microunit?label=packagist&color=0A17A8"></a>
   <img alt="PHP 8.5+" src="https://img.shields.io/badge/php-8.5%2B-0A17A8">

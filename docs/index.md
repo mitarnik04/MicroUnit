@@ -42,6 +42,8 @@ vendor/bin/microunit
 [Get started in five minutes](getting-started.md), or bring your PHPUnit suite along with
 [one command](migrating-from-phpunit.md).
 
+Featured on PHP News: [“MicroUnit 1.0: A Zero-Dependency Testing Framework for PHP”](https://phpnews.net/microunit) by Eric L. Barnes.
+
 ## What you get
 
 <div class="feature-grid">
