@@ -215,7 +215,7 @@ and could it do without a single external dependency? MicroUnit got to a public 
 and then it stalled: coverage, parallel runs, framework integrations and a proper explorer were more
 than I could build alone next to a day job. Moving to an agentic workflow brought it to 1.0. The
 [benchmarks](https://mitarnik04.github.io/MicroUnit/benchmarks/) answer the first question on six
-real projects, and the answer to the second hasn't changed: not one dependency.
+real projects. The answer to the second? Still zero dependencies.
 
 ## Contributing
 
