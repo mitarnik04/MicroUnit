@@ -60,7 +60,8 @@ not the headline. "Modern" hints at it; the docs show it.
   the opt-in browser Test Explorer.
 - Evaluated through the README, the docs site (`docs/`, GitHub Pages), the benchmarks, the social
   image and the 1.0 product video.
-- Built by one maintainer, with AI writing code, tests and docs. The maintainer designs the product
+- Built by one maintainer: started by hand, then moved to an agentic workflow, with AI writing code,
+  tests and docs since. The maintainer designs the product
   and reviews the work; CI checks every change. `docs/quality-with-ai.md` describes the process.
 
 ## Capabilities and Constraints
@@ -117,7 +118,8 @@ sentences, specific facts, a little personality. The rules for every text:
   migrating is framed as making the move easy for people who choose MicroUnit.
 - **Easy to understand for newcomers**, so they catch the vital parts at first read.
 - **Being open about AI is a strength.** AI is used to write the code and the docs; say so plainly,
-  without saying how much, and point to the guardrails.
+  without saying how much, and point to the guardrails. MicroUnit started by hand and moved to AI
+  later; never imply it was written entirely by AI.
 - **No em dashes, no decorative emoji.**
 
 ## Evidence on Hand

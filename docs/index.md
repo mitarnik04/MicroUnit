@@ -80,9 +80,10 @@ needed. When your project needs its own setup, one `microunit.config.php` holds 
 with autocompletion and comments. Command-line flags only change a single run. See
 [configuration](configuration.md).
 
-**Built with AI, checked at every step.** I write MicroUnit with AI and review what it writes, and
-every change has to pass its own tests on three operating systems, static analysis and a coverage
-floor. [Ensuring high quality with AI](quality-with-ai.md) walks through the whole process.
+**Finished with AI, checked at every step.** After a hand-written start, MicroUnit moved to an
+agentic workflow. I review what AI writes, and every change has to pass its own tests on three
+operating systems, static analysis and a coverage floor.
+[Ensuring high quality with AI](quality-with-ai.md) walks through the whole process.
 
 ## Sponsors
 

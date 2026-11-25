@@ -1,12 +1,12 @@
 ---
 layout: default
 title: Ensuring high quality with AI
-description: MicroUnit is written with AI. Every change runs through its own test suite twelve times, static analysis, a coverage floor and an integrity check, and every release through the test suites of six real projects.
+description: MicroUnit started by hand and is built with AI today. Every change runs through its own test suite twelve times, static analysis, a coverage floor and an integrity check, and every release through the test suites of six real projects.
 ---
 
 # Ensuring high quality with AI
 
-MicroUnit is written with AI. The code, the tests and the documentation you are reading all start as AI output, and I chose that deliberately. It comes with an obligation, though: if a tool writes the code, I have to be able to show what keeps a bad change from reaching you.
+I started MicroUnit by hand and moved to an agentic workflow later, the one that built 1.0. Today new code, tests and the documentation you are reading start as AI output, and I chose that deliberately. It comes with an obligation, though: if a tool writes the code, I have to be able to show what keeps a bad change from reaching you.
 
 That is what this page does. It follows a change from the first line to a release, and every step links to the place where you can check it yourself.
 

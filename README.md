@@ -71,12 +71,12 @@ Summary: 3/3 passed, 0 failed in 14.37ms
 
 No base classes, no annotations. A test is a closure with a name that says what it checks.
 
-## Built with AI
+## Started by hand, finished with AI
 
-I write MicroUnit with AI: the code, the tests, and also this README and the documentation. It is
-also one of the main reasons MicroUnit is tested as thoroughly as it is. On my own, next to a day
-job, I would not have had the time to test each feature from several sides, how it fails as well as
-how it passes. With AI, I do.
+I started MicroUnit by hand and moved to an agentic workflow later. With AI I finally had the time
+to build every feature I had in mind, and to test each one from several sides, how it fails as well
+as how it passes. On my own, next to a day job, I could not have done either. This README and the
+documentation are written with AI too.
 
 The quality comes from what surrounds it. I design the APIs and review the code, and every change
 has to pass MicroUnit's own test suite on three operating systems, static analysis, a coverage floor
